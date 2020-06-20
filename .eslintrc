@@ -1,0 +1,17 @@
+{
+  "extends": ["wesbos"],
+  "plugins": ["simple-import-sort", "sort-keys-fix"],
+  "rules": {
+    "no-nested-ternary": "off",
+    "react/display-name": "off",
+    "react-hooks/exhaustive-deps": "off",
+    "react/prop-types": "off",
+    "no-use-before-define": "off",
+    "import/no-cycle": "off",
+    "no-plusplus": "off",
+    "sort-imports": "off",
+    "simple-import-sort/sort": "warn",
+    "sort-keys-fix/sort-keys-fix": "warn",
+    "no-loop-func": "off"
+  }
+}
