@@ -31,9 +31,7 @@
   "scripts": {
     "build:css": "postcss src/css/tailwind.css -o src/css/generated-tailwind.css",
     "start": "npm run build:css && react-scripts start",
-    "build": "npm run build:css && react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "npm run build:css && react-scripts build"
   },
   "browserslist": {
     "production": [

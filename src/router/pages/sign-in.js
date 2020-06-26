@@ -1,76 +1,54 @@
 import { LockOutlined, UserOutlined } from '@ant-design/icons';
-import { useApolloClient, useMutation } from '@apollo/react-hooks';
-import { Button, Form, Input } from 'antd';
+import { useApolloClient } from '@apollo/react-hooks';
+import { Button, Form, Input, message } from 'antd';
 import gql from 'graphql-tag';
 import React from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
 
+import { TOKEN_KEY } from '../../common/constants';
 import { SIGN_IN } from '../../redux/types/user.type';
 
-export const Login = () => {
+export const SignIn = () => {
   const client = useApolloClient();
   const dispatch = useDispatch();
-
-  const [signIn, { loading }] = useMutation(
-    gql`
-      mutation {
-        signIn(data: { username: "duonghoang", password: "123456" }) {
-          data {
-            _id
-            displayName
-          }
-          token
-        }
-      }
-    `,
-    {
-      onCompleted: () => {},
-      onError: () => {},
-    }
-  );
+  const history = useHistory();
 
   const onFinish = async values => {
-    // const { username ,password } =  values
-    const result = await client.mutate({
-      mutation: gql`
-        mutation {
-          signIn(data: { username: "duonghoang", password: "123456" }) {
-            data {
-              _id
-              displayName
+    const { username, password } = values;
+
+    try {
+      const result = await client.mutate({
+        mutation: gql`
+          mutation SignIn($username: String!, $password: String!) {
+            signIn(data: { username: $username, password: $password }) {
+              token
+              data {
+                _id
+                username
+                displayName
+              }
             }
-            token
           }
-        }
-      `,
-    });
+        `,
+        variables: {
+          password,
+          username,
+        },
+      });
 
-    dispatch({
-      payload: result.data.signIn.data,
-      type: SIGN_IN,
-    });
+      dispatch({
+        payload: result.data.signIn.data,
+        type: SIGN_IN,
+      });
+
+      localStorage.setItem(TOKEN_KEY, result.data.signIn.token);
+
+      history.push('/');
+    } catch (e) {
+      message.error('Wrong username or password!');
+    }
   };
-
-  // const onFinish = async values => {
-  //   // // const { username ,password } =  values
-  //   // const result = await client.mutate({
-  //   //   mutation: gql`
-  //   //     mutation {
-  //   //       signIn(data: { username: "duonghoang", password: "123456" }) {
-  //   //         data {
-  //   //           _id
-  //   //           displayName
-  //   //         }
-  //   //         token
-  //   //       }
-  //   //     }
-  //   //   `,
-  //   // });
-  //   // dispatch({
-  //   //   payload: result.data.signIn.data,
-  //   //   type: SIGN_IN,
-  //   // });
-  // };
 
   return (
     <div className="flex justify-center items-center min-h-screen">
@@ -80,8 +58,6 @@ export const Login = () => {
       >
         <h1 className="text-3xl font-semibold mb-6 text-center">Sign in</h1>
         <Form
-          name="normal_login"
-          className="login-form"
           initialValues={{
             remember: true,
           }}

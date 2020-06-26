@@ -15,3 +15,7 @@ code {
 #root {
   min-height: 100vh;
 }
+
+.ant-avatar .anticon {
+  transform: translateY(-3px);
+}

@@ -1,3 +1,5 @@
 import React from 'react';
 
-export const Home = () => <div>Home</div>;
+import { LayoutDashboard } from '../../components/layout-dashboard';
+
+export const Home = () => <LayoutDashboard>Home</LayoutDashboard>;

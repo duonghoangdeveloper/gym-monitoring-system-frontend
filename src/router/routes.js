@@ -7,10 +7,10 @@ import * as pages from './pages';
 // Everyone can access
 const publicRoutes = [
   {
-    component: pages.Login,
+    component: pages.SignIn,
     exact: true,
-    key: 'login',
-    path: '/login',
+    key: 'sign-in',
+    path: '/sign-in',
   },
 ];
 
@@ -20,6 +20,12 @@ const authRoutes = [
     exact: true,
     key: 'home',
     path: '/',
+  },
+  {
+    component: pages.Profile,
+    exact: true,
+    key: 'profile',
+    path: '/profile',
   },
 ];
 
