@@ -2,7 +2,7 @@ import { LockOutlined, UserOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Button, Form, Input, message } from 'antd';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -14,9 +14,11 @@ export const SignIn = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
+  const [loading, setLoading] = useState(false);
+
   const onFinish = async values => {
     const { username, password } = values;
-
+    setLoading(true);
     try {
       const result = await client.mutate({
         mutation: gql`
@@ -48,6 +50,7 @@ export const SignIn = () => {
     } catch (e) {
       message.error('Wrong username or password!');
     }
+    setLoading(false);
   };
 
   return (
@@ -97,7 +100,12 @@ export const SignIn = () => {
           </Form.Item>
 
           <Form.Item>
-            <Button type="primary" htmlType="submit" className="w-full">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="w-full"
+              loading={loading}
+            >
               Sign in
             </Button>
           </Form.Item>

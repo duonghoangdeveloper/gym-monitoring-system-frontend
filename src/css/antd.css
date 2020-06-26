@@ -1,5 +1,17 @@
 @import "~antd/dist/antd.css";
 
+.ant-btn .anticon {
+  transform: translateY(-3px);
+}
+
 .ant-message .anticon {
-  top: -3px;
+  transform: translateY(-3px);
+}
+
+.ant-avatar .anticon {
+  transform: translateY(-3px);
+}
+
+.ant-spin .anticon {
+  transform: translateY(-3px);
 }
