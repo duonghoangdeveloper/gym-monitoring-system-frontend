@@ -54,8 +54,12 @@ export const LayoutDashboard = ({ children }) => {
           eGMS
         </div>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
-          <Menu.Item key="1" icon={<UserOutlined />}>
-            nav 1
+          <Menu.Item
+            key="users"
+            icon={<UserOutlined />}
+            onClick={() => history.push('/users')}
+          >
+            Users
           </Menu.Item>
           <Menu.Item key="2" icon={<UserOutlined />}>
             nav 2
@@ -93,7 +97,7 @@ export const LayoutDashboard = ({ children }) => {
             </div>
           </Dropdown>
         </div>
-        <div className="pt-6" style={{ minHeight: 'calc(100vh - 4rem)' }}>
+        <div className="p-6" style={{ minHeight: 'calc(100vh - 4rem)' }}>
           {children}
         </div>
       </div>
