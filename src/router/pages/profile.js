@@ -53,22 +53,22 @@ export const Profile = () => {
   return (
     <LayoutDashboard>
       <Form
-        onFinish={onFinish}
         initialValues={{
           _id: me._id,
           username: me.username,
         }}
+        onFinish={onFinish}
         {...formItemLayout}
       >
         <Form.Item {...tailFormItemLayout}>
           <h1 className="text-3xl mb-0">Update profile</h1>
         </Form.Item>
-        <Form.Item name="_id" label="User ID">
+        <Form.Item label="User ID" name="_id">
           <Input disabled />
         </Form.Item>
         <Form.Item
-          name="username"
           label="Username"
+          name="username"
           rules={[
             {
               message: 'Please input your username!',
@@ -79,7 +79,7 @@ export const Profile = () => {
           <Input />
         </Form.Item>
         <Form.Item {...tailFormItemLayout}>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button htmlType="submit" loading={loading} type="primary">
             Update profile
           </Button>
         </Form.Item>
