@@ -1,5 +1,5 @@
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input, message, Modal } from 'antd';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 
 import { formItemLayout, tailFormItemLayout } from '../../common/antd';
 import { LayoutDashboard } from '../../components/layout-dashboard';
+import { UpdatePasswordButton } from '../../components/update-password-button';
 import { UPDATE_PROFILE } from '../../redux/types/user.type';
 
 export const Profile = () => {
@@ -17,20 +18,24 @@ export const Profile = () => {
   const [loading, setLoading] = useState(false);
 
   const onFinish = async values => {
-    const { username } = values;
+    const { username, displayName } = values;
     setLoading(true);
 
     try {
       const result = await client.mutate({
         mutation: gql`
-          mutation UpdateProfile($username: String!) {
-            updateProfile(data: { username: $username }) {
+          mutation UpdateProfile($username: String!, $displayName: String!) {
+            updateProfile(
+              data: { username: $username, displayName: $displayName }
+            ) {
               _id
               username
+              displayName
             }
           }
         `,
         variables: {
+          displayName,
           username,
         },
       });
@@ -56,6 +61,7 @@ export const Profile = () => {
         onFinish={onFinish}
         initialValues={{
           _id: me._id,
+          displayName: me.displayName,
           username: me.username,
         }}
         {...formItemLayout}
@@ -78,10 +84,23 @@ export const Profile = () => {
         >
           <Input />
         </Form.Item>
-        <Form.Item {...tailFormItemLayout}>
+        <Form.Item
+          name="displayName"
+          label="Display Name"
+          rules={[
+            {
+              message: 'Please input display name!',
+              required: true,
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+        <Form.Item className="" {...tailFormItemLayout}>
           <Button type="primary" htmlType="submit" loading={loading}>
             Update profile
           </Button>
+          <UpdatePasswordButton className="ml-4" />
         </Form.Item>
       </Form>
     </LayoutDashboard>
