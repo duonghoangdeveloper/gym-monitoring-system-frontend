@@ -1,6 +1,6 @@
 {
   "extends": ["wesbos"],
-  "plugins": ["simple-import-sort", "sort-keys-fix"],
+  "plugins": ["simple-import-sort", "sort-keys-fix", "sort-destructure-keys"],
   "rules": {
     "no-nested-ternary": "off",
     "react/display-name": "off",
@@ -17,6 +17,7 @@
     "jsx-a11y/click-events-have-key-events": "off",
     "react/jsx-sort-props": ["warn", {
       "ignoreCase": false
-    }]
+    }],
+    "sort-destructure-keys/sort-destructure-keys": 2
   }
 }
