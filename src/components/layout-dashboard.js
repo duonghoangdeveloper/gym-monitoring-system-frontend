@@ -72,8 +72,9 @@ export const LayoutDashboard = ({ children }) => {
           >
             Users
           </Menu.Item>
-          <Menu.Item key="2" icon={<UserOutlined />}>
-            nav 2
+          <Menu.Item key="customers" icon={<UserOutlined />}
+            onClick={() => history.push('/customers')}>
+            Customer Management
           </Menu.Item>
           <Menu.Item key="3" icon={<UserOutlined />}>
             nav 3

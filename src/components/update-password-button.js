@@ -13,7 +13,6 @@ export const UpdatePasswordButton = props => {
   };
 
   const handleOk = () => {
-    console.log('ok');
     form.submit();
   };
 
@@ -22,7 +21,7 @@ export const UpdatePasswordButton = props => {
   };
 
   const onFinish = async values => {
-    const { oldPassword, newPassword, confirmPassword } = values;
+    const { confirmPassword, newPassword, oldPassword } = values;
     console.log(values);
 
     if (confirmPassword !== newPassword) {
@@ -65,14 +64,14 @@ export const UpdatePasswordButton = props => {
         Reset Password
       </Button>
       <Modal
+        className="select-none"
+        maskClosable={false}
+        onCancel={handleCancel}
+        onOk={handleOk}
         title="Reset Password"
         visible={visible}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        maskClosable={false}
-        className="select-none"
       >
-        <Form onFinish={onFinish} layout="vertical" form={form}>
+        <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
             label="Old password"
             name="oldPassword"

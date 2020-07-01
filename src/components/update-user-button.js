@@ -1,0 +1,115 @@
+import { EditOutlined } from '@ant-design/icons';
+import { Form, Input, Modal, Select } from 'antd';
+import React, { useEffect, useState } from 'react';
+
+import { USER_GENDERS } from '../common/constants';
+
+export const UpdateUserButton = ({ user }) => {
+  const [form] = Form.useForm();
+  const [visible, setVisible] = useState(false);
+  const [disabled, setDisabled] = useState(true);
+
+  const handleClick = () => {
+    setVisible(true);
+  };
+
+  useEffect(() => {
+    if (visible) {
+      // Do something
+    } else {
+      try {
+        setTimeout(() => form.resetFields(), 500);
+      } catch (_) {
+        // Do nothing
+      }
+    }
+  }, [visible]);
+
+  const onFinish = values => {
+    console.log(values);
+  };
+
+  const onValuesChange = (_, allValues) => {
+    setDisabled(
+      allValues.username === user.username &&
+        allValues.phone === user.phone &&
+        allValues.displayName === user.displayName &&
+        allValues.gender === user.gender &&
+        allValues.email === user.email
+    );
+  };
+
+  return (
+    <>
+      <a className="whitespace-no-wrap" onClick={handleClick}>
+        <EditOutlined />
+        &nbsp;&nbsp;Update
+      </a>
+      <Modal
+        className="select-none"
+        maskClosable={false}
+        okButtonProps={{
+          disabled,
+        }}
+        onCancel={() => setVisible(false)}
+        onOk={() => form.submit()}
+        title="Update user"
+        visible={visible}
+      >
+        <Form
+          form={form}
+          initialValues={{
+            displayName: user.displayName,
+            email: user.email,
+            gender: user.gender,
+            phone: user.phone,
+            username: user.username,
+          }}
+          layout="vertical"
+          onFinish={onFinish}
+          onValuesChange={onValuesChange}
+        >
+          <Form.Item
+            label="Username"
+            name="username"
+            rules={[
+              {
+                message: 'Please input username!',
+                required: true,
+              },
+            ]}
+          >
+            <Input placeholder="Enter username" />
+          </Form.Item>
+          <Form.Item
+            label="Email"
+            name="email"
+            rules={[
+              {
+                message: 'Email is invalid!',
+                type: 'email',
+              },
+            ]}
+          >
+            <Input placeholder="Enter email" />
+          </Form.Item>
+          <Form.Item label="Name" name="displayName">
+            <Input placeholder="Enter name" />
+          </Form.Item>
+          <Form.Item label="Phone" name="phone">
+            <Input placeholder="Enter phone" />
+          </Form.Item>
+          <Form.Item label="Gender" name="gender">
+            <Select placeholder="Select gender">
+              {USER_GENDERS.map(gender => (
+                <Select.Option key={gender} value={gender}>
+                  {gender}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
+  );
+};
