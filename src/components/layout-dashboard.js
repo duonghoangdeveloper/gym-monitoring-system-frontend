@@ -1,13 +1,14 @@
 import {
   DownOutlined,
+  LoadingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Avatar, Dropdown, Layout, Menu } from 'antd';
+import { Avatar, Dropdown, Layout, Menu, Spin } from 'antd';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -20,7 +21,11 @@ export const LayoutDashboard = ({ children }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
+  // const [signOutloading, setSignOutLoading] = useState(false);
+
   const handleSignOutClick = async () => {
+    // setSignOutLoading(true);
+
     try {
       await client.mutate({
         mutation: gql`
@@ -35,6 +40,7 @@ export const LayoutDashboard = ({ children }) => {
       // Do nothing
     }
 
+    // setSignOutLoading(false);
     dispatch({
       type: SIGN_OUT,
     });
@@ -48,10 +54,15 @@ export const LayoutDashboard = ({ children }) => {
         trigger={null}
         collapsible
         width={256}
-        className="bg-red-500 min-h-screen"
+        className="min-h-screen"
       >
         <div className="text-white text-2xl px-6 h-16 flex items-center">
-          eGMS
+          <a
+            className="cursor-pointer text-white"
+            onClick={() => history.push('/')}
+          >
+            eGMS
+          </a>
         </div>
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
           <Menu.Item
@@ -70,9 +81,10 @@ export const LayoutDashboard = ({ children }) => {
         </Menu>
       </Layout.Sider>
       <div className="flex-1">
-        <div className="h-16 bg-white w-full shadow z-50 flex items-center px-4">
+        <div className="h-16 bg-white w-full shadow z-50 flex items-center px-6">
           Header
           <div className="flex-1" />
+          <div>{username}</div>
           <Dropdown
             overlay={
               <Menu>
@@ -80,14 +92,21 @@ export const LayoutDashboard = ({ children }) => {
                   Profile
                 </Menu.Item>
                 <Menu.Divider />
-                <Menu.Item onClick={handleSignOutClick}>Sign out</Menu.Item>
+                <Menu.Item onClick={handleSignOutClick}>
+                  Sign out
+                  {/* {signOutloading && (
+                    <>
+                      &nbsp;&nbsp;
+                      <Spin indicator={<LoadingOutlined spin />} />
+                    </>
+                  )} */}
+                </Menu.Item>
               </Menu>
             }
             placement="bottomRight"
           >
             <div className="flex items-center cursor-pointer">
-              <div>{username}</div>
-              <div className="ml-2 mr-1">
+              <div className="mx-2">
                 <Avatar shape="square" icon={<UserOutlined />} />
               </div>
               <DownOutlined

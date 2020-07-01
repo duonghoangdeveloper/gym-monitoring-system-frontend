@@ -15,29 +15,3 @@ code {
 #root {
   min-height: 100vh;
 }
-
-.ant-avatar .anticon {
-  transform: translateY(-3px);
-}
-
-.ant-pagination-item-link .anticon {
-  transform: translateY(-3px);
-}
-
-.ant-message .anticon {
-  transform: translateY(-3px);
-}
-
-.ant-menu-item .anticon {
-  transform: translateY(-3px);
-}
- /* .anticon  {
-  transform: translateY(-4.5px);
-} */
-.ant-table-cell .anticon{
-  transform: translateY(-3px);
-
-}
-.ant-btn .anticon{
-  transform: translateY(-3px);
-}

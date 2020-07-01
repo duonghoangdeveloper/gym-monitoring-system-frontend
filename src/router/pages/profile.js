@@ -1,7 +1,7 @@
 import { useApolloClient } from '@apollo/react-hooks';
 import { Button, Form, Input, message } from 'antd';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
@@ -14,8 +14,11 @@ export const Profile = () => {
   const dispatch = useDispatch();
   const history = useHistory();
 
+  const [loading, setLoading] = useState(false);
+
   const onFinish = async values => {
     const { username } = values;
+    setLoading(true);
 
     try {
       const result = await client.mutate({
@@ -41,6 +44,8 @@ export const Profile = () => {
     } catch (e) {
       message.error('Wrong username or password!');
     }
+
+    setLoading(false);
   };
 
   const me = useSelector(state => state?.user?.me);
@@ -48,22 +53,22 @@ export const Profile = () => {
   return (
     <LayoutDashboard>
       <Form
-        onFinish={onFinish}
         initialValues={{
           _id: me._id,
           username: me.username,
         }}
+        onFinish={onFinish}
         {...formItemLayout}
       >
         <Form.Item {...tailFormItemLayout}>
           <h1 className="text-3xl mb-0">Update profile</h1>
         </Form.Item>
-        <Form.Item name="_id" label="User ID">
+        <Form.Item label="User ID" name="_id">
           <Input disabled />
         </Form.Item>
         <Form.Item
-          name="username"
           label="Username"
+          name="username"
           rules={[
             {
               message: 'Please input your username!',
@@ -74,7 +79,7 @@ export const Profile = () => {
           <Input />
         </Form.Item>
         <Form.Item {...tailFormItemLayout}>
-          <Button type="primary" htmlType="submit">
+          <Button htmlType="submit" loading={loading} type="primary">
             Update profile
           </Button>
         </Form.Item>

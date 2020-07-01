@@ -1,7 +1,7 @@
 export const URI =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
     ? 'http://localhost:7777/graphql'
-    : 'https://gym-monitoring-system.herokuapp.com//graphql';
+    : 'https://gym-monitoring-system.herokuapp.com/graphql';
 
 export const TOKEN_KEY = 'gym-monitoring-system-token';
 
