@@ -27,6 +27,12 @@ const authRoutes = [
     key: 'profile',
     path: '/profile',
   },
+  {
+    component: pages.Users,
+    exact: true,
+    key: 'users',
+    path: '/users',
+  },
 ];
 
 export const allRoutes = [...publicRoutes, ...authRoutes];
