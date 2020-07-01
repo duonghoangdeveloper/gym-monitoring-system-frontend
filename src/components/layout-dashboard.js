@@ -4,19 +4,19 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
-} from '@ant-design/icons';
-import { useApolloClient } from '@apollo/react-hooks';
-import { Avatar, Dropdown, Layout, Menu, Spin } from 'antd';
-import gql from 'graphql-tag';
-import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+} from "@ant-design/icons";
+import { useApolloClient } from "@apollo/react-hooks";
+import { Avatar, Dropdown, Layout, Menu, Spin } from "antd";
+import gql from "graphql-tag";
+import React, { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useHistory } from "react-router-dom";
 
-import { TOKEN_KEY } from '../common/constants';
-import { SIGN_OUT } from '../redux/types/user.type';
+import { TOKEN_KEY } from "../common/constants";
+import { SIGN_OUT } from "../redux/types/user.type";
 
 export const LayoutDashboard = ({ children }) => {
-  const username = useSelector(state => state.user?.me?.username);
+  const username = useSelector((state) => state.user?.me?.username);
   const client = useApolloClient();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -45,7 +45,7 @@ export const LayoutDashboard = ({ children }) => {
       type: SIGN_OUT,
     });
     localStorage.removeItem(TOKEN_KEY);
-    history.push('/');
+    history.push("/");
   };
 
   return (
@@ -59,7 +59,7 @@ export const LayoutDashboard = ({ children }) => {
         <div className="text-white text-2xl px-6 h-16 flex items-center">
           <a
             className="cursor-pointer text-white"
-            onClick={() => history.push('/')}
+            onClick={() => history.push("/")}
           >
             eGMS
           </a>
@@ -88,7 +88,7 @@ export const LayoutDashboard = ({ children }) => {
           <Dropdown
             overlay={
               <Menu>
-                <Menu.Item onClick={() => history.push('/profile')}>
+                <Menu.Item onClick={() => history.push("/profile")}>
                   Profile
                 </Menu.Item>
                 <Menu.Divider />
@@ -111,12 +111,12 @@ export const LayoutDashboard = ({ children }) => {
               </div>
               <DownOutlined
                 className="text-xs"
-                style={{ fontSize: '0.6rem' }}
+                style={{ fontSize: "0.6rem" }}
               />
             </div>
           </Dropdown>
         </div>
-        <div className="p-6" style={{ minHeight: 'calc(100vh - 4rem)' }}>
+        <div className="p-6" style={{ minHeight: "calc(100vh - 4rem)" }}>
           {children}
         </div>
       </div>
