@@ -64,7 +64,9 @@ export const AppApolloWrapper = ({ children }) => {
       if (networkError) {
         // Handle network error
         console.log('[NETWORK ERROR]');
-        setConnectionStatus(CONNECTION_STATUSES.DISCONNECTED);
+        if (networkError.message === 'Failed to fetch') {
+          setConnectionStatus(CONNECTION_STATUSES.DISCONNECTED);
+        }
       }
     });
 

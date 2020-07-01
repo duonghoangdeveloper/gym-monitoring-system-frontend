@@ -15,3 +15,15 @@
 .ant-spin .anticon {
   transform: translateY(-3px);
 }
+
+.ant-pagination-item-link .anticon {
+  transform: translateY(-3px);
+}
+
+.ant-menu-item .anticon {
+  transform: translateY(-3px);
+}
+
+.ant-table-cell .anticon {
+  transform: translateY(-3px);
+}
