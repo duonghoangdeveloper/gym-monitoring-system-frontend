@@ -1,11 +1,6 @@
-import {
-  DeleteOutlined,
-  DownloadOutlined,
-  EditOutlined,
-  PlusOutlined,
-} from '@ant-design/icons';
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Divider, Radio, Space, Table } from 'antd';
+import { Button, Divider, Radio, Space, Switch, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -28,7 +23,7 @@ export const Customer = () => {
             query {
               users(
                 query: {
-                  skip: 2
+                  skip: 0
                   sort: { username: ascending }
                   filter: { role: [CUSTOMER] }
                 }
@@ -60,6 +55,10 @@ export const Customer = () => {
       setLoading(false);
     })();
   }, []);
+
+  const deleteCustomer = () => {
+    console.log('This is delete function!!!');
+  };
 
   return (
     <LayoutDashboard>
@@ -115,12 +114,9 @@ const columns = [
   },
   {
     key: 'action',
-    render: (text, record) => (
-      <a className="whitespace-no-wrap">
-        <DeleteOutlined />
-        &nbsp;&nbsp;Delete
-      </a>
+    render: user => (
+      <Switch unCheckedChildren={<CloseOutlined />} user={user} />
     ),
-    title: 'Delete',
+    title: 'Active/Inactive',
   },
 ];

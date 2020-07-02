@@ -1,10 +1,13 @@
 import { EditOutlined } from '@ant-design/icons';
-import { Form, Input, Modal, Select } from 'antd';
+import { useApolloClient } from '@apollo/react-hooks';
+import { Form, Input, message, Modal, Select } from 'antd';
+import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
 import { USER_GENDERS } from '../common/constants';
 
 export const UpdateUserButton = ({ user }) => {
+  const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [disabled, setDisabled] = useState(true);
@@ -25,8 +28,60 @@ export const UpdateUserButton = ({ user }) => {
     }
   }, [visible]);
 
-  const onFinish = values => {
-    console.log(values);
+  const onFinish = async values => {
+    if (!values.displayName) {
+      values.displayName = 'No name';
+    }
+    if (!values.phone) {
+      values.phone = '0';
+    }
+
+    const { displayName, email, gender, phone, username } = values;
+    const { _id } = user;
+    try {
+      await client.mutate({
+        mutation: gql`
+          mutation UpdateProfile(
+            $_id: ID
+            $username: String
+            $displayName: String
+            $gender: String
+            $email: String
+            $phone: String
+          ) {
+            updateProfile(
+              data: {
+                _id: $_id
+                username: $username
+                displayName: $displayName
+                gender: $gender
+                email: $email
+                phone: $phone
+              }
+            ) {
+              _id
+              username
+              displayName
+              gender
+              email
+              phone
+            }
+          }
+        `,
+        variables: {
+          _id,
+          displayName,
+          email,
+          gender,
+          phone,
+          username,
+        },
+      });
+      message.success('Update profile succeed!');
+      setVisible(false);
+    } catch (e) {
+      message.error(`${e.message.split(': ')[1]}!`);
+    }
   };
 
   const onValuesChange = (_, allValues) => {
@@ -87,6 +142,7 @@ export const UpdateUserButton = ({ user }) => {
             rules={[
               {
                 message: 'Email is invalid!',
+                required: true,
                 type: 'email',
               },
             ]}

@@ -1,17 +1,14 @@
-import {
-  DeleteOutlined,
-  DownloadOutlined,
-  EditOutlined,
-  PlusOutlined,
-} from '@ant-design/icons';
+import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Divider, Radio, Space, Table } from 'antd';
+import { Button, Divider, Radio, Space, Switch, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
+import { CreateUserButton } from '../../components/create-user-button';
 import { LayoutDashboard } from '../../components/layout-dashboard';
+import { UpdateUserButton } from '../../components/update-user-button';
 
 export const Users = () => {
   const client = useApolloClient();
@@ -24,8 +21,8 @@ export const Users = () => {
       try {
         const result = await client.query({
           query: gql`
-            query Users {
-              users {
+            query {
+              users(query: { skip: 0, sort: { username: ascending } }) {
                 data {
                   _id
                   username
@@ -54,16 +51,20 @@ export const Users = () => {
       setLoading(false);
     })();
   }, []);
-
   return (
     <LayoutDashboard>
       <div className="bg-white shadow p-6">
         <div className="flex justify-between">
           <h1 className="text-3xl">User Management</h1>
-          <Button icon={<PlusOutlined />}>Create User</Button>
+          <CreateUserButton />
         </div>
 
-        <Table columns={columns} dataSource={users} loading={loading} />
+        <Table
+          className="overflow-x-auto"
+          columns={columns}
+          dataSource={users}
+          loading={loading}
+        />
       </div>
     </LayoutDashboard>
   );
@@ -80,6 +81,11 @@ const columns = [
     key: 'username',
     render: text => <a>{text}</a>,
     title: 'Username',
+  },
+  {
+    dataIndex: 'role',
+    key: 'role',
+    title: 'Role',
   },
   {
     dataIndex: 'displayName',
@@ -101,87 +107,17 @@ const columns = [
     key: 'gender',
     title: 'Gender',
   },
-  {
-    dataIndex: 'role',
-    key: 'role',
-    title: 'Role',
-  },
 
   {
     key: 'action',
-    render: (text, record) => (
-      <a>
-        <EditOutlined />
-        &nbsp;&nbsp;Update
-      </a>
-    ),
+    render: (text, user) => <UpdateUserButton user={user} />,
     title: 'Update',
   },
   {
     key: 'action',
-    render: (text, record) => (
-      <a>
-        <DeleteOutlined />
-        &nbsp;&nbsp;Delete
-      </a>
+    render: user => (
+      <Switch unCheckedChildren={<CloseOutlined />} user={user} />
     ),
-    title: 'Delete',
+    title: 'Active/Inactive',
   },
 ];
-
-// const users = [
-//   {
-//     _id: '5efaafaa3eff6805e0de82c2',
-//     displayName: null,
-//     email: 'tung@gmail.com',
-//     gender: 'MALE',
-//     phone: '0909227738',
-//     role: 'CUSTOMER',
-//     username: 'tungov2',
-//   },
-//   {
-//     _id: '5ef5c04da48fae197c0f8529',
-//     displayName: null,
-//     email: 'aa@dadxsaddasa.com',
-//     gender: 'MALE',
-//     phone: '0987678419',
-//     role: 'CUSTOMER',
-//     username: 'tienvipdinhcao',
-//   },
-//   {
-//     _id: '5ef5c01aa48fae197c0f8526',
-//     displayName: null,
-//     email: 'aa@dadxsada.com',
-//     gender: 'MALE',
-//     phone: '0987678419',
-//     role: 'CUSTOMER',
-//     username: 'tiendinsahkount',
-//   },
-//   {
-//     _id: '5ef5ad6ee1133509746af7f7',
-//     displayName: null,
-//     email: null,
-//     gender: 'MALE',
-//     phone: null,
-//     role: 'CUSTOMER',
-//     username: 'quoctrin',
-//   },
-//   {
-//     _id: '5ef41cfa78701c2924d22bab',
-//     displayName: null,
-//     email: null,
-//     gender: 'MALE',
-//     phone: null,
-//     role: 'CUSTOMER',
-//     username: 'tungov',
-//   },
-//   {
-//     _id: '5ed80cf7044a862d621fc48f',
-//     displayName: 'trinnaq1234500000',
-//     email: null,
-//     gender: 'MALE',
-//     phone: null,
-//     role: 'SYSTEM_ADMIN',
-//     username: 'trinnaqse63387',
-//   },
-// ].map((user, index) => ({ no: index + 1, ...user }))

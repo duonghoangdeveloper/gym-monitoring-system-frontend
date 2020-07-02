@@ -15,7 +15,7 @@ export const CONNECTION_STATUSES = {
 export const AUTH_ROLES = [
   'CUSTOMER',
   'TRAINER',
-  'MANAGER',
+  'GYM_MANAGER',
   'GYM_OWNER',
   'SYSTEM_ADMIN',
 ];
