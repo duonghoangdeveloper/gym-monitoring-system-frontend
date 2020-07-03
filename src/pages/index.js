@@ -2,12 +2,17 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 
 import { AppAuthRoute } from '../components/app-auth-route';
-import * as pages from './pages';
+import { _404 } from './_404';
+import { Cameras } from './cameras';
+import { Customers } from './customers';
+import { Profile } from './profile';
+import { SignIn } from './sign-in';
+import { Staffs } from './staffs';
 
 // Everyone can access
 const publicRoutes = [
   {
-    component: pages.SignIn,
+    component: SignIn,
     exact: true,
     key: 'sign-in',
     path: '/sign-in',
@@ -16,28 +21,40 @@ const publicRoutes = [
 
 const authRoutes = [
   {
-    component: pages.Home,
+    component: Staffs,
     exact: true,
     key: 'home',
     path: '/',
   },
   {
-    component: pages.Profile,
-    exact: true,
-    key: 'profile',
-    path: '/profile',
-  },
-  {
-    component: pages.Staffs,
+    component: Staffs,
     exact: true,
     key: 'staffs',
     path: '/staffs',
   },
   {
-    component: pages.Customer,
+    component: Profile,
+    exact: true,
+    key: 'profile',
+    path: '/profile',
+  },
+  {
+    component: Staffs,
+    exact: true,
+    key: 'staffs',
+    path: '/staffs',
+  },
+  {
+    component: Customers,
     exact: true,
     key: 'customers',
     path: '/customers',
+  },
+  {
+    component: Cameras,
+    exact: true,
+    key: 'cameras',
+    path: '/cameras',
   },
 ];
 
@@ -50,5 +67,5 @@ export const routes = [
   ...authRoutes.map(({ component, exact, key, path }) => (
     <AppAuthRoute component={component} exact={exact} key={key} path={path} />
   )),
-  <Route component={pages._404} key="404" />,
+  <Route component={_404} key="404" />,
 ];

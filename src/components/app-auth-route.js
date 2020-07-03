@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { Route, useHistory } from 'react-router-dom';
 
 import { TOKEN_KEY } from '../common/constants';
-import { CommonLoading } from './common-loading';
+import { CommonPageLoading } from './common-page-loading';
 
 export const AppAuthRoute = ({ component: Component, ...rest }) => {
   const history = useHistory();
@@ -16,14 +16,14 @@ export const AppAuthRoute = ({ component: Component, ...rest }) => {
   const isSignedIn = _id && token;
 
   if (loading) {
-    return <CommonLoading fullscreen />;
+    return <CommonPageLoading fullscreen />;
   }
 
   if (!isSignedIn) {
     history.push({
       pathname: '/sign-in',
     });
-    return <CommonLoading fullscreen />;
+    return <CommonPageLoading fullscreen />;
   }
 
   return <Route {...rest} render={props => <Component {...props} />} />;

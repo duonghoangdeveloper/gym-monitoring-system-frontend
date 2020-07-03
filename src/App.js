@@ -3,15 +3,18 @@ import { HashRouter, Switch } from 'react-router-dom';
 
 import { AppApolloWrapper } from './components/app-apollo-wrapper';
 import { AppReduxWrapper } from './components/app-redux-wrapper';
-import { routes } from './router/routes';
+import { AppSocketWrapper } from './components/app-socket-wrapper';
+import { routes } from './pages';
 
 function App() {
   return (
     <HashRouter>
       <AppApolloWrapper>
-        <AppReduxWrapper>
-          <Switch>{routes}</Switch>
-        </AppReduxWrapper>
+        <AppSocketWrapper>
+          <AppReduxWrapper>
+            <Switch>{routes}</Switch>
+          </AppReduxWrapper>
+        </AppSocketWrapper>
       </AppApolloWrapper>
     </HashRouter>
   );

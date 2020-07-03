@@ -27,3 +27,7 @@
 .ant-table-cell .anticon {
   transform: translateY(-3px);
 }
+
+.ant-menu-submenu-title .anticon {
+  transform: translateY(-3px);
+}

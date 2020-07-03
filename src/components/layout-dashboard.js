@@ -1,19 +1,19 @@
 import {
   DownOutlined,
-  LoadingOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
+  VideoCameraOutlined,
 } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Avatar, Dropdown, Layout, Menu, Spin } from 'antd';
+import { Avatar, Dropdown, Layout, Menu } from 'antd';
 import gql from 'graphql-tag';
-import React, { useState } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { TOKEN_KEY } from '../common/constants';
-import { TOGGLE_COLLAPSED } from '../redux/types/common.types';
+import { SET_OPEN_KEYS, TOGGLE_COLLAPSED } from '../redux/types/common.types';
 import { SIGN_OUT } from '../redux/types/user.types';
 
 export const LayoutDashboard = ({ children }) => {
@@ -22,15 +22,12 @@ export const LayoutDashboard = ({ children }) => {
   const collapsed = useSelector(
     state => state.common?.sider?.collapsed ?? false
   );
+  const openKeys = useSelector(state => state.common?.sider?.openKeys ?? []);
   const client = useApolloClient();
   const dispatch = useDispatch();
   const history = useHistory();
 
-  // const [signOutloading, setSignOutLoading] = useState(false);
-
   const handleSignOutClick = async () => {
-    // setSignOutLoading(true);
-
     try {
       await client.mutate({
         mutation: gql`
@@ -45,11 +42,10 @@ export const LayoutDashboard = ({ children }) => {
       // Do nothing
     }
 
-    // setSignOutLoading(false);
     dispatch({
       type: SIGN_OUT,
     });
-    localStorage.removeItem(TOKEN_KEY);
+    localStorage.rmoveItem(TOKEN_KEY);
     history.push('/');
   };
 
@@ -58,20 +54,26 @@ export const LayoutDashboard = ({ children }) => {
       children: [
         {
           icon: <UserOutlined />,
-          key: 'staff',
+          key: 'staffs',
           onClick: () => history.push('/staffs'),
           title: 'Staff',
         },
         {
           icon: <UserOutlined />,
-          key: 'customer',
+          key: 'customers',
           onClick: () => history.push('/customers'),
           title: 'Customer',
         },
       ],
       icon: <UserOutlined />,
       key: 'user-management',
-      title: 'User management',
+      title: 'User Management',
+    },
+    {
+      icon: <VideoCameraOutlined />,
+      key: 'cameras',
+      onClick: () => history.push('/cameras'),
+      title: 'Cameras',
     },
   ];
 
@@ -81,6 +83,9 @@ export const LayoutDashboard = ({ children }) => {
         className="min-h-screen"
         collapsed={collapsed}
         collapsible
+        style={{
+          boxShadow: '2px 0 6px rgba(0,21,41,.35)',
+        }}
         trigger={null}
         width={256}
       >
@@ -94,29 +99,48 @@ export const LayoutDashboard = ({ children }) => {
           </a>
         </div>
         <Menu
-          defaultOpenKeys={[getOpenKeys(location.pathname)]}
-          defaultSelectedKeys={[getSelectedKey(location.pathname)]}
           inlineCollapsed
           mode="inline"
+          onOpenChange={keys =>
+            console.log(keys) ||
+            dispatch({
+              payload: {
+                openKeys: keys,
+              },
+              type: SET_OPEN_KEYS,
+            })
+          }
+          openKeys={openKeys}
+          selectedKeys={[getSelectedKey(location.pathname)]}
           theme="dark"
         >
-          {SIDER_MENU.map(submenu => (
-            <Menu.SubMenu
-              icon={submenu.icon}
-              key={submenu.key}
-              title={submenu.title}
-            >
-              {submenu.children.map(menu => (
-                <Menu.Item
-                  icon={menu.icon}
-                  key={menu.key}
-                  onClick={menu.onClick}
-                >
-                  {menu.title}
-                </Menu.Item>
-              ))}
-            </Menu.SubMenu>
-          ))}
+          {SIDER_MENU.map(submenu =>
+            submenu.children ? (
+              <Menu.SubMenu
+                icon={submenu.icon}
+                key={submenu.key}
+                title={submenu.title}
+              >
+                {submenu.children.map(menu => (
+                  <Menu.Item
+                    icon={menu.icon}
+                    key={menu.key}
+                    onClick={menu.onClick}
+                  >
+                    {menu.title}
+                  </Menu.Item>
+                ))}
+              </Menu.SubMenu>
+            ) : (
+              <Menu.Item
+                icon={submenu.icon}
+                key={submenu.key}
+                onClick={submenu.onClick}
+              >
+                {submenu.title}
+              </Menu.Item>
+            )
+          )}
         </Menu>
       </Layout.Sider>
       <div className="flex-1 w-0">
@@ -164,14 +188,11 @@ export const LayoutDashboard = ({ children }) => {
   );
 };
 
-const getOpenKeys = pathname =>
-  /^\/staffs/.test(pathname) || /^\/customers/.test(pathname)
-    ? 'user-management'
-    : null;
-
 const getSelectedKey = pathname =>
-  /^\/staffs/.test(pathname)
+  pathname === '/' || /^\/staffs/.test(pathname)
     ? 'staffs'
     : /^\/customers/.test(pathname)
     ? 'customers'
+    : /^\/cameras/.test(pathname)
+    ? 'cameras'
     : null;

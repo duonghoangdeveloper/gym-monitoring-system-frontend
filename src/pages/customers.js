@@ -1,15 +1,13 @@
-import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Divider, Radio, Space, Switch, Table } from 'antd';
+import { Switch, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
-import { LayoutDashboard } from '../../components/layout-dashboard';
-import { UsersUpdateStaffButton } from '../../components/users-update-staff-button';
+import { LayoutDashboard } from '../components/layout-dashboard';
+import { UsersUpdateStaffButton } from '../components/users-update-staff-button';
 
-export const Customer = () => {
+export const Customers = () => {
   const client = useApolloClient();
 
   const [loading, setLoading] = useState(true);
@@ -62,7 +60,7 @@ export const Customer = () => {
 
   return (
     <LayoutDashboard>
-      <div className="bg-white shadow p-6">
+      <div className="bg-white shadow p-6 rounded-sm">
         <div className="flex justify-between">
           <h1 className="text-3xl">Customer Management</h1>
         </div>

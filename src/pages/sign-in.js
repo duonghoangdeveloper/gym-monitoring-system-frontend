@@ -6,8 +6,8 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { TOKEN_KEY } from '../../common/constants';
-import { SIGN_IN } from '../../redux/types/user.types';
+import { TOKEN_KEY } from '../common/constants';
+import { SIGN_IN } from '../redux/types/user.types';
 
 export const SignIn = () => {
   const client = useApolloClient();

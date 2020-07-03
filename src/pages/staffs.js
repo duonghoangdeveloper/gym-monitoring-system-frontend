@@ -6,9 +6,9 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { LayoutDashboard } from '../../components/layout-dashboard';
-import { UsersCreateStaffButton } from '../../components/users-create-staff-button';
-import { UsersUpdateStaffButton } from '../../components/users-update-staff-button';
+import { LayoutDashboard } from '../components/layout-dashboard';
+import { UsersCreateStaffButton } from '../components/users-create-staff-button';
+import { UsersUpdateStaffButton } from '../components/users-update-staff-button';
 
 export const Staffs = () => {
   const client = useApolloClient();
@@ -57,9 +57,10 @@ export const Staffs = () => {
       setLoading(false);
     })();
   }, []);
+
   return (
     <LayoutDashboard>
-      <div className="bg-white shadow p-6">
+      <div className="bg-white shadow p-6 rounded-sm">
         <div className="flex justify-between">
           <h1 className="text-3xl">Staff Management</h1>
           <UsersCreateStaffButton />

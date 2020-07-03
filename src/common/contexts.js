@@ -5,3 +5,5 @@ export const ConnectionStatusContext = React.createContext(null);
 export const AuthContext = React.createContext(null);
 
 export const SiderContext = React.createContext(null);
+
+export const SocketContext = React.createContext(null);
