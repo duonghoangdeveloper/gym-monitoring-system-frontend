@@ -7,8 +7,8 @@ import { useHistory } from 'react-router-dom';
 
 import { formItemLayout, tailFormItemLayout } from '../../common/antd';
 import { LayoutDashboard } from '../../components/layout-dashboard';
-import { UpdatePasswordButton } from '../../components/update-password-button';
-import { UPDATE_PROFILE } from '../../redux/types/user.type';
+import { UpdatePasswordButton } from '../../components/profile-update-password-button';
+import { UPDATE_PROFILE } from '../../redux/types/user.types';
 
 export const Profile = () => {
   const client = useApolloClient();

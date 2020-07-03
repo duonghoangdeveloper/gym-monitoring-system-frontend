@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { LayoutDashboard } from '../../components/layout-dashboard';
-import { UpdateUserButton } from '../../components/update-user-button';
+import { UsersUpdateStaffButton } from '../../components/users-update-staff-button';
 
 export const Customer = () => {
   const client = useApolloClient();
@@ -65,7 +65,6 @@ export const Customer = () => {
       <div className="bg-white shadow p-6">
         <div className="flex justify-between">
           <h1 className="text-3xl">Customer Management</h1>
-          <Button icon={<PlusOutlined />}>Create Customer</Button>
         </div>
 
         <Table columns={columns} dataSource={users} loading={loading} />
@@ -97,26 +96,15 @@ const columns = [
     title: 'Email',
   },
   {
-    dataIndex: 'phone',
-    key: 'phone',
-    title: 'Phone',
-  },
-  {
-    dataIndex: 'gender',
-    key: 'gender',
-    title: 'Gender',
-  },
-
-  {
-    key: 'action',
-    render: (text, user) => <UpdateUserButton user={user} />,
+    key: 'update',
+    render: (text, user) => <UsersUpdateStaffButton user={user} />,
     title: 'Update',
   },
   {
-    key: 'action',
+    key: 'active',
     render: user => (
       <Switch unCheckedChildren={<CloseOutlined />} user={user} />
     ),
-    title: 'Active/Inactive',
+    title: 'Active',
   },
 ];

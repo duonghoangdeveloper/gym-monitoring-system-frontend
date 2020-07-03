@@ -1,10 +1,11 @@
-import { SIGN_IN, SIGN_OUT, UPDATE_PROFILE, USERS } from '../types/user.type';
+import { SIGN_IN, SIGN_OUT, UPDATE_PROFILE, USERS } from '../types/user.types';
 
 const INITIAL_STATE = {
   me: {
     _id: null,
     displayName: null,
     email: null,
+    role: null,
     username: null,
   },
 };

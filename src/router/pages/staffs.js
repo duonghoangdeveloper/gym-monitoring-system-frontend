@@ -6,15 +6,15 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { CreateUserButton } from '../../components/create-user-button';
 import { LayoutDashboard } from '../../components/layout-dashboard';
-import { UpdateUserButton } from '../../components/update-user-button';
+import { UsersCreateStaffButton } from '../../components/users-create-staff-button';
+import { UsersUpdateStaffButton } from '../../components/users-update-staff-button';
 
-export const Users = () => {
+export const Staffs = () => {
   const client = useApolloClient();
 
   const [loading, setLoading] = useState(true);
-  const [users, setUsers] = useState([]);
+  const [users, setStaffs] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -22,7 +22,13 @@ export const Users = () => {
         const result = await client.query({
           query: gql`
             query {
-              users(query: { skip: 0, sort: { username: ascending } }) {
+              users(
+                query: {
+                  skip: 0
+                  sort: { username: ascending }
+                  filter: { role: [TRAINER, MANAGER, GYM_OWNER, SYSTEM_ADMIN] }
+                }
+              ) {
                 data {
                   _id
                   username
@@ -37,9 +43,9 @@ export const Users = () => {
           `,
         });
 
-        const fetchedUsers = result?.data?.users?.data ?? [];
-        setUsers(
-          fetchedUsers.map((user, index) => ({
+        const fetchedStaffs = result?.data?.users?.data ?? [];
+        setStaffs(
+          fetchedStaffs.map((user, index) => ({
             key: user._id,
             no: index + 1,
             ...user,
@@ -55,8 +61,8 @@ export const Users = () => {
     <LayoutDashboard>
       <div className="bg-white shadow p-6">
         <div className="flex justify-between">
-          <h1 className="text-3xl">User Management</h1>
-          <CreateUserButton />
+          <h1 className="text-3xl">Staff Management</h1>
+          <UsersCreateStaffButton />
         </div>
 
         <Table
@@ -98,26 +104,15 @@ const columns = [
     title: 'Email',
   },
   {
-    dataIndex: 'phone',
-    key: 'phone',
-    title: 'Phone',
-  },
-  {
-    dataIndex: 'gender',
-    key: 'gender',
-    title: 'Gender',
-  },
-
-  {
-    key: 'action',
-    render: (text, user) => <UpdateUserButton user={user} />,
+    key: 'update',
+    render: (text, user) => <UsersUpdateStaffButton user={user} />,
     title: 'Update',
   },
   {
-    key: 'action',
+    key: 'active',
     render: user => (
       <Switch unCheckedChildren={<CloseOutlined />} user={user} />
     ),
-    title: 'Active/Inactive',
+    title: 'Active',
   },
 ];

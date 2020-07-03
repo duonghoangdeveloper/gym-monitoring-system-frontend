@@ -10,13 +10,18 @@ import { Avatar, Dropdown, Layout, Menu, Spin } from 'antd';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 
 import { TOKEN_KEY } from '../common/constants';
-import { SIGN_OUT } from '../redux/types/user.type';
+import { TOGGLE_COLLAPSED } from '../redux/types/common.types';
+import { SIGN_OUT } from '../redux/types/user.types';
 
 export const LayoutDashboard = ({ children }) => {
+  const location = useLocation();
   const username = useSelector(state => state.user?.me?.username);
+  const collapsed = useSelector(
+    state => state.common?.sider?.collapsed ?? false
+  );
   const client = useApolloClient();
   const dispatch = useDispatch();
   const history = useHistory();
@@ -48,45 +53,84 @@ export const LayoutDashboard = ({ children }) => {
     history.push('/');
   };
 
+  const SIDER_MENU = [
+    {
+      children: [
+        {
+          icon: <UserOutlined />,
+          key: 'staff',
+          onClick: () => history.push('/staffs'),
+          title: 'Staff',
+        },
+        {
+          icon: <UserOutlined />,
+          key: 'customer',
+          onClick: () => history.push('/customers'),
+          title: 'Customer',
+        },
+      ],
+      icon: <UserOutlined />,
+      key: 'user-management',
+      title: 'User management',
+    },
+  ];
+
   return (
     <Layout>
       <Layout.Sider
         className="min-h-screen"
+        collapsed={collapsed}
         collapsible
         trigger={null}
         width={256}
       >
         <div className="text-white text-2xl px-6 h-16 flex items-center">
           <a
-            className="cursor-pointer text-white"
+            className="cursor-pointer text-white flex items-center"
             onClick={() => history.push('/')}
           >
-            eGMS
+            <div className="bg-blue-500 w-8 h-8" />
+            {!collapsed && <div className="ml-4">eGMS</div>}
           </a>
         </div>
-        <Menu defaultSelectedKeys={['1']} mode="inline" theme="dark">
-          <Menu.Item
-            icon={<UserOutlined />}
-            key="users"
-            onClick={() => history.push('/users')}
-          >
-            User Management
-          </Menu.Item>
-          <Menu.Item
-            icon={<UserOutlined />}
-            key="customers"
-            onClick={() => history.push('/customers')}
-          >
-            Customer Management
-          </Menu.Item>
-          <Menu.Item icon={<UserOutlined />} key="3">
-            Report
-          </Menu.Item>
+        <Menu
+          defaultOpenKeys={[getOpenKeys(location.pathname)]}
+          defaultSelectedKeys={[getSelectedKey(location.pathname)]}
+          inlineCollapsed
+          mode="inline"
+          theme="dark"
+        >
+          {SIDER_MENU.map(submenu => (
+            <Menu.SubMenu
+              icon={submenu.icon}
+              key={submenu.key}
+              title={submenu.title}
+            >
+              {submenu.children.map(menu => (
+                <Menu.Item
+                  icon={menu.icon}
+                  key={menu.key}
+                  onClick={menu.onClick}
+                >
+                  {menu.title}
+                </Menu.Item>
+              ))}
+            </Menu.SubMenu>
+          ))}
         </Menu>
       </Layout.Sider>
-      <div className="flex-1">
+      <div className="flex-1 w-0">
         <div className="h-16 bg-white w-full shadow z-50 flex items-center px-6">
-          Header
+          <div
+            className="text-xl flex items-center cursor-pointer"
+            onClick={() =>
+              dispatch({
+                type: TOGGLE_COLLAPSED,
+              })
+            }
+          >
+            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          </div>
           <div className="flex-1" />
           <div>{username}</div>
           <Dropdown
@@ -96,15 +140,7 @@ export const LayoutDashboard = ({ children }) => {
                   Profile
                 </Menu.Item>
                 <Menu.Divider />
-                <Menu.Item onClick={handleSignOutClick}>
-                  Sign out
-                  {/* {signOutloading && (
-                    <>
-                      &nbsp;&nbsp;
-                      <Spin indicator={<LoadingOutlined spin />} />
-                    </>
-                  )} */}
-                </Menu.Item>
+                <Menu.Item onClick={handleSignOutClick}>Sign out</Menu.Item>
               </Menu>
             }
             placement="bottomRight"
@@ -127,3 +163,15 @@ export const LayoutDashboard = ({ children }) => {
     </Layout>
   );
 };
+
+const getOpenKeys = pathname =>
+  /^\/staffs/.test(pathname) || /^\/customers/.test(pathname)
+    ? 'user-management'
+    : null;
+
+const getSelectedKey = pathname =>
+  /^\/staffs/.test(pathname)
+    ? 'staffs'
+    : /^\/customers/.test(pathname)
+    ? 'customers'
+    : null;

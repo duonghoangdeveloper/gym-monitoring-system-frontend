@@ -3,11 +3,13 @@ import { useApolloClient } from '@apollo/react-hooks';
 import { Button, Form, Input, message, Modal, Select } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import { AUTH_ROLES, USER_GENDERS } from '../common/constants';
 
-export const CreateUserButton = () => {
+export const UsersCreateStaffButton = () => {
   const client = useApolloClient();
+  const me = useSelector(state => state?.user?.me);
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [disabled, setDisabled] = useState(false);
@@ -36,10 +38,13 @@ export const CreateUserButton = () => {
   //   );
   // };
 
+  const indexRole = AUTH_ROLES.indexOf(me.role);
+  const roles = AUTH_ROLES.filter(r => AUTH_ROLES.indexOf(r) <= indexRole);
+
   const onFinish = async values => {
     const { confirmPassword, password } = values;
     if (password !== confirmPassword) {
-      message.error("Password and confirm password is doesn't match!!!");
+      message.error('Password and confirm password do not match!');
     } else {
       try {
         const { displayName, email, gender, phone, role, username } = values;
@@ -84,7 +89,7 @@ export const CreateUserButton = () => {
             username,
           },
         });
-        message.success('Update profile succeed!');
+        message.success('Create user succeed.');
         setVisible(false);
       } catch (e) {
         console.log(e.message);
@@ -141,7 +146,7 @@ export const CreateUserButton = () => {
           </Form.Item>
           <Form.Item
             label="Confirm Password"
-            name="confirm Password"
+            name="confirmPassword"
             rules={[
               {
                 message: 'Please input confirm password!',
@@ -197,7 +202,7 @@ export const CreateUserButton = () => {
             ]}
           >
             <Select placeholder="Select role">
-              {AUTH_ROLES.map(role => (
+              {roles.map(role => (
                 <Select.Option key={role} value={role}>
                   {role}
                 </Select.Option>

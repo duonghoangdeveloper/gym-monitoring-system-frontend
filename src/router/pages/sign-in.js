@@ -7,7 +7,7 @@ import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { TOKEN_KEY } from '../../common/constants';
-import { SIGN_IN } from '../../redux/types/user.type';
+import { SIGN_IN } from '../../redux/types/user.types';
 
 export const SignIn = () => {
   const client = useApolloClient();
@@ -17,7 +17,7 @@ export const SignIn = () => {
   const [loading, setLoading] = useState(false);
 
   const onFinish = async values => {
-    const { username, password } = values;
+    const { password, username } = values;
     setLoading(true);
     try {
       const result = await client.mutate({
@@ -29,6 +29,7 @@ export const SignIn = () => {
                 _id
                 username
                 displayName
+                role
               }
             }
           }
@@ -76,8 +77,8 @@ export const SignIn = () => {
             ]}
           >
             <Input
-              prefix={<UserOutlined className="site-form-item-icon" />}
               placeholder="Username"
+              prefix={<UserOutlined className="site-form-item-icon" />}
             />
           </Form.Item>
           <Form.Item
@@ -90,9 +91,9 @@ export const SignIn = () => {
             ]}
           >
             <Input.Password
+              placeholder="Password"
               prefix={<LockOutlined className="site-form-item-icon" />}
               type="password"
-              placeholder="Password"
             />
           </Form.Item>
           <Form.Item>
@@ -101,10 +102,10 @@ export const SignIn = () => {
 
           <Form.Item>
             <Button
-              type="primary"
-              htmlType="submit"
               className="w-full"
+              htmlType="submit"
               loading={loading}
+              type="primary"
             >
               Sign in
             </Button>

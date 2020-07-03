@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 
 import { USER_GENDERS } from '../common/constants';
 
-export const UpdateUserButton = ({ user }) => {
+export const UsersUpdateStaffButton = ({ user }) => {
   const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
@@ -41,23 +41,23 @@ export const UpdateUserButton = ({ user }) => {
     try {
       await client.mutate({
         mutation: gql`
-          mutation UpdateProfile(
-            $_id: ID
-            $username: String
+          mutation UpdateUser(
+            $_id: ID!
+            $username: String!
             $displayName: String
-            $gender: String
+            $gender: Gender!
             $email: String
             $phone: String
           ) {
-            updateProfile(
+            updateUser(
               data: {
-                _id: $_id
                 username: $username
                 displayName: $displayName
                 gender: $gender
                 email: $email
                 phone: $phone
               }
+              _id: $_id
             ) {
               _id
               username
