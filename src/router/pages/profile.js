@@ -1,5 +1,5 @@
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Form, Input, message, Modal } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
@@ -7,8 +7,8 @@ import { useHistory } from 'react-router-dom';
 
 import { formItemLayout, tailFormItemLayout } from '../../common/antd';
 import { LayoutDashboard } from '../../components/layout-dashboard';
-import { UpdatePasswordButton } from '../../components/update-password-button';
-import { UPDATE_PROFILE } from '../../redux/types/user.type';
+import { UpdatePasswordButton } from '../../components/profile-update-password-button';
+import { UPDATE_PROFILE } from '../../redux/types/user.types';
 
 export const Profile = () => {
   const client = useApolloClient();
@@ -18,7 +18,7 @@ export const Profile = () => {
   const [loading, setLoading] = useState(false);
 
   const onFinish = async values => {
-    const { username, displayName } = values;
+    const { displayName, username } = values;
     setLoading(true);
 
     try {
@@ -47,7 +47,7 @@ export const Profile = () => {
 
       message.success('Update profile succeed!');
     } catch (e) {
-      message.error('Wrong username or password!');
+      message.error(`${e.message.split(': ')[1]}!`);
     }
 
     setLoading(false);
@@ -85,8 +85,8 @@ export const Profile = () => {
           <Input />
         </Form.Item>
         <Form.Item
-          name="displayName"
           label="Display Name"
+          name="displayName"
           rules={[
             {
               message: 'Please input display name!',
@@ -97,7 +97,7 @@ export const Profile = () => {
           <Input />
         </Form.Item>
         <Form.Item {...tailFormItemLayout}>
-          <Button type="primary" htmlType="submit" loading={loading}>
+          <Button htmlType="submit" loading={loading} type="primary">
             Update profile
           </Button>
           <UpdatePasswordButton className="ml-4" />

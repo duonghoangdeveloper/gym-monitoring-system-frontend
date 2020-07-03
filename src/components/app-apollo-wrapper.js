@@ -10,7 +10,7 @@ import React, { useEffect, useState } from 'react';
 import { CONNECTION_STATUSES, TOKEN_KEY, URI } from '../common/constants';
 import { ConnectionStatusContext } from '../common/contexts';
 import { connect, getTokenFromLocalStorage } from '../common/services';
-import { Loading } from './loading';
+import { CommonLoading } from './common-loading';
 
 const key = 'connection-status';
 
@@ -42,11 +42,11 @@ export const AppApolloWrapper = ({ children }) => {
       if (graphQLErrors) {
         for (const graphQLError of graphQLErrors) {
           const {
-            message: msg,
-            path,
             extensions: {
               exception: { code },
             },
+            message: msg,
+            path,
           } = graphQLError;
 
           // Handle graphql error
@@ -157,7 +157,7 @@ export const AppApolloWrapper = ({ children }) => {
         content: (
           <span>
             Connect to the server failed!{' '}
-            <Button type="link" onClick={reconnect}>
+            <Button onClick={reconnect} type="link">
               Try again
             </Button>
           </span>
@@ -169,7 +169,7 @@ export const AppApolloWrapper = ({ children }) => {
   }, [connectionStatus]);
 
   if (!client) {
-    return <Loading fullscreen />;
+    return <CommonLoading fullscreen />;
   }
 
   return (

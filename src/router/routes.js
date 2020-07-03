@@ -28,21 +28,27 @@ const authRoutes = [
     path: '/profile',
   },
   {
-    component: pages.Users,
+    component: pages.Staffs,
     exact: true,
-    key: 'users',
-    path: '/users',
+    key: 'staffs',
+    path: '/staffs',
+  },
+  {
+    component: pages.Customer,
+    exact: true,
+    key: 'customers',
+    path: '/customers',
   },
 ];
 
 export const allRoutes = [...publicRoutes, ...authRoutes];
 
 export const routes = [
-  ...publicRoutes.map(({ key, path, exact, component }) => (
-    <Route key={key} path={path} exact={exact} component={component} />
+  ...publicRoutes.map(({ component, exact, key, path }) => (
+    <Route component={component} exact={exact} key={key} path={path} />
   )),
-  ...authRoutes.map(({ key, path, exact, component }) => (
-    <AppAuthRoute key={key} path={path} exact={exact} component={component} />
+  ...authRoutes.map(({ component, exact, key, path }) => (
+    <AppAuthRoute component={component} exact={exact} key={key} path={path} />
   )),
-  <Route key="404" component={pages._404} />,
+  <Route component={pages._404} key="404" />,
 ];

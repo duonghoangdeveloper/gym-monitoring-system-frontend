@@ -29,4 +29,6 @@ export const ALL_ROLES = [
   'SYSTEM_ADMIN',
 ];
 
+export const USER_GENDERS = ['MALE', 'FEMALE', 'OTHER'];
+
 export const DATE_FORMAT = 'DD/MM/YYYY';
