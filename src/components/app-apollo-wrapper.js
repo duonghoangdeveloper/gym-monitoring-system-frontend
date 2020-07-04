@@ -102,7 +102,7 @@ export const AppApolloWrapper = ({ children }) => {
     // Link - uploadLink
     const uploadLink = createUploadLink({
       credentials: 'same-origin',
-      uri: URI,
+      uri: `${URI}/graphql`,
     });
 
     const apolloClient = new ApolloClient({
