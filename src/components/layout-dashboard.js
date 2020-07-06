@@ -46,7 +46,7 @@ export const LayoutDashboard = ({ children }) => {
     dispatch({
       type: SIGN_OUT,
     });
-    localStorage.reoveItem(TOKEN_KEY);
+    localStorage.removeItem(TOKEN_KEY);
     history.push('/');
   };
 
