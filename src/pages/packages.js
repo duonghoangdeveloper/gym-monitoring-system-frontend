@@ -15,39 +15,67 @@ export const Packages = () => {
 
   const [loading, setLoading] = useState(true);
   const [packages, setPackages] = useState([]);
+  const [total, setTotal] = useState(0);
+  const [skip, setSkip] = useState(0);
+  const [sort, setSort] = useState('');
+  const [search, setSearch] = useState({});
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       try {
         const result = await client.query({
           query: gql`
-            query {
-              packages(query: { skip: 0, sort: { name: ascending } }) {
+            query SignIn($query: PackagesQueryInput) {
+              packages(query: $query) {
                 data {
                   _id
                   name
                   price
                   period
                 }
+                total
               }
             }
           `,
+          variables: {
+            query: { limit: 10, search, skip, sort },
+          },
         });
 
-        const fetchedPackages = result?.data?.packages?.data ?? [];
+        const fetchedPackagesData = result?.data?.packages?.data ?? [];
+        const fetchedPackagesTotal = result?.data?.packages?.total ?? 0;
         setPackages(
-          fetchedPackages.map((_package, index) => ({
+          fetchedPackagesData.map((_package, index) => ({
             key: _package._id,
             no: index + 1,
             ..._package,
           }))
         );
+        setTotal(fetchedPackagesTotal);
       } catch (e) {
         // Do something
       }
       setLoading(false);
     })();
-  }, []);
+  }, [skip, sort]);
+
+  const handleTableChange = (pagination, filters, sorter) => {
+    // console.log(pagination, filters, sorter);
+
+    // Pagination
+    setSkip((pagination.current - 1) * 10);
+
+    // Sorter
+    const { columnKey, order } = sorter;
+    if (order === 'ascend') {
+      setSort(columnKey);
+    } else if (order === 'descend') {
+      setSort(`-${columnKey}`);
+    } else {
+      setSort('');
+    }
+  };
 
   return (
     <LayoutDashboard>
@@ -62,6 +90,13 @@ export const Packages = () => {
           columns={columns}
           dataSource={packages}
           loading={loading}
+          onChange={handleTableChange}
+          pagination={{
+            current: Math.floor(skip / 10) + 1,
+            pageSize: 10,
+            total,
+          }}
+          // rowKey={record => record.login.uuid}
         />
       </div>
     </LayoutDashboard>
@@ -76,18 +111,22 @@ const columns = [
   },
   {
     dataIndex: 'name',
+    ellipsis: true,
     key: 'name',
-    render: text => <a>{text}</a>,
+    sorter: true,
     title: 'Name',
   },
   {
     dataIndex: 'price',
+    ellipsis: true,
     key: 'price',
+    sorter: true,
     title: 'Price',
   },
   {
     dataIndex: 'period',
     key: 'period',
+    sorter: true,
     title: 'Period',
   },
   {
