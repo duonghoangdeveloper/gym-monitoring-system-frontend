@@ -1,36 +1,29 @@
-import { EditOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Form, Input, InputNumber, message, Modal, Select } from 'antd';
+import { Button, Form, Input, InputNumber, message, Modal, Select } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
-export const PackagesUpdatePackageButton = ({ _package }) => {
+export const PackagesCreatePackageButton = () => {
   const client = useApolloClient();
+  const me = useSelector(state => state?._package?.me);
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
-  const [disabled, setDisabled] = useState(true);
-
-  const onValuesChange = (_, allValues) => {
-    setDisabled(
-      allValues.name === _package.name &&
-        allValues.price === _package.price &&
-        allValues.period === _package.period
-    );
-  };
-
+  const [disabled, setDisabled] = useState(false);
   const handleClick = () => {
     setVisible(true);
   };
 
   const onFinish = async values => {
-    const { name, period, price } = values;
-    const { _id } = _package;
     try {
+      const { name, period, price } = values;
       await client.mutate({
         mutation: gql`
-          mutation UpdatePackage($_id: ID!, $price: Int, $period: Int) {
-            updatePackage(_id: $_id, data: { price: $price, period: $period }) {
-              _id
+          mutation CreateUser($name: String!, $price: Int!, $period: Int!) {
+            createPackage(
+              data: { name: $name, price: $price, period: $period }
+            ) {
               name
               price
               period
@@ -38,25 +31,24 @@ export const PackagesUpdatePackageButton = ({ _package }) => {
           }
         `,
         variables: {
-          _id,
           name,
           period,
           price,
         },
       });
-      message.success('Update package succeed!');
+      message.success('Create package succeed.');
       setVisible(false);
     } catch (e) {
+      console.log(e.message);
       message.error(`${e.message.split(': ')[1]}!`);
     }
   };
 
   return (
     <>
-      <a className="whitespace-no-wrap" onClick={handleClick}>
-        <EditOutlined />
-        &nbsp;&nbsp;Update
-      </a>
+      <Button icon={<PlusOutlined />} onClick={handleClick}>
+        Create Package
+      </Button>
       <Modal
         className="select-none"
         maskClosable={false}
@@ -68,20 +60,10 @@ export const PackagesUpdatePackageButton = ({ _package }) => {
           setVisible(false);
         }}
         onOk={() => form.submit()}
-        title="Update package"
+        title="Create Package"
         visible={visible}
       >
-        <Form
-          form={form}
-          initialValues={{
-            name: _package.name,
-            period: _package.period,
-            price: _package.price,
-          }}
-          layout="vertical"
-          onFinish={onFinish}
-          onValuesChange={onValuesChange}
-        >
+        <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
             label="Name"
             name="name"
@@ -94,10 +76,28 @@ export const PackagesUpdatePackageButton = ({ _package }) => {
           >
             <Input placeholder="Enter name" />
           </Form.Item>
-          <Form.Item label="Price" name="price">
+          <Form.Item
+            label="Price"
+            name="price"
+            rules={[
+              {
+                message: 'Please input price!',
+                required: true,
+              },
+            ]}
+          >
             <InputNumber placeholder="Enter price" />
           </Form.Item>
-          <Form.Item label="Period" name="period">
+          <Form.Item
+            label="Period"
+            name="period"
+            rules={[
+              {
+                message: 'Please input period!',
+                required: true,
+              },
+            ]}
+          >
             <InputNumber placeholder="Enter period" />
           </Form.Item>
         </Form>
