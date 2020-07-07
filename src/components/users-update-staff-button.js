@@ -16,18 +16,6 @@ export const UsersUpdateStaffButton = ({ user }) => {
     setVisible(true);
   };
 
-  useEffect(() => {
-    if (visible) {
-      // Do something
-    } else {
-      try {
-        setTimeout(() => form.resetFields(), 500);
-      } catch (_) {
-        // Do nothing
-      }
-    }
-  }, [visible]);
-
   const onFinish = async values => {
     if (!values.displayName) {
       values.displayName = 'No name';
@@ -106,7 +94,10 @@ export const UsersUpdateStaffButton = ({ user }) => {
         okButtonProps={{
           disabled,
         }}
-        onCancel={() => setVisible(false)}
+        onCancel={() => {
+          setTimeout(() => form.resetFields(), 500);
+          setVisible(false);
+        }}
         onOk={() => form.submit()}
         title="Update user"
         visible={visible}

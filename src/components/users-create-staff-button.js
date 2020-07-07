@@ -17,17 +17,6 @@ export const UsersCreateStaffButton = () => {
     setVisible(true);
   };
 
-  useEffect(() => {
-    if (visible) {
-      // Do something
-    } else {
-      try {
-        setTimeout(() => form.resetFields(), 500);
-      } catch (_) {
-        // Do nothing
-      }
-    }
-  }, [visible]);
   // const onValuesChange = (_, allValues) => {
   //   setDisabled(
   //       allValues.username &&
@@ -109,7 +98,10 @@ export const UsersCreateStaffButton = () => {
         okButtonProps={{
           disabled,
         }}
-        onCancel={() => setVisible(false)}
+        onCancel={() => {
+          setTimeout(() => form.resetFields(), 500);
+          setVisible(false);
+        }}
         onOk={() => form.submit()}
         title="Create User"
         visible={visible}

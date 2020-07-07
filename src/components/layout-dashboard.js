@@ -1,5 +1,6 @@
 import {
   DownOutlined,
+  FolderAddOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
@@ -70,6 +71,12 @@ export const LayoutDashboard = ({ children }) => {
       title: 'User Management',
     },
     {
+      icon: <FolderAddOutlined />,
+      key: 'packages',
+      onClick: () => history.push('/packages'),
+      title: 'Packages',
+    },
+    {
       icon: <VideoCameraOutlined />,
       key: 'cameras',
       onClick: () => history.push('/cameras'),
@@ -99,7 +106,6 @@ export const LayoutDashboard = ({ children }) => {
           </a>
         </div>
         <Menu
-          inlineCollapsed
           mode="inline"
           onOpenChange={keys =>
             console.log(keys) ||
@@ -193,6 +199,8 @@ const getSelectedKey = pathname =>
     ? 'staffs'
     : /^\/customers/.test(pathname)
     ? 'customers'
+    : /^\/packages/.test(pathname)
+    ? 'packages'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
     : null;
