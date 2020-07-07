@@ -6,6 +6,7 @@ import { _404 } from './_404';
 import { Cameras } from './cameras';
 import { Customers } from './customers';
 import { Feedbacks } from './feedbacks';
+import { Packages } from './packages';
 import { Profile } from './profile';
 import { SignIn } from './sign-in';
 import { Staffs } from './staffs';
@@ -40,12 +41,6 @@ const authRoutes = [
     path: '/profile',
   },
   {
-    component: Staffs,
-    exact: true,
-    key: 'staffs',
-    path: '/staffs',
-  },
-  {
     component: Customers,
     exact: true,
     key: 'customers',
@@ -62,6 +57,12 @@ const authRoutes = [
     exact: true,
     key: 'feedbacks',
     path: '/feedbacks',
+  },
+  {
+    component: Packages,
+    exact: true,
+    key: 'packages',
+    path: '/packages',
   },
 ];
 

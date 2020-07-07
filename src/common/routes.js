@@ -51,6 +51,12 @@ const authRoutes = [
     key: 'cameras',
     path: '/cameras',
   },
+  {
+    component: pages.Packages,
+    exact: true,
+    key: 'packages',
+    path: '/packages',
+  },
 ];
 
 export const allRoutes = [...publicRoutes, ...authRoutes];

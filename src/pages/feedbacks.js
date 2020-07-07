@@ -22,7 +22,7 @@ export const Feedbacks = () => {
         const result = await client.query({
           query: gql`
             query {
-              feedbacks(query: { skip: 0, sort: { title: ascending } }) {
+              feedbacks(query: { skip: 0, sort: "title" }) {
                 data {
                   _id
                   title
