@@ -6,6 +6,7 @@ import { _404 } from './_404';
 import { Cameras } from './cameras';
 import { Customers } from './customers';
 import { Home } from './home';
+import { Packages } from './packages';
 import { Profile } from './profile';
 import { SignIn } from './sign-in';
 import { Staffs } from './staffs';
@@ -33,7 +34,7 @@ const authRoutes = [
     key: 'trainers',
     path: '/trainers',
     role: 'TRAINER',
-    title: 'Trainers',
+    title: 'Trainer',
   },
   {
     component: Staffs,
@@ -41,7 +42,7 @@ const authRoutes = [
     key: 'managers',
     path: '/managers',
     role: 'MANAGER',
-    title: 'Managers',
+    title: 'Manager',
   },
   {
     component: Staffs,
@@ -77,6 +78,12 @@ const authRoutes = [
     exact: true,
     key: 'cameras',
     path: '/cameras',
+  },
+  {
+    component: Packages,
+    exact: true,
+    key: 'packages',
+    path: '/packages',
   },
 ];
 

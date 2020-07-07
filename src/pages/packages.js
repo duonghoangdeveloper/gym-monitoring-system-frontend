@@ -7,52 +7,52 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { LayoutDashboard } from '../components/layout-dashboard';
-import { UsersCreateStaffButton } from '../components/users-create-staff-button';
-import { UserEnableDisbleSwitch } from '../components/users-enable-disable-switch';
-import { UsersUpdateStaffButton } from '../components/users-update-staff-button';
+import { PackagesCreatePackageButton } from '../components/packages-create-package-button';
+import { PackagesUpdatePackageButton } from '../components/packages-update-package-button';
 
-export const Staffs = ({ role, title }) => {
+export const Packages = () => {
   const client = useApolloClient();
+
   const [loading, setLoading] = useState(true);
-  const [users, setStaffs] = useState([]);
+  const [packages, setPackages] = useState([]);
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [sort, setSort] = useState('');
+  const [search, setSearch] = useState({});
 
   useEffect(() => {
     (async () => {
+      setLoading(true);
       try {
         const result = await client.query({
           query: gql`
-            query getUser($query: UsersQueryInput!) {
-              users(query: $query) {
+            query SignIn($query: PackagesQueryInput) {
+              packages(query: $query) {
                 data {
                   _id
-                  username
-                  displayName
-                  email
-                  phone
-                  gender
-                  isActive
+                  name
+                  price
+                  period
                 }
+                total
               }
             }
           `,
           variables: {
-            query: { filter: { role }, limit: 10, skip, sort },
+            query: { limit: 10, search, skip, sort },
           },
         });
 
-        const fetchedStaffsData = result?.data?.users?.data ?? [];
-        const fetchedStaffsTotal = result?.data?.packages?.total ?? 0;
-        setStaffs(
-          fetchedStaffsData.map((user, index) => ({
-            key: user._id,
+        const fetchedPackagesData = result?.data?.packages?.data ?? [];
+        const fetchedPackagesTotal = result?.data?.packages?.total ?? 0;
+        setPackages(
+          fetchedPackagesData.map((_package, index) => ({
+            key: _package._id,
             no: index + 1,
-            ...user,
+            ..._package,
           }))
         );
-        setTotal(fetchedStaffsTotal);
+        setTotal(fetchedPackagesTotal);
       } catch (e) {
         // Do something
       }
@@ -77,55 +77,18 @@ export const Staffs = ({ role, title }) => {
     }
   };
 
-  const columns = [
-    {
-      dataIndex: 'no',
-      key: 'no',
-      title: 'No',
-    },
-    {
-      dataIndex: 'username',
-      key: 'username',
-      render: text => <a>{text}</a>,
-      sorter: true,
-      title: 'Username',
-    },
-    {
-      dataIndex: 'displayName',
-      key: 'displayName',
-      sorter: true,
-      title: 'Display Name',
-    },
-    {
-      dataIndex: 'email',
-      key: 'email',
-      sorter: true,
-      title: 'Email',
-    },
-    {
-      key: 'update',
-      render: (text, user) => <UsersUpdateStaffButton user={user} />,
-      title: 'Update',
-    },
-    {
-      key: 'active',
-      render: user => <UserEnableDisbleSwitch user={user} />,
-      title: 'Active',
-    },
-  ];
-
   return (
     <LayoutDashboard>
       <div className="bg-white shadow p-6 rounded-sm">
         <div className="flex justify-between">
-          <h1 className="text-3xl"> {title} Management</h1>
-          <UsersCreateStaffButton title={title} />
+          <h1 className="text-3xl">Package Management</h1>
+          <PackagesCreatePackageButton />
         </div>
 
         <Table
           className="overflow-x-auto"
           columns={columns}
-          dataSource={users}
+          dataSource={packages}
           loading={loading}
           onChange={handleTableChange}
           pagination={{
@@ -133,8 +96,51 @@ export const Staffs = ({ role, title }) => {
             pageSize: 10,
             total,
           }}
+          // rowKey={record => record.login.uuid}
         />
       </div>
     </LayoutDashboard>
   );
 };
+
+const columns = [
+  {
+    dataIndex: 'no',
+    key: 'no',
+    title: 'No',
+  },
+  {
+    dataIndex: 'name',
+    ellipsis: true,
+    key: 'name',
+    sorter: true,
+    title: 'Name',
+  },
+  {
+    dataIndex: 'price',
+    ellipsis: true,
+    key: 'price',
+    sorter: true,
+    title: 'Price',
+  },
+  {
+    dataIndex: 'period',
+    key: 'period',
+    sorter: true,
+    title: 'Period',
+  },
+  {
+    key: 'update',
+    render: (text, _package) => (
+      <PackagesUpdatePackageButton _package={_package} />
+    ),
+    title: 'Update',
+  },
+  {
+    key: 'active',
+    render: _package => (
+      <Switch _package={_package} unCheckedChildren={<CloseOutlined />} />
+    ),
+    title: 'Active',
+  },
+];

@@ -1,7 +1,7 @@
 export const URI =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
-    ? 'http://localhost:7777/graphql'
-    : 'https://gym-monitoring-system.herokuapp.com/graphql';
+    ? 'http://localhost:7777'
+    : 'https://gym-monitoring-system.herokuapp.com';
 
 export const TOKEN_KEY = 'gym-monitoring-system-token';
 
@@ -32,3 +32,5 @@ export const ALL_ROLES = [
 export const USER_GENDERS = ['MALE', 'FEMALE', 'OTHER'];
 
 export const DATE_FORMAT = 'DD/MM/YYYY';
+
+export const DELAY = 100;

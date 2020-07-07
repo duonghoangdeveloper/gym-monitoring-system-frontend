@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 import { AUTH_ROLES, USER_GENDERS } from '../common/constants';
 
-export const UsersCreateStaffButton = () => {
+export const UsersCreateStaffButton = ({ title }) => {
   const client = useApolloClient();
   const me = useSelector(state => state?.user?.me);
   const [form] = Form.useForm();
@@ -17,17 +17,6 @@ export const UsersCreateStaffButton = () => {
     setVisible(true);
   };
 
-  useEffect(() => {
-    if (visible) {
-      // Do something
-    } else {
-      try {
-        setTimeout(() => form.resetFields(), 500);
-      } catch (_) {
-        // Do nothing
-      }
-    }
-  }, [visible]);
   // const onValuesChange = (_, allValues) => {
   //   setDisabled(
   //       allValues.username &&
@@ -101,7 +90,7 @@ export const UsersCreateStaffButton = () => {
   return (
     <>
       <Button icon={<PlusOutlined />} onClick={handleClick}>
-        Create Staff
+        Create {title}
       </Button>
       <Modal
         className="select-none"
@@ -109,7 +98,10 @@ export const UsersCreateStaffButton = () => {
         okButtonProps={{
           disabled,
         }}
-        onCancel={() => setVisible(false)}
+        onCancel={() => {
+          setTimeout(() => form.resetFields(), 500);
+          setVisible(false);
+        }}
         onOk={() => form.submit()}
         title="Create User"
         visible={visible}

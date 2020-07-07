@@ -35,7 +35,7 @@ const authRoutes = [
     title: 'trainer',
   },
   {
-    component: pages.Customer,
+    component: pages.Customers,
     exact: true,
     key: 'customers',
     path: '/customers',
@@ -45,6 +45,12 @@ const authRoutes = [
     exact: true,
     key: 'cameras',
     path: '/cameras',
+  },
+  {
+    component: pages.Packages,
+    exact: true,
+    key: 'packages',
+    path: '/packages',
   },
 ];
 
