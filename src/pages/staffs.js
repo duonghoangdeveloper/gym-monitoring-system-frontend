@@ -8,11 +8,11 @@ import { useHistory } from 'react-router-dom';
 
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { UsersCreateStaffButton } from '../components/users-create-staff-button';
+import { UserEnableDisbleSwitch } from '../components/users-enable-disable-switch';
 import { UsersUpdateStaffButton } from '../components/users-update-staff-button';
 
-export const Staffs = () => {
+export const Staffs = ({ role, title }) => {
   const client = useApolloClient();
-
   const [loading, setLoading] = useState(true);
   const [users, setStaffs] = useState([]);
 
@@ -21,12 +21,12 @@ export const Staffs = () => {
       try {
         const result = await client.query({
           query: gql`
-            query {
+            query getUser($role: [Role!]) {
               users(
                 query: {
                   skip: 0
-                  sort: { username: ascending }
-                  filter: { role: [TRAINER, MANAGER, GYM_OWNER, SYSTEM_ADMIN] }
+                  sort: { role: ascending }
+                  filter: { role: $role }
                 }
               ) {
                 data {
@@ -36,11 +36,14 @@ export const Staffs = () => {
                   email
                   phone
                   gender
-                  role
+                  isActive
                 }
               }
             }
           `,
+          variables: {
+            role,
+          },
         });
 
         const fetchedStaffs = result?.data?.users?.data ?? [];
@@ -62,7 +65,7 @@ export const Staffs = () => {
     <LayoutDashboard>
       <div className="bg-white shadow p-6 rounded-sm">
         <div className="flex justify-between">
-          <h1 className="text-3xl">Staff Management</h1>
+          <h1 className="text-3xl"> {title} Management</h1>
           <UsersCreateStaffButton />
         </div>
 
@@ -90,11 +93,6 @@ const columns = [
     title: 'Username',
   },
   {
-    dataIndex: 'role',
-    key: 'role',
-    title: 'Role',
-  },
-  {
     dataIndex: 'displayName',
     key: 'displayName',
     title: 'Display Name',
@@ -111,9 +109,7 @@ const columns = [
   },
   {
     key: 'active',
-    render: user => (
-      <Switch unCheckedChildren={<CloseOutlined />} user={user} />
-    ),
+    render: user => <UserEnableDisbleSwitch user={user} />,
     title: 'Active',
   },
 ];

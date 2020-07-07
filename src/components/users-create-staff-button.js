@@ -101,7 +101,7 @@ export const UsersCreateStaffButton = () => {
   return (
     <>
       <Button icon={<PlusOutlined />} onClick={handleClick}>
-        Create Customer
+        Create Staff
       </Button>
       <Modal
         className="select-none"

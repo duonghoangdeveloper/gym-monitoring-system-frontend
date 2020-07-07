@@ -5,6 +5,8 @@ import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
 import { LayoutDashboard } from '../components/layout-dashboard';
+import { UsersCreateCustomerButton } from '../components/users-create-customer-button';
+import { UserEnableDisbleSwitch } from '../components/users-enable-disable-switch';
 import { UsersUpdateStaffButton } from '../components/users-update-staff-button';
 
 export const Customers = () => {
@@ -33,6 +35,7 @@ export const Customers = () => {
                   email
                   phone
                   gender
+                  isActive
                 }
               }
             }
@@ -54,17 +57,13 @@ export const Customers = () => {
     })();
   }, []);
 
-  const deleteCustomer = () => {
-    console.log('This is delete function!!!');
-  };
-
   return (
     <LayoutDashboard>
       <div className="bg-white shadow p-6 rounded-sm">
         <div className="flex justify-between">
           <h1 className="text-3xl">Customer Management</h1>
+          <UsersCreateCustomerButton />
         </div>
-
         <Table columns={columns} dataSource={users} loading={loading} />
       </div>
     </LayoutDashboard>
@@ -100,9 +99,7 @@ const columns = [
   },
   {
     key: 'active',
-    render: user => (
-      <Switch unCheckedChildren={<CloseOutlined />} user={user} />
-    ),
+    render: user => <UserEnableDisbleSwitch user={user} />,
     title: 'Active',
   },
 ];

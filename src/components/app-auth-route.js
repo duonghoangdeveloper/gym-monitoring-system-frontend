@@ -10,8 +10,6 @@ export const AppAuthRoute = ({ component: Component, ...rest }) => {
   const _id = useSelector(state => state?.user?.me?._id);
   const token = localStorage.getItem(TOKEN_KEY);
 
-  console.log(_id);
-
   const loading = false;
   const isSignedIn = _id && token;
 
@@ -26,5 +24,12 @@ export const AppAuthRoute = ({ component: Component, ...rest }) => {
     return <CommonPageLoading fullscreen />;
   }
 
-  return <Route {...rest} render={props => <Component {...props} />} />;
+  return (
+    <Route
+      {...rest}
+      render={props => (
+        <Component {...props} role={rest.role} title={rest.title} />
+      )}
+    />
+  );
 };

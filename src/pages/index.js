@@ -5,6 +5,7 @@ import { AppAuthRoute } from '../components/app-auth-route';
 import { _404 } from './_404';
 import { Cameras } from './cameras';
 import { Customers } from './customers';
+import { Home } from './home';
 import { Profile } from './profile';
 import { SignIn } from './sign-in';
 import { Staffs } from './staffs';
@@ -21,7 +22,7 @@ const publicRoutes = [
 
 const authRoutes = [
   {
-    component: Staffs,
+    component: Home,
     exact: true,
     key: 'home',
     path: '/',
@@ -29,8 +30,34 @@ const authRoutes = [
   {
     component: Staffs,
     exact: true,
-    key: 'staffs',
-    path: '/staffs',
+    key: 'trainers',
+    path: '/trainers',
+    role: 'TRAINER',
+    title: 'Trainers',
+  },
+  {
+    component: Staffs,
+    exact: true,
+    key: 'managers',
+    path: '/managers',
+    role: 'MANAGER',
+    title: 'Managers',
+  },
+  {
+    component: Staffs,
+    exact: true,
+    key: 'owners',
+    path: '/owners',
+    role: 'GYM_OWNER',
+    title: 'Gym Owner',
+  },
+  {
+    component: Staffs,
+    exact: true,
+    key: 'admins',
+    path: '/admins',
+    role: 'SYSTEM_ADMIN',
+    title: 'Admin',
   },
   {
     component: Profile,
@@ -39,16 +66,11 @@ const authRoutes = [
     path: '/profile',
   },
   {
-    component: Staffs,
-    exact: true,
-    key: 'staffs',
-    path: '/staffs',
-  },
-  {
     component: Customers,
     exact: true,
     key: 'customers',
     path: '/customers',
+    role: 'CUSTOMER',
   },
   {
     component: Cameras,
@@ -64,8 +86,15 @@ export const routes = [
   ...publicRoutes.map(({ component, exact, key, path }) => (
     <Route component={component} exact={exact} key={key} path={path} />
   )),
-  ...authRoutes.map(({ component, exact, key, path }) => (
-    <AppAuthRoute component={component} exact={exact} key={key} path={path} />
+  ...authRoutes.map(({ component, exact, key, path, role, title }) => (
+    <AppAuthRoute
+      component={component}
+      exact={exact}
+      key={key}
+      path={path}
+      role={role}
+      title={title}
+    />
   )),
   <Route component={_404} key="404" />,
 ];

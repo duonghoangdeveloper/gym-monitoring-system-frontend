@@ -32,6 +32,7 @@ const authRoutes = [
     exact: true,
     key: 'staffs',
     path: '/staffs',
+    title: 'trainer',
   },
   {
     component: pages.Customer,
@@ -53,8 +54,14 @@ export const routes = [
   ...publicRoutes.map(({ component, exact, key, path }) => (
     <Route component={component} exact={exact} key={key} path={path} />
   )),
-  ...authRoutes.map(({ component, exact, key, path }) => (
-    <AppAuthRoute component={component} exact={exact} key={key} path={path} />
+  ...authRoutes.map(({ component, exact, key, path, title }) => (
+    <AppAuthRoute
+      component={component}
+      exact={exact}
+      key={key}
+      path={path}
+      title={title}
+    />
   )),
   <Route component={pages._404} key="404" />,
 ];
