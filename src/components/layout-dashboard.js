@@ -1,5 +1,6 @@
 import {
   DownOutlined,
+  FileSearchOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
@@ -45,7 +46,7 @@ export const LayoutDashboard = ({ children }) => {
     dispatch({
       type: SIGN_OUT,
     });
-    localStorage.rmoveItem(TOKEN_KEY);
+    localStorage.removeItem(TOKEN_KEY);
     history.push('/');
   };
 
@@ -68,6 +69,12 @@ export const LayoutDashboard = ({ children }) => {
       icon: <UserOutlined />,
       key: 'user-management',
       title: 'User Management',
+    },
+    {
+      icon: <FileSearchOutlined />,
+      key: 'feedbacks',
+      onClick: () => history.push('/feedbacks'),
+      title: 'Feedbacks',
     },
     {
       icon: <VideoCameraOutlined />,
@@ -193,6 +200,8 @@ const getSelectedKey = pathname =>
     ? 'staffs'
     : /^\/customers/.test(pathname)
     ? 'customers'
+    : /^\/feedbacks/.test(pathname)
+    ? 'feedbacks'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
     : null;
