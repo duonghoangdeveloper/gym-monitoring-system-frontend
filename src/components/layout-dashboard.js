@@ -1,5 +1,6 @@
 import {
   DownOutlined,
+  FileSearchOutlined,
   FolderAddOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -97,6 +98,12 @@ export const LayoutDashboard = ({ children }) => {
       icon: <UserOutlined />,
       key: 'user-management',
       title: 'User Management',
+    },
+    {
+      icon: <FileSearchOutlined />,
+      key: 'feedbacks',
+      onClick: () => history.push('/feedbacks'),
+      title: 'Feedbacks',
     },
     {
       icon: <FolderAddOutlined />,
@@ -226,10 +233,18 @@ export const LayoutDashboard = ({ children }) => {
 };
 
 const getSelectedKey = pathname =>
-  pathname === '/' || /^\/staffs/.test(pathname)
-    ? 'staffs'
-    : /^\/customers/.test(pathname)
+  pathname === '/' || /^\/customers/.test(pathname)
     ? 'customers'
+    : /^\/trainers/.test(pathname)
+    ? 'trainers'
+    : /^\/managers/.test(pathname)
+    ? 'managers'
+    : /^\/owners/.test(pathname)
+    ? 'owners'
+    : /^\/admins/.test(pathname)
+    ? 'admins'
+    : /^\/feedbacks/.test(pathname)
+    ? 'feedbacks'
     : /^\/packages/.test(pathname)
     ? 'packages'
     : /^\/cameras/.test(pathname)

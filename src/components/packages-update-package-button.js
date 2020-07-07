@@ -4,7 +4,7 @@ import { Form, Input, InputNumber, message, Modal, Select } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
-export const PackagesUpdatePackageButton = ({ _package }) => {
+export const PackagesUpdatePackageButton = ({ _package, onSuccess }) => {
   const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
@@ -26,10 +26,10 @@ export const PackagesUpdatePackageButton = ({ _package }) => {
     const { name, period, price } = values;
     const { _id } = _package;
     try {
-      await client.mutate({
+      const result = await client.mutate({
         mutation: gql`
-          mutation UpdatePackage($_id: ID!, $price: Int, $period: Int) {
-            updatePackage(_id: $_id, data: { price: $price, period: $period }) {
+          mutation UpdatePackage($_id: ID!, $data: UpdatePackageInput) {
+            updatePackage(_id: $_id, data: $data) {
               _id
               name
               price
@@ -39,13 +39,16 @@ export const PackagesUpdatePackageButton = ({ _package }) => {
         `,
         variables: {
           _id,
-          name,
-          period,
-          price,
+          data: {
+            name,
+            period,
+            price,
+          },
         },
       });
       message.success('Update package succeed!');
       setVisible(false);
+      onSuccess(result?.data?.updatePackage);
     } catch (e) {
       message.error(`${e.message.split(': ')[1]}!`);
     }
@@ -95,10 +98,10 @@ export const PackagesUpdatePackageButton = ({ _package }) => {
             <Input placeholder="Enter name" />
           </Form.Item>
           <Form.Item label="Price" name="price">
-            <InputNumber placeholder="Enter price" />
+            <InputNumber placeholder="Enter price" style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item label="Period" name="period">
-            <InputNumber placeholder="Enter period" />
+            <InputNumber placeholder="Enter period" style={{ width: '100%' }} />
           </Form.Item>
         </Form>
       </Modal>

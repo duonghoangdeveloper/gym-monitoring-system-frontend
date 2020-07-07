@@ -20,44 +20,46 @@ export const Packages = () => {
   const [sort, setSort] = useState('');
   const [search, setSearch] = useState({});
 
-  useEffect(() => {
-    (async () => {
-      setLoading(true);
-      try {
-        const result = await client.query({
-          query: gql`
-            query SignIn($query: PackagesQueryInput) {
-              packages(query: $query) {
-                data {
-                  _id
-                  name
-                  price
-                  period
-                }
-                total
+  const fetchPackagesData = async () => {
+    setLoading(true);
+    try {
+      const result = await client.query({
+        query: gql`
+          query SignIn($query: PackagesQueryInput) {
+            packages(query: $query) {
+              data {
+                _id
+                name
+                price
+                period
               }
+              total
             }
-          `,
-          variables: {
-            query: { limit: 10, search, skip, sort },
-          },
-        });
+          }
+        `,
+        variables: {
+          query: { limit: 10, search, skip, sort },
+        },
+      });
 
-        const fetchedPackagesData = result?.data?.packages?.data ?? [];
-        const fetchedPackagesTotal = result?.data?.packages?.total ?? 0;
-        setPackages(
-          fetchedPackagesData.map((_package, index) => ({
-            key: _package._id,
-            no: index + 1,
-            ..._package,
-          }))
-        );
-        setTotal(fetchedPackagesTotal);
-      } catch (e) {
-        // Do something
-      }
-      setLoading(false);
-    })();
+      const fetchedPackagesData = result?.data?.packages?.data ?? [];
+      const fetchedPackagesTotal = result?.data?.packages?.total ?? 0;
+      setPackages(
+        fetchedPackagesData.map((_package, index) => ({
+          key: _package._id,
+          no: skip + index + 1,
+          ..._package,
+        }))
+      );
+      setTotal(fetchedPackagesTotal);
+    } catch (e) {
+      // Do something
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchPackagesData();
   }, [skip, sort]);
 
   const handleTableChange = (pagination, filters, sorter) => {
@@ -77,12 +79,68 @@ export const Packages = () => {
     }
   };
 
+  const columns = [
+    {
+      dataIndex: 'no',
+      key: 'no',
+      title: 'No',
+    },
+    {
+      dataIndex: 'name',
+      ellipsis: true,
+      key: 'name',
+      sorter: true,
+      title: 'Name',
+    },
+    {
+      dataIndex: 'price',
+      ellipsis: true,
+      key: 'price',
+      sorter: true,
+      title: 'Price',
+    },
+    {
+      dataIndex: 'period',
+      key: 'period',
+      sorter: true,
+      title: 'Period',
+    },
+    {
+      key: 'update',
+      render: (text, _package) => (
+        <PackagesUpdatePackageButton
+          _package={_package}
+          onSuccess={updatedPackage =>
+            setPackages(
+              packages.map(currentPackage =>
+                currentPackage._id === updatedPackage._id
+                  ? {
+                      ...currentPackage,
+                      ...updatedPackage,
+                    }
+                  : currentPackage
+              )
+            )
+          }
+        />
+      ),
+      title: 'Update',
+    },
+    {
+      key: 'active',
+      render: _package => (
+        <Switch _package={_package} unCheckedChildren={<CloseOutlined />} />
+      ),
+      title: 'Active',
+    },
+  ];
+
   return (
     <LayoutDashboard>
       <div className="bg-white shadow p-6 rounded-sm">
         <div className="flex justify-between">
           <h1 className="text-3xl">Package Management</h1>
-          <PackagesCreatePackageButton />
+          <PackagesCreatePackageButton onSuccess={fetchPackagesData} />
         </div>
 
         <Table
@@ -96,51 +154,8 @@ export const Packages = () => {
             pageSize: 10,
             total,
           }}
-          // rowKey={record => record.login.uuid}
         />
       </div>
     </LayoutDashboard>
   );
 };
-
-const columns = [
-  {
-    dataIndex: 'no',
-    key: 'no',
-    title: 'No',
-  },
-  {
-    dataIndex: 'name',
-    ellipsis: true,
-    key: 'name',
-    sorter: true,
-    title: 'Name',
-  },
-  {
-    dataIndex: 'price',
-    ellipsis: true,
-    key: 'price',
-    sorter: true,
-    title: 'Price',
-  },
-  {
-    dataIndex: 'period',
-    key: 'period',
-    sorter: true,
-    title: 'Period',
-  },
-  {
-    key: 'update',
-    render: (text, _package) => (
-      <PackagesUpdatePackageButton _package={_package} />
-    ),
-    title: 'Update',
-  },
-  {
-    key: 'active',
-    render: _package => (
-      <Switch _package={_package} unCheckedChildren={<CloseOutlined />} />
-    ),
-    title: 'Active',
-  },
-];

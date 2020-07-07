@@ -21,7 +21,7 @@ import { UsersCreateCustomerStep3 } from './users-create-customer-step-3';
 export const UsersCreateCustomerButton = () => {
   const client = useApolloClient();
   const [form] = Form.useForm();
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [current, setCurrent] = useState(0);
   const { Step } = Steps;

@@ -5,6 +5,7 @@ import { AppAuthRoute } from '../components/app-auth-route';
 import { _404 } from './_404';
 import { Cameras } from './cameras';
 import { Customers } from './customers';
+import { Feedbacks } from './feedbacks';
 import { Home } from './home';
 import { Packages } from './packages';
 import { Profile } from './profile';
@@ -23,7 +24,7 @@ const publicRoutes = [
 
 const authRoutes = [
   {
-    component: Home,
+    component: Customers,
     exact: true,
     key: 'home',
     path: '/',
@@ -78,6 +79,12 @@ const authRoutes = [
     exact: true,
     key: 'cameras',
     path: '/cameras',
+  },
+  {
+    component: Feedbacks,
+    exact: true,
+    key: 'feedbacks',
+    path: '/feedbacks',
   },
   {
     component: Packages,
