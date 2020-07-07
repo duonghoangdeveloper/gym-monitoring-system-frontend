@@ -22,7 +22,7 @@ export const Customers = () => {
               users(
                 query: {
                   skip: 0
-                  sort: { username: ascending }
+                  sort: "username"
                   filter: { role: [CUSTOMER] }
                 }
               ) {

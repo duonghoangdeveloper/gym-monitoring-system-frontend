@@ -25,7 +25,7 @@ export const Staffs = () => {
               users(
                 query: {
                   skip: 0
-                  sort: { username: ascending }
+                  sort: "username"
                   filter: { role: [TRAINER, MANAGER, GYM_OWNER, SYSTEM_ADMIN] }
                 }
               ) {
