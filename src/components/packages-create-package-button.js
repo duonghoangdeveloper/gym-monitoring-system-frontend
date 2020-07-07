@@ -2,15 +2,14 @@ import { PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Button, Form, Input, InputNumber, message, Modal, Select } from 'antd';
 import gql from 'graphql-tag';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-export const PackagesCreatePackageButton = () => {
+export const PackagesCreatePackageButton = ({ onSuccess }) => {
   const client = useApolloClient();
-  const me = useSelector(state => state?._package?.me);
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
-  const [disabled, setDisabled] = useState(false);
+  const [disabled] = useState(false);
   const handleClick = () => {
     setVisible(true);
   };
@@ -20,10 +19,8 @@ export const PackagesCreatePackageButton = () => {
       const { name, period, price } = values;
       await client.mutate({
         mutation: gql`
-          mutation CreateUser($name: String!, $price: Int!, $period: Int!) {
-            createPackage(
-              data: { name: $name, price: $price, period: $period }
-            ) {
+          mutation CreatePackage($data: CreatePackageInput!) {
+            createPackage(data: $data) {
               name
               price
               period
@@ -31,13 +28,12 @@ export const PackagesCreatePackageButton = () => {
           }
         `,
         variables: {
-          name,
-          period,
-          price,
+          data: { name, period, price },
         },
       });
-      message.success('Create package succeed.');
+      message.success('Create package succeed!');
       setVisible(false);
+      onSuccess();
     } catch (e) {
       console.log(e.message);
       message.error(`${e.message.split(': ')[1]}!`);
@@ -86,7 +82,7 @@ export const PackagesCreatePackageButton = () => {
               },
             ]}
           >
-            <InputNumber placeholder="Enter price" />
+            <InputNumber placeholder="Enter price" style={{ width: '100%' }} />
           </Form.Item>
           <Form.Item
             label="Period"
@@ -98,7 +94,7 @@ export const PackagesCreatePackageButton = () => {
               },
             ]}
           >
-            <InputNumber placeholder="Enter period" />
+            <InputNumber placeholder="Enter period" style={{ width: '100%' }} />
           </Form.Item>
         </Form>
       </Modal>
