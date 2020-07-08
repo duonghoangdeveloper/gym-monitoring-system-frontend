@@ -5,6 +5,7 @@ import { AppAuthRoute } from '../components/app-auth-route';
 import { _404 } from './_404';
 import { Cameras } from './cameras';
 import { Customers } from './customers';
+import { Feedbacks } from './feedbacks';
 import { Packages } from './packages';
 import { Profile } from './profile';
 import { SignIn } from './sign-in';
@@ -40,12 +41,6 @@ const authRoutes = [
     path: '/profile',
   },
   {
-    component: Staffs,
-    exact: true,
-    key: 'staffs',
-    path: '/staffs',
-  },
-  {
     component: Customers,
     exact: true,
     key: 'customers',
@@ -56,6 +51,12 @@ const authRoutes = [
     exact: true,
     key: 'cameras',
     path: '/cameras',
+  },
+  {
+    component: Feedbacks,
+    exact: true,
+    key: 'feedbacks',
+    path: '/feedbacks',
   },
   {
     component: Packages,

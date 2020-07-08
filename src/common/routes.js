@@ -34,6 +34,12 @@ const authRoutes = [
     path: '/staffs',
   },
   {
+    component: pages.Feedbacks,
+    exact: true,
+    key: 'feedbacks',
+    path: '/feedbacks',
+  },
+  {
     component: pages.Customers,
     exact: true,
     key: 'customers',

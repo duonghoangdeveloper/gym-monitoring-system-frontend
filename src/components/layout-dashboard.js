@@ -1,5 +1,6 @@
 import {
   DownOutlined,
+  FileSearchOutlined,
   FolderAddOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -69,6 +70,12 @@ export const LayoutDashboard = ({ children }) => {
       icon: <UserOutlined />,
       key: 'user-management',
       title: 'User Management',
+    },
+    {
+      icon: <FileSearchOutlined />,
+      key: 'feedbacks',
+      onClick: () => history.push('/feedbacks'),
+      title: 'Feedbacks',
     },
     {
       icon: <FolderAddOutlined />,
@@ -199,6 +206,8 @@ const getSelectedKey = pathname =>
     ? 'staffs'
     : /^\/customers/.test(pathname)
     ? 'customers'
+    : /^\/feedbacks/.test(pathname)
+    ? 'feedbacks'
     : /^\/packages/.test(pathname)
     ? 'packages'
     : /^\/cameras/.test(pathname)
