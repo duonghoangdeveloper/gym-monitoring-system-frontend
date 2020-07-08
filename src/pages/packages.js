@@ -1,24 +1,28 @@
 import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Divider, Radio, Space, Switch, Table } from 'antd';
+import { Button, Divider, Input, Radio, Space, Switch, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
+import { getColumnSearchProps } from '../common/antd';
+import { CommonTableSearchDropdown } from '../components/common-table-search-dropdown';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { PackagesCreatePackageButton } from '../components/packages-create-package-button';
 import { PackagesUpdatePackageButton } from '../components/packages-update-package-button';
 
 export const Packages = () => {
   const client = useApolloClient();
-
   const [loading, setLoading] = useState(true);
   const [packages, setPackages] = useState([]);
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [sort, setSort] = useState('');
-  const [search, setSearch] = useState({});
+  const [search, setSearch] = useState({
+    name: '',
+  });
+  const [searchAll, setSearchAll] = useState('');
 
   const fetchPackagesData = async () => {
     setLoading(true);
@@ -60,11 +64,17 @@ export const Packages = () => {
 
   useEffect(() => {
     fetchPackagesData();
-  }, [skip, sort]);
+  }, [skip, sort, search]);
+
+  const generateOnSearch = dataIndex => value => {
+    setSearch({
+      ...search,
+      [dataIndex]: value,
+    });
+    setSearchAll('');
+  };
 
   const handleTableChange = (pagination, filters, sorter) => {
-    // console.log(pagination, filters, sorter);
-
     // Pagination
     setSkip((pagination.current - 1) * 10);
 
@@ -87,14 +97,13 @@ export const Packages = () => {
     },
     {
       dataIndex: 'name',
-      ellipsis: true,
       key: 'name',
       sorter: true,
       title: 'Name',
+      ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
     },
     {
       dataIndex: 'price',
-      ellipsis: true,
       key: 'price',
       sorter: true,
       title: 'Price',
@@ -138,9 +147,24 @@ export const Packages = () => {
   return (
     <LayoutDashboard>
       <div className="bg-white shadow p-6 rounded-sm">
-        <div className="flex justify-between">
-          <h1 className="text-3xl">Package Management</h1>
-          <PackagesCreatePackageButton onSuccess={fetchPackagesData} />
+        <div className="flex items-center">
+          <h1 className="text-3xl flex-1">Package Management</h1>
+          <Input.Search
+            allowClear
+            onChange={e => setSearchAll(e.target.value)}
+            onSearch={value =>
+              setSearch({
+                name: value,
+              })
+            }
+            placeholder="Search package"
+            style={{ width: '14rem' }}
+            value={searchAll}
+          />
+          <PackagesCreatePackageButton
+            className="ml-4"
+            onSuccess={fetchPackagesData}
+          />
         </div>
 
         <Table

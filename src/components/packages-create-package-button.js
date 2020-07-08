@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-export const PackagesCreatePackageButton = ({ onSuccess }) => {
+export const PackagesCreatePackageButton = ({ onSuccess, ...props }) => {
   const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
@@ -42,7 +42,7 @@ export const PackagesCreatePackageButton = ({ onSuccess }) => {
 
   return (
     <>
-      <Button icon={<PlusOutlined />} onClick={handleClick}>
+      <Button icon={<PlusOutlined />} onClick={handleClick} {...props}>
         Create Package
       </Button>
       <Modal
