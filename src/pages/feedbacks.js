@@ -8,6 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
 import { DATE_FORMAT, TIME_FORMAT } from '../common/constants';
+import { UsersDeleteFeedbacksButton } from '../components/feedbacks-delete-feedbacks-button';
+import { UsersViewFeedbacksButton } from '../components/feedbacks-view-feedbacks-button';
 import { LayoutDashboard } from '../components/layout-dashboard';
 
 export const Feedbacks = () => {
@@ -22,7 +24,7 @@ export const Feedbacks = () => {
         const result = await client.query({
           query: gql`
             query {
-              feedbacks(query: { skip: 0, sort: "title" }) {
+              feedbacks(query: { skip: 0, sort: "createdAt" }) {
                 data {
                   _id
                   title
@@ -77,7 +79,9 @@ const columns = [
   {
     dataIndex: 'title',
     key: 'title',
-    // render: text => <a>{text}</a>,
+    render: (text, feedback) => (
+      <UsersViewFeedbacksButton feedback={feedback} />
+    ),
     title: 'Title',
   },
   {
@@ -112,11 +116,8 @@ const columns = [
   // },
   {
     key: 'delete',
-    render: (text, user) => (
-      <a>
-        <DeleteOutlined />
-        &nbsp;&nbsp;Delete
-      </a>
+    render: (text, feedback) => (
+      <UsersDeleteFeedbacksButton feedback={feedback} />
     ),
     title: 'Delete',
   },
