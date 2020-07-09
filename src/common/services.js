@@ -1,7 +1,7 @@
 // import { SIGN_OUT } from '../apollo/mutation';
 import gql from 'graphql-tag';
 
-import { TOKEN_KEY } from './constants';
+import { AUTH_ROLES, TOKEN_KEY } from './constants';
 
 export const clearAuthMemory = async () => {
   // Clear user token
@@ -118,4 +118,9 @@ export const encode = input => {
       keyStr.charAt(enc4);
   }
   return output;
+};
+
+export const generateRolesToView = myRole => {
+  const indexRole = AUTH_ROLES.indexOf(myRole);
+  return AUTH_ROLES.filter(r => AUTH_ROLES.indexOf(r) <= indexRole);
 };

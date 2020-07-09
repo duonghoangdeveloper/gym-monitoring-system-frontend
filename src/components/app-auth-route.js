@@ -24,12 +24,5 @@ export const AppAuthRoute = ({ component: Component, ...rest }) => {
     return <CommonPageLoading fullscreen />;
   }
 
-  return (
-    <Route
-      {...rest}
-      render={props => (
-        <Component {...props} role={rest.role} title={rest.title} />
-      )}
-    />
-  );
+  return <Route {...rest} render={props => <Component {...props} />} />;
 };

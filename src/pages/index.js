@@ -34,32 +34,24 @@ const authRoutes = [
     exact: true,
     key: 'trainers',
     path: '/trainers',
-    role: 'TRAINER',
-    title: 'Trainer',
   },
   {
     component: Staffs,
     exact: true,
     key: 'managers',
     path: '/managers',
-    role: 'MANAGER',
-    title: 'Manager',
   },
   {
     component: Staffs,
     exact: true,
     key: 'owners',
     path: '/owners',
-    role: 'GYM_OWNER',
-    title: 'Gym Owner',
   },
   {
     component: Staffs,
     exact: true,
     key: 'admins',
     path: '/admins',
-    role: 'SYSTEM_ADMIN',
-    title: 'Admin',
   },
   {
     component: Profile,
@@ -72,7 +64,6 @@ const authRoutes = [
     exact: true,
     key: 'customers',
     path: '/customers',
-    role: 'CUSTOMER',
   },
   {
     component: Cameras,
@@ -100,15 +91,8 @@ export const routes = [
   ...publicRoutes.map(({ component, exact, key, path }) => (
     <Route component={component} exact={exact} key={key} path={path} />
   )),
-  ...authRoutes.map(({ component, exact, key, path, role, title }) => (
-    <AppAuthRoute
-      component={component}
-      exact={exact}
-      key={key}
-      path={path}
-      role={role}
-      title={title}
-    />
+  ...authRoutes.map(({ component, exact, key, path }) => (
+    <AppAuthRoute component={component} exact={exact} key={key} path={path} />
   )),
   <Route component={_404} key="404" />,
 ];

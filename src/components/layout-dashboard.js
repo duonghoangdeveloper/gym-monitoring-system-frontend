@@ -15,15 +15,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { AUTH_ROLES, TOKEN_KEY } from '../common/constants';
+import { generateRolesToView } from '../common/services';
 import { SET_OPEN_KEYS, TOGGLE_COLLAPSED } from '../redux/types/common.types';
 import { SIGN_OUT } from '../redux/types/user.types';
 
 export const LayoutDashboard = ({ children }) => {
   const me = useSelector(state => state?.user?.me);
-  const indexRole = AUTH_ROLES.indexOf(me.role);
-  const rolesToView = AUTH_ROLES.filter(
-    r => AUTH_ROLES.indexOf(r) <= indexRole
-  );
+  const rolesToView = generateRolesToView(me.role);
   const location = useLocation();
   const username = useSelector(state => state.user?.me?.username);
   const collapsed = useSelector(
@@ -60,38 +58,38 @@ export const LayoutDashboard = ({ children }) => {
     {
       children: [
         {
+          hidden: !rolesToView.includes('CUSTOMER'),
           icon: <UserOutlined />,
           key: 'customers',
           onClick: () => history.push('/customers'),
-          role: 'CUSTOMER',
           title: 'Customers',
         },
         {
+          hidden: !rolesToView.includes('TRAINER'),
           icon: <UserOutlined />,
           key: 'trainers',
           onClick: () => history.push('/trainers'),
-          role: 'TRAINER',
           title: 'Trainers',
         },
         {
+          hidden: !rolesToView.includes('MANAGER'),
           icon: <UserOutlined />,
           key: 'managers',
           onClick: () => history.push('/managers'),
-          role: 'MANAGER',
           title: 'Managers',
         },
         {
+          hidden: !rolesToView.includes('GYM_OWNER'),
           icon: <UserOutlined />,
           key: 'owners',
           onClick: () => history.push('/owners'),
-          role: 'GYM_OWNER',
-          title: 'Gym Owners',
+          title: 'Gym owners',
         },
         {
+          hidden: !rolesToView.includes('SYSTEM_ADMIN'),
           icon: <UserOutlined />,
           key: 'admins',
           onClick: () => history.push('/admins'),
-          role: 'SYSTEM_ADMIN',
           title: 'Admins',
         },
       ],
@@ -164,7 +162,7 @@ export const LayoutDashboard = ({ children }) => {
               >
                 {submenu.children.map(
                   menu =>
-                    rolesToView.includes(menu.role) && (
+                    !menu.hidden && (
                       <Menu.Item
                         icon={menu.icon}
                         key={menu.key}

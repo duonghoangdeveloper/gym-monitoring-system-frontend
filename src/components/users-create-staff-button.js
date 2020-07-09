@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 import { AUTH_ROLES, USER_GENDERS } from '../common/constants';
 
-export const UsersCreateStaffButton = ({ title }) => {
+export const UsersCreateStaffButton = ({ children }) => {
   const client = useApolloClient();
   const me = useSelector(state => state?.user?.me);
   const [form] = Form.useForm();
@@ -90,7 +90,7 @@ export const UsersCreateStaffButton = ({ title }) => {
   return (
     <>
       <Button icon={<PlusOutlined />} onClick={handleClick}>
-        Create {title}
+        {children}
       </Button>
       <Modal
         className="select-none"
@@ -103,7 +103,7 @@ export const UsersCreateStaffButton = ({ title }) => {
           setVisible(false);
         }}
         onOk={() => form.submit()}
-        title="Create User"
+        title={children}
         visible={visible}
       >
         <Form

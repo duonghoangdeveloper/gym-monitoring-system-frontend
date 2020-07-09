@@ -15,95 +15,84 @@ import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
 import { USER_GENDERS } from '../common/constants';
-import { UsersCreateCustomerStep1 } from './users-create-customer-step-1';
-import { UsersCreateCustomerStep3 } from './users-create-customer-step-3';
+import { UsersCreateCustomerStep1View } from './users-create-customer-step-1-view';
+import { UsersCreateCustomerStep2View } from './users-create-customer-step-2-view';
+import { UsersCreateCustomerStep3View } from './users-create-customer-step-3-view';
+import { UsersCreateCustomerStep4View } from './users-create-customer-step-4-view';
 
 export const UsersCreateCustomerButton = () => {
-  const client = useApolloClient();
   const [form] = Form.useForm();
-  const [visible, setVisible] = useState(false);
-  const [disabled, setDisabled] = useState(false);
-  const [current, setCurrent] = useState(0);
-  const { Step } = Steps;
+  const [visible, setVisible] = useState(true);
+  const [currentStep, setCurrentStep] = useState(0);
 
-  const next = () => {
-    setCurrent(current + 1);
-  };
+  const [step1data, setStep1Data] = useState(null);
+  const [step2data, setStep2Data] = useState(null);
+  const [step3data, setStep3Data] = useState(null);
 
-  const prev = () => {
-    setCurrent(current - 1);
-  };
-
-  const steps = [
-    {
-      content: <UsersCreateCustomerStep1 />,
-      title: 'First',
-    },
-    {
-      content: 'Second-content',
-      title: 'Second',
-    },
-    {
-      content: <UsersCreateCustomerStep3 />,
-      title: 'Last',
-    },
-  ];
   const handleClick = () => {
     setVisible(true);
   };
-  const onFinish = async values => {
-    const { confirmPassword, password } = values;
-    if (password !== confirmPassword) {
-      message.error('Password and confirm password do not match!');
-    } else {
-      try {
-        const { displayName, email, gender, phone, username } = values;
-        await client.mutate({
-          mutation: gql`
-            mutation CreateUser(
-              $username: String!
-              $password: String!
-              $gender: Gender!
-              $displayName: String
-              $phone: String
-              $email: String
-            ) {
-              createUser(
-                data: {
-                  username: $username
-                  password: $password
-                  role: CUSTOMER
-                  phone: $phone
-                  displayName: $displayName
-                  email: $email
-                  gender: $gender
-                }
-              ) {
-                displayName
-                email
-                gender
-                phone
-                role
-                username
-              }
-            }
-          `,
-          variables: {
-            displayName,
-            email,
-            gender,
-            password,
-            phone,
-            username,
-          },
-        });
-        message.success('Create user succeed.');
-        setVisible(false);
-      } catch (e) {
-        message.error(`${e.message.split(': ')[1]}!`);
-      }
+
+  const generateStepView = step => {
+    switch (step) {
+      case 0:
+        return (
+          <UsersCreateCustomerStep1View
+            onNext={() => {
+              setCurrentStep(1);
+              // Do something
+              // setStep1Data
+            }}
+          />
+        );
+      case 1:
+        return (
+          <UsersCreateCustomerStep2View
+            onNext={() => {
+              setCurrentStep(2);
+              // Do something
+              // setStep2Data
+            }}
+            onPrev={() => {
+              setCurrentStep(0);
+              // Do something
+            }}
+          />
+        );
+      case 2:
+        return (
+          <UsersCreateCustomerStep3View
+            onNext={() => {
+              setCurrentStep(3);
+              // Do something
+              // setStep3Data
+              // Combine 3 steps & submit data
+            }}
+            onPrev={() => {
+              setCurrentStep(1);
+              // Do something
+            }}
+          />
+        );
+      case 3:
+        return (
+          <UsersCreateCustomerStep4View
+            onDone={() => {
+              // Do something
+              // setStep3Data
+              // Combine 3 steps & submit data
+            }}
+            onPrev={() => {
+              setCurrentStep(2);
+              // Do something
+            }}
+          />
+        );
+      default:
+        return null;
     }
   };
+
   return (
     <>
       <Button icon={<PlusOutlined />} onClick={handleClick}>
@@ -111,10 +100,8 @@ export const UsersCreateCustomerButton = () => {
       </Button>
       <Modal
         className="select-none w-screen"
+        footer={null}
         maskClosable={false}
-        okButtonProps={{
-          disabled,
-        }}
         onCancel={() => setVisible(false)}
         onOk={() => form.submit()}
         title="Create User"
@@ -122,34 +109,29 @@ export const UsersCreateCustomerButton = () => {
         width="700px"
       >
         <div>
-          <Steps current={current}>
+          <Steps current={currentStep}>
             {steps.map(item => (
-              <Step key={item.title} title={item.title} />
+              <Steps.Step key={item.title} title={item.title} />
             ))}
           </Steps>
-          <div className="steps-content">{steps[current].content}</div>
-          <div className="steps-action">
-            {current < steps.length - 1 && (
-              <Button onClick={next} type="primary">
-                Next
-              </Button>
-            )}
-            {current === steps.length - 1 && (
-              <Button
-                onClick={() => message.success('Processing complete!')}
-                type="primary"
-              >
-                Done
-              </Button>
-            )}
-            {current > 0 && (
-              <Button onClick={prev} style={{ margin: '0 8px' }}>
-                Previous
-              </Button>
-            )}
-          </div>
+          <div className="mt-6">{generateStepView(currentStep)}</div>
         </div>
       </Modal>
     </>
   );
 };
+
+const steps = [
+  {
+    title: 'Step 1',
+  },
+  {
+    title: 'Step 2',
+  },
+  {
+    title: 'Step 3',
+  },
+  {
+    title: 'Step 4',
+  },
+];

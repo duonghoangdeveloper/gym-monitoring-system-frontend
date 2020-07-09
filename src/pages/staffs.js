@@ -4,20 +4,22 @@ import { Button, Divider, Radio, Space, Switch, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { UsersCreateStaffButton } from '../components/users-create-staff-button';
 import { UserEnableDisbleSwitch } from '../components/users-enable-disable-switch';
 import { UsersUpdateStaffButton } from '../components/users-update-staff-button';
 
-export const Staffs = ({ role, title }) => {
+export const Staffs = () => {
+  const { pathname } = useLocation();
   const client = useApolloClient();
   const [loading, setLoading] = useState(true);
-  const [users, setStaffs] = useState([]);
+  const [staffs, setStaffs] = useState([]);
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [sort, setSort] = useState('');
+  const pageRole = generatePageRole(pathname);
 
   useEffect(() => {
     (async () => {
@@ -39,7 +41,7 @@ export const Staffs = ({ role, title }) => {
             }
           `,
           variables: {
-            query: { filter: { role }, limit: 10, skip, sort },
+            query: { filter: { role: pageRole }, limit: 10, skip, sort },
           },
         });
 
@@ -118,14 +120,16 @@ export const Staffs = ({ role, title }) => {
     <LayoutDashboard>
       <div className="bg-white shadow p-6 rounded-sm">
         <div className="flex justify-between">
-          <h1 className="text-3xl"> {title} Management</h1>
-          <UsersCreateStaffButton title={title} />
+          <h1 className="text-3xl">{generatePageTitle(pathname)}</h1>
+          <UsersCreateStaffButton>
+            {generateCreateButtonTitle(pathname)}
+          </UsersCreateStaffButton>
         </div>
 
         <Table
           className="overflow-x-auto"
           columns={columns}
-          dataSource={users}
+          dataSource={staffs}
           loading={loading}
           onChange={handleTableChange}
           pagination={{
@@ -137,4 +141,49 @@ export const Staffs = ({ role, title }) => {
       </div>
     </LayoutDashboard>
   );
+};
+
+const generatePageTitle = pathname => {
+  switch (pathname) {
+    case '/trainers':
+      return 'Trainer Management';
+    case '/managers':
+      return 'Manager Management';
+    case '/owners':
+      return 'Gym Owner Management';
+    case '/admins':
+      return 'Admin Management';
+    default:
+      return null;
+  }
+};
+
+const generateCreateButtonTitle = pathname => {
+  switch (pathname) {
+    case '/trainers':
+      return 'Create Trainer';
+    case '/managers':
+      return 'Create Manager';
+    case '/owners':
+      return 'Create Gym Owner';
+    case '/admins':
+      return 'Create Admin';
+    default:
+      return null;
+  }
+};
+
+const generatePageRole = pathname => {
+  switch (pathname) {
+    case '/trainers':
+      return 'TRAINER';
+    case '/managers':
+      return 'MANAGER';
+    case '/owners':
+      return 'GYM_OWNER';
+    case '/admins':
+      return 'SYSTEM_ADMIN';
+    default:
+      return null;
+  }
 };
