@@ -1,11 +1,9 @@
-import { CloseOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Divider, Radio, Space, Switch, Table } from 'antd';
+import { Table } from 'antd';
 import gql from 'graphql-tag';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { DATE_FORMAT, TIME_FORMAT } from '../common/constants';
 import { LayoutDashboard } from '../components/layout-dashboard';

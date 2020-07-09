@@ -1,13 +1,10 @@
-import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Divider, Input, Radio, Space, Switch, Table } from 'antd';
+import { Input, Switch, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { getColumnSearchProps } from '../common/antd';
-import { CommonTableSearchDropdown } from '../components/common-table-search-dropdown';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { PackagesCreatePackageButton } from '../components/packages-create-package-button';
 import { PackagesUpdatePackageButton } from '../components/packages-update-package-button';

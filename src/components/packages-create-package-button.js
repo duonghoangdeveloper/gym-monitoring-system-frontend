@@ -1,9 +1,8 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Form, Input, InputNumber, message, Modal, Select } from 'antd';
+import { Button, Form, Input, InputNumber, message, Modal } from 'antd';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 
 export const PackagesCreatePackageButton = ({ onSuccess, ...props }) => {
   const client = useApolloClient();
