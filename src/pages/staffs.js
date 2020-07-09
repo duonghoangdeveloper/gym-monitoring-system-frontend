@@ -1,15 +1,21 @@
-import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Divider, Radio, Space, Switch, Table } from 'antd';
+import { Input, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
+import { getColumnSearchProps } from '../common/antd';
+import { PAGE_SIZE } from '../common/constants';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { UsersCreateStaffButton } from '../components/users-create-staff-button';
 import { UserEnableDisbleSwitch } from '../components/users-enable-disable-switch';
 import { UsersUpdateStaffButton } from '../components/users-update-staff-button';
+
+const INIT_SEARCH = {
+  displayName: '',
+  email: '',
+  username: '',
+};
 
 export const Staffs = () => {
   const { pathname } = useLocation();
@@ -19,54 +25,73 @@ export const Staffs = () => {
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [sort, setSort] = useState('');
+  const [search, setSearch] = useState(INIT_SEARCH);
+  const [searchAll, setSearchAll] = useState('');
   const pageRole = generatePageRole(pathname);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const result = await client.query({
-          query: gql`
-            query getUser($query: UsersQueryInput!) {
-              users(query: $query) {
-                data {
-                  _id
-                  username
-                  displayName
-                  email
-                  phone
-                  gender
-                  isActive
-                }
+  const fetchUsersData = async () => {
+    setLoading(true);
+    try {
+      const result = await client.query({
+        query: gql`
+          query getUser($query: UsersQueryInput!) {
+            users(query: $query) {
+              data {
+                _id
+                username
+                displayName
+                email
+                phone
+                gender
+                isActive
               }
             }
-          `,
-          variables: {
-            query: { filter: { role: pageRole }, limit: 10, skip, sort },
+          }
+        `,
+        variables: {
+          query: {
+            filter: { role: pageRole },
+            limit: PAGE_SIZE,
+            search,
+            skip,
+            sort,
           },
-        });
+        },
+      });
 
-        const fetchedStaffsData = result?.data?.users?.data ?? [];
-        const fetchedStaffsTotal = result?.data?.packages?.total ?? 0;
-        setStaffs(
-          fetchedStaffsData.map((user, index) => ({
-            key: user._id,
-            no: index + 1,
-            ...user,
-          }))
-        );
-        setTotal(fetchedStaffsTotal);
-      } catch (e) {
-        // Do something
-      }
-      setLoading(false);
-    })();
-  }, [skip, sort]);
+      const fetchedStaffsData = result?.data?.users?.data ?? [];
+      const fetchedStaffsTotal = result?.data?.users?.total ?? 0;
+      setStaffs(
+        fetchedStaffsData.map((user, index) => ({
+          key: user._id,
+          no: skip + index + 1,
+          ...user,
+        }))
+      );
+      setTotal(fetchedStaffsTotal);
+    } catch (e) {
+      // Do something
+    }
+    setLoading(false);
+  };
+
+  useEffect(() => {
+    fetchUsersData();
+  }, [skip, sort, search]);
+
+  const generateOnSearch = dataIndex => value => {
+    setSearch({
+      ...search,
+      [dataIndex]: value,
+    });
+    setSearchAll('');
+  };
 
   const handleTableChange = (pagination, filters, sorter) => {
     // console.log(pagination, filters, sorter);
 
     // Pagination
-    setSkip((pagination.current - 1) * 10);
+    setSkip((pagination.current - 1) * PAGE_SIZE);
 
     // Sorter
     const { columnKey, order } = sorter;
@@ -91,18 +116,29 @@ export const Staffs = () => {
       render: text => <a>{text}</a>,
       sorter: true,
       title: 'Username',
+      ...getColumnSearchProps(
+        'username',
+        generateOnSearch('username'),
+        search.username
+      ),
     },
     {
       dataIndex: 'displayName',
       key: 'displayName',
       sorter: true,
       title: 'Display Name',
+      ...getColumnSearchProps(
+        'displayName',
+        generateOnSearch('displayName'),
+        search.displayName
+      ),
     },
     {
       dataIndex: 'email',
       key: 'email',
       sorter: true,
       title: 'Email',
+      ...getColumnSearchProps('email', generateOnSearch('email'), search.email),
     },
     {
       key: 'update',
@@ -119,9 +155,23 @@ export const Staffs = () => {
   return (
     <LayoutDashboard>
       <div className="bg-white shadow p-6 rounded-sm">
-        <div className="flex justify-between">
-          <h1 className="text-3xl">{generatePageTitle(pathname)}</h1>
-          <UsersCreateStaffButton>
+        <div className="flex items-center">
+          <h1 className="text-3xl flex-1">{generatePageTitle(pathname)}</h1>
+          <Input.Search
+            allowClear
+            onChange={e => setSearchAll(e.target.value)}
+            onSearch={value =>
+              setSearch({
+                displayName: value,
+                email: value,
+                username: value,
+              })
+            }
+            placeholder="Search user"
+            style={{ width: '14rem' }}
+            value={searchAll}
+          />
+          <UsersCreateStaffButton className="ml-4" onSuccess={fetchUsersData}>
             {generateCreateButtonTitle(pathname)}
           </UsersCreateStaffButton>
         </div>
@@ -133,8 +183,8 @@ export const Staffs = () => {
           loading={loading}
           onChange={handleTableChange}
           pagination={{
-            current: Math.floor(skip / 10) + 1,
-            pageSize: 10,
+            current: Math.floor(skip / PAGE_SIZE) + 1,
+            pageSize: PAGE_SIZE,
             total,
           }}
         />

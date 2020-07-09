@@ -25,9 +25,7 @@ export const UsersCreateCustomerButton = () => {
   const [visible, setVisible] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
 
-  const [step1data, setStep1Data] = useState(null);
-  const [step2data, setStep2Data] = useState(null);
-  const [step3data, setStep3Data] = useState(null);
+  const [user: {}, setUser] = useState();
 
   const handleClick = () => {
     setVisible(true);

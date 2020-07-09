@@ -7,7 +7,7 @@ import { useSelector } from 'react-redux';
 
 import { AUTH_ROLES, USER_GENDERS } from '../common/constants';
 
-export const UsersCreateStaffButton = ({ children }) => {
+export const UsersCreateStaffButton = ({ children, ...props }) => {
   const client = useApolloClient();
   const me = useSelector(state => state?.user?.me);
   const [form] = Form.useForm();
@@ -89,7 +89,7 @@ export const UsersCreateStaffButton = ({ children }) => {
 
   return (
     <>
-      <Button icon={<PlusOutlined />} onClick={handleClick}>
+      <Button icon={<PlusOutlined />} {...props} onClick={handleClick}>
         {children}
       </Button>
       <Modal
