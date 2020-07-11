@@ -25,7 +25,11 @@ export const UsersCreateCustomerButton = () => {
   const [visible, setVisible] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
 
-  const [user: {}, setUser] = useState();
+  const [customerData, setCustomerData] = useState({
+    step1: null,
+    step2: null,
+    step3: null,
+  });
 
   const handleClick = () => {
     setVisible(true);
@@ -36,16 +40,20 @@ export const UsersCreateCustomerButton = () => {
       case 0:
         return (
           <UsersCreateCustomerStep1View
-            onNext={() => {
+            customerData={customerData}
+            onNext={values => {
+              setCustomerData({
+                ...customerData,
+                step1: values,
+              });
               setCurrentStep(1);
-              // Do something
-              // setStep1Data
             }}
           />
         );
       case 1:
         return (
           <UsersCreateCustomerStep2View
+            customerData={customerData}
             onNext={() => {
               setCurrentStep(2);
               // Do something
@@ -60,11 +68,15 @@ export const UsersCreateCustomerButton = () => {
       case 2:
         return (
           <UsersCreateCustomerStep3View
-            onNext={() => {
+            customerData={customerData}
+            onNext={values => {
+              setCustomerData({
+                ...customerData,
+                step3: values,
+              });
               setCurrentStep(3);
               // Do something
               // setStep3Data
-              // Combine 3 steps & submit data
             }}
             onPrev={() => {
               setCurrentStep(1);
@@ -75,9 +87,9 @@ export const UsersCreateCustomerButton = () => {
       case 3:
         return (
           <UsersCreateCustomerStep4View
+            customerData={customerData}
             onDone={() => {
               // Do something
-              // setStep3Data
               // Combine 3 steps & submit data
             }}
             onPrev={() => {

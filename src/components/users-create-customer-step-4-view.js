@@ -1,15 +1,29 @@
 import { Button, Form, Input, Select } from 'antd';
 import React, { useForm } from 'react';
+import { useSelector } from 'react-redux';
 
 import { USER_GENDERS } from '../common/constants';
 
-export const UsersCreateCustomerStep4View = ({ onDone, onPrev }) => {
+export const UsersCreateCustomerStep4View = ({
+  customerData,
+  onDone,
+  onPrev,
+}) => {
   const onFinish = () => {};
   const [form] = Form.useForm();
+  // const customer = useSelector(state => state?.user?.customer);
   return (
     <div>
       <Form
         form={form}
+        initialValues={{
+          displayName: customerData.step1.displayName,
+          email: customerData.step1.email,
+          gender: customerData.step1.gender,
+          password: customerData.step3.password,
+          phone: customerData.step1.phone,
+          username: customerData.step3.username,
+        }}
         layout="vertical"
         onFinish={onFinish}
         // onValuesChange={onValuesChange}
@@ -66,13 +80,7 @@ export const UsersCreateCustomerStep4View = ({ onDone, onPrev }) => {
             },
           ]}
         >
-          <Select placeholder="Select gender">
-            {USER_GENDERS.map(gender => (
-              <Select.Option key={gender} value={gender}>
-                {gender}
-              </Select.Option>
-            ))}
-          </Select>
+          <Input placeholder="Enter Gender" />
         </Form.Item>
       </Form>
 

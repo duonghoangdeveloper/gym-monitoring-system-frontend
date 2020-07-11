@@ -1,14 +1,44 @@
 import { Button, Form, Input, Select } from 'antd';
-import React, { useForm } from 'react';
+import React, { useForm, useReducer } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { USER_GENDERS } from '../common/constants';
+import { CREATE_CUSTOMER } from '../redux/types/user.types';
 
-export const UsersCreateCustomerStep1View = ({ onNext }) => {
-  const onFinish = () => {};
+export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
+  // const dispatch = useDispatch();
+  // const customer = useSelector(state => state?.user?.customer);
+
+  const onFinish = async values => {
+    // customer.email = values.email;
+    // customer.gender = values.gender;
+    // customer.phone = values.phone;
+    // customer.displayName = values.displayName;
+    // dispatch({
+    //   payload: customer,
+    //   type: CREATE_CUSTOMER,
+    // });
+    onNext(values);
+  };
+
+  const handleOnNextClick = () => {
+    form.submit();
+  };
+
   const [form] = Form.useForm();
   return (
     <div>
-      <Form form={form} layout="vertical" onFinish={onFinish}>
+      <Form
+        form={form}
+        initialValues={{
+          displayName: customerData.step1?.displayName,
+          email: customerData.step1?.email,
+          gender: customerData.step1?.gender,
+          phone: customerData.step1?.phone,
+        }}
+        layout="vertical"
+        onFinish={onFinish}
+      >
         <Form.Item
           label="Email"
           name="email"
@@ -47,7 +77,7 @@ export const UsersCreateCustomerStep1View = ({ onNext }) => {
         </Form.Item>
       </Form>
       <div className="flex justify-end">
-        <Button onClick={onNext} type="primary">
+        <Button onClick={handleOnNextClick} type="primary">
           Next
         </Button>
       </div>

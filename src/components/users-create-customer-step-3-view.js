@@ -1,16 +1,48 @@
-import { Button, Form, Input, Select } from 'antd';
+import { Button, Form, Input, message, Select } from 'antd';
 import React, { useForm } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-export const UsersCreateCustomerStep3View = ({ onNext, onPrev }) => {
-  const onFinish = () => {};
+import { CREATE_CUSTOMER } from '../redux/types/user.types';
+
+export const UsersCreateCustomerStep3View = ({
+  customerData,
+  onNext,
+  onPrev,
+}) => {
   const [form] = Form.useForm();
+  // const dispatch = useDispatch();
+  // const customer = useSelector(state => state?.user?.customer);
+  const onFinish = async values => {
+    if (verifyPassword(values.password, values.confirmPassword)) {
+      // customer.username = values.username;
+      // customer.password = values.password;
+      // dispatch({
+      //   payload: customer,
+      //   type: CREATE_CUSTOMER,
+      // });
+      onNext(values);
+    } else {
+      message.error('Password and confirmed password do not match!');
+    }
+  };
+
+  const handleOnNextClick = () => {
+    form.submit();
+  };
   return (
     <div>
       <Form
         form={form}
+        initialValues={{
+          confirmPassword: customerData.step3?.password
+            ? customerData.step3?.password
+            : null,
+          password: customerData.step3?.password,
+          username: customerData.step3?.username,
+        }}
         layout="vertical"
-        onFinish={onFinish}
         // onValuesChange={onValuesChange}
+        onFinish={onFinish}
       >
         <Form.Item
           label="Username"
@@ -52,10 +84,12 @@ export const UsersCreateCustomerStep3View = ({ onNext, onPrev }) => {
 
       <div className="flex justify-end">
         <Button onClick={onPrev}>Previous</Button>
-        <Button className="ml-2" onClick={onNext} type="primary">
+        <Button className="ml-2" onClick={handleOnNextClick} type="primary">
           Next
         </Button>
       </div>
     </div>
   );
 };
+const verifyPassword = (password, comfirmPassword) =>
+  password === comfirmPassword;
