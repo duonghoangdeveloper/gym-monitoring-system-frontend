@@ -39,7 +39,7 @@ export const Packages = () => {
           }
         `,
         variables: {
-          query: { limit: 10, search, skip, sort },
+          query: { limit: 52, search, skip, sort },
         },
       });
 
@@ -113,6 +113,27 @@ export const Packages = () => {
     },
     {
       key: 'update',
+      render: (text, _package) => (
+        <PackagesUpdatePackageButton
+          _package={_package}
+          onSuccess={updatedPackage =>
+            setPackages(
+              packages.map(currentPackage =>
+                currentPackage._id === updatedPackage._id
+                  ? {
+                      ...currentPackage,
+                      ...updatedPackage,
+                    }
+                  : currentPackage
+              )
+            )
+          }
+        />
+      ),
+      title: 'Update',
+    },
+    {
+      key: 'delete',
       render: (text, _package) => (
         <PackagesUpdatePackageButton
           _package={_package}

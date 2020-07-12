@@ -2,7 +2,7 @@ import { EditOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Form, Input, message, Modal, Select } from 'antd';
 import gql from 'graphql-tag';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { USER_GENDERS } from '../common/constants';
 

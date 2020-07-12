@@ -1,22 +1,14 @@
 import { EditOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Form, Input, InputNumber, message, Modal, Select } from 'antd';
+import { Form, Input, InputNumber, message, Modal } from 'antd';
 import gql from 'graphql-tag';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 export const PackagesUpdatePackageButton = ({ _package, onSuccess }) => {
   const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [disabled, setDisabled] = useState(true);
-
-  const onValuesChange = (_, allValues) => {
-    setDisabled(
-      allValues.name === _package.name &&
-        allValues.price === _package.price &&
-        allValues.period === _package.period
-    );
-  };
 
   const handleClick = () => {
     setVisible(true);
@@ -52,6 +44,14 @@ export const PackagesUpdatePackageButton = ({ _package, onSuccess }) => {
     } catch (e) {
       message.error(`${e.message.split(': ')[1]}!`);
     }
+  };
+
+  const onValuesChange = (_, allValues) => {
+    setDisabled(
+      allValues.name === _package.name &&
+        allValues.price === _package.price &&
+        allValues.period === _package.period
+    );
   };
 
   return (
