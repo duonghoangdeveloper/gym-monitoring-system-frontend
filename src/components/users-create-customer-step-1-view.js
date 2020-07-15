@@ -1,24 +1,50 @@
-import { Button, Form, Input, Select } from 'antd';
-import React, { useForm, useReducer } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useApolloClient } from '@apollo/react-hooks';
+import { Button, Form, Input, message, Select } from 'antd';
+import gql from 'graphql-tag';
+import React from 'react';
 
 import { USER_GENDERS } from '../common/constants';
-import { CREATE_CUSTOMER } from '../redux/types/user.types';
 
 export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
-  // const dispatch = useDispatch();
-  // const customer = useSelector(state => state?.user?.customer);
-
+  const client = useApolloClient();
   const onFinish = async values => {
-    // customer.email = values.email;
-    // customer.gender = values.gender;
-    // customer.phone = values.phone;
-    // customer.displayName = values.displayName;
-    // dispatch({
-    //   payload: customer,
-    //   type: CREATE_CUSTOMER,
-    // });
-    onNext(values);
+    const { displayName, email, gender, phone } = values;
+    try {
+      const result = await client.query({
+        query: gql`
+          query ValidateUser($data: ValidateUserInput) {
+            validateUser(data: $data) {
+              displayName
+              email
+              phone
+              gender
+            }
+          }
+        `,
+        variables: {
+          data: {
+            displayName,
+            email,
+            gender,
+            phone,
+          },
+        },
+      });
+      if (
+        !Object.keys(result.data.validateUser).some(
+          key =>
+            Array.isArray(result.data.validateUser[key]) &&
+            result.data.validateUser[key].length > 0
+        )
+      ) {
+        onNext(values);
+      } else {
+        addErrorToInputField(result.data.validateUser);
+      }
+    } catch (e) {
+      message.error(`${e.message.split(': ')[1]}!`);
+      console.log(e.message);
+    }
   };
 
   const handleOnNextClick = () => {
@@ -26,6 +52,37 @@ export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
   };
 
   const [form] = Form.useForm();
+
+  const addErrorToInputField = Errors => {
+    if (Errors.email.length > 0)
+      form.setFields([
+        {
+          errors: [Errors.email[0]],
+          name: 'email',
+        },
+      ]);
+    if (Errors.displayName.length > 0)
+      form.setFields([
+        {
+          errors: [Errors.displayName[0]],
+          name: 'displayName',
+        },
+      ]);
+    if (Errors.phone.length > 0)
+      form.setFields([
+        {
+          errors: [Errors.phone[0]],
+          name: 'phone',
+        },
+      ]);
+    if (Errors.gender.length > 0)
+      form.setFields([
+        {
+          errors: [Errors.gender[0]],
+          name: 'gender',
+        },
+      ]);
+  };
   return (
     <div>
       <Form
@@ -44,7 +101,7 @@ export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
           name="email"
           rules={[
             {
-              message: 'Email is invalid!',
+              message: 'Email is invalid',
               required: true,
               type: 'email',
             },

@@ -5,9 +5,14 @@ import { Route, useHistory } from 'react-router-dom';
 import { TOKEN_KEY } from '../common/constants';
 import { CommonPageLoading } from './common-page-loading';
 
-export const AppAuthRoute = ({ component: Component, ...rest }) => {
+export const AppAuthRoute = ({
+  authRoles = [],
+  component: Component,
+  ...rest
+}) => {
   const history = useHistory();
   const _id = useSelector(state => state?.user?.me?._id);
+  const role = useSelector(state => state?.user?.me?.role);
   const token = localStorage.getItem(TOKEN_KEY);
 
   const loading = false;
@@ -18,9 +23,22 @@ export const AppAuthRoute = ({ component: Component, ...rest }) => {
   }
 
   if (!isSignedIn) {
-    history.push({
-      pathname: '/sign-in',
-    });
+    setTimeout(() =>
+      history.push({
+        pathname: '/sign-in',
+      })
+    );
+
+    return <CommonPageLoading fullscreen />;
+  }
+
+  if (!authRoles.includes(role)) {
+    setTimeout(() =>
+      history.push({
+        pathname: '/unauthorized',
+      })
+    );
+
     return <CommonPageLoading fullscreen />;
   }
 

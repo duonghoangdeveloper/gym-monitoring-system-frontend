@@ -50,8 +50,8 @@ export const SignIn = () => {
       history.push('/');
     } catch (e) {
       message.error('Wrong username or password!');
+      setLoading(false);
     }
-    setLoading(false);
   };
 
   return (

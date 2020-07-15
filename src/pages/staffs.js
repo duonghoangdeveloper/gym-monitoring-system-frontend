@@ -1,7 +1,9 @@
+import { DeleteOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Input, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import { getColumnSearchProps } from '../common/antd';
@@ -28,6 +30,7 @@ export const Staffs = () => {
   const [search, setSearch] = useState(INIT_SEARCH);
   const [searchAll, setSearchAll] = useState('');
   const pageRole = generatePageRole(pathname);
+  const role = useSelector(state => state?.user?.me?.role);
 
   const fetchUsersData = async () => {
     setLoading(true);
@@ -43,8 +46,9 @@ export const Staffs = () => {
                 email
                 phone
                 gender
-                isActive
+                isOnline
               }
+              total
             }
           }
         `,
@@ -58,7 +62,7 @@ export const Staffs = () => {
           },
         },
       });
-
+      console.log(result?.data?.users?.data);
       const fetchedStaffsData = result?.data?.users?.data ?? [];
       const fetchedStaffsTotal = result?.data?.users?.total ?? 0;
       setStaffs(
@@ -140,16 +144,42 @@ export const Staffs = () => {
       title: 'Email',
       ...getColumnSearchProps('email', generateOnSearch('email'), search.email),
     },
+    ...(pageRole === 'MANAGER' || pageRole === 'TRAINER'
+      ? [
+          {
+            key: 'online',
+            render: user => (
+              <UserEnableDisbleSwitch
+                status={user.isOnline}
+                type="online"
+                user={user}
+              />
+            ),
+            title: 'Online',
+          },
+        ]
+      : []),
     {
       key: 'update',
-      render: (text, user) => <UsersUpdateStaffButton user={user} />,
+      render: (text, user) => (
+        <UsersUpdateStaffButton onSuccess={fetchUsersData} user={user} />
+      ),
       title: 'Update',
     },
-    {
-      key: 'active',
-      render: user => <UserEnableDisbleSwitch user={user} />,
-      title: 'Active',
-    },
+    ...(role === 'GYM_OWNER' || role === 'SYSTEM_ADMIN'
+      ? [
+          {
+            key: 'delete',
+            render: () => (
+              <a>
+                <DeleteOutlined />
+                &nbsp;&nbsp;Delete
+              </a>
+            ),
+            title: 'Delete',
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -171,7 +201,11 @@ export const Staffs = () => {
             style={{ width: '14rem' }}
             value={searchAll}
           />
-          <UsersCreateStaffButton className="ml-4" onSuccess={fetchUsersData}>
+          <UsersCreateStaffButton
+            className="ml-4"
+            onSuccess={fetchUsersData}
+            role={generatePageRole(pathname)}
+          >
             {generateCreateButtonTitle(pathname)}
           </UsersCreateStaffButton>
         </div>

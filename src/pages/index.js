@@ -2,6 +2,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 
 import { AppAuthRoute } from '../components/app-auth-route';
+import { _403 } from './_403';
 import { _404 } from './_404';
 import { Cameras } from './cameras';
 import { Customers } from './customers';
@@ -22,7 +23,8 @@ const publicRoutes = [
   },
 ];
 
-const authRoutes = [
+// Manager, owner, admin can access
+const managerOwnerAdminRoutes = [
   {
     component: Customers,
     exact: true,
@@ -42,18 +44,6 @@ const authRoutes = [
     path: '/managers',
   },
   {
-    component: Staffs,
-    exact: true,
-    key: 'owners',
-    path: '/owners',
-  },
-  {
-    component: Staffs,
-    exact: true,
-    key: 'admins',
-    path: '/admins',
-  },
-  {
     component: Profile,
     exact: true,
     key: 'profile',
@@ -71,6 +61,9 @@ const authRoutes = [
     key: 'cameras',
     path: '/cameras',
   },
+];
+
+export const ownerAdminRoutes = [
   {
     component: Feedbacks,
     exact: true,
@@ -83,16 +76,67 @@ const authRoutes = [
     key: 'packages',
     path: '/packages',
   },
+  {
+    component: Staffs,
+    exact: true,
+    key: 'owners',
+    path: '/owners',
+  },
+  {
+    component: Staffs,
+    exact: true,
+    key: 'admins',
+    path: '/admins',
+  },
 ];
 
-export const allRoutes = [...publicRoutes, ...authRoutes];
+export const adminRoutes = [
+  {
+    component: Staffs,
+    exact: true,
+    key: 'admins',
+    path: '/admins',
+  },
+];
+
+export const allRoutes = [
+  ...publicRoutes,
+  ...managerOwnerAdminRoutes,
+  ...ownerAdminRoutes,
+  ...adminRoutes,
+];
 
 export const routes = [
   ...publicRoutes.map(({ component, exact, key, path }) => (
     <Route component={component} exact={exact} key={key} path={path} />
   )),
-  ...authRoutes.map(({ component, exact, key, path }) => (
-    <AppAuthRoute component={component} exact={exact} key={key} path={path} />
+  ...managerOwnerAdminRoutes.map(({ component, exact, key, path }) => (
+    <AppAuthRoute
+      authRoles={['MANAGER', 'GYM_OWNER', 'SYSTEM_ADMIN']}
+      component={component}
+      exact={exact}
+      key={key}
+      path={path}
+    />
   )),
+  ...ownerAdminRoutes.map(({ component, exact, key, path }) => (
+    <AppAuthRoute
+      authRoles={['GYM_OWNER', 'SYSTEM_ADMIN']}
+      component={component}
+      exact={exact}
+      key={key}
+      path={path}
+    />
+  )),
+  ...adminRoutes.map(({ component, exact, key, path }) => (
+    <AppAuthRoute
+      authRoles={['SYSTEM_ADMIN']}
+      component={component}
+      exact={exact}
+      key={key}
+      path={path}
+    />
+  )),
+  <Route component={_403} key="403" path="/unauthorized" />,
   <Route component={_404} key="404" />,
 ];

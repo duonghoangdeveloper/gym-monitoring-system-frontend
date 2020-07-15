@@ -1,8 +1,10 @@
-import { Button, Form, Input, Select } from 'antd';
+import { Button, Form, Input } from 'antd';
+import { Typography } from 'antd';
+import { FieldsOnCorrectTypeRule } from 'graphql';
 import React, { useForm } from 'react';
 import { useSelector } from 'react-redux';
 
-import { USER_GENDERS } from '../common/constants';
+const { Text } = Typography;
 
 export const UsersCreateCustomerStep4View = ({
   customerData,
@@ -16,14 +18,6 @@ export const UsersCreateCustomerStep4View = ({
     <div>
       <Form
         form={form}
-        initialValues={{
-          displayName: customerData.step1.displayName,
-          email: customerData.step1.email,
-          gender: customerData.step1.gender,
-          password: customerData.step3.password,
-          phone: customerData.step1.phone,
-          username: customerData.step3.username,
-        }}
         layout="vertical"
         onFinish={onFinish}
         // onValuesChange={onValuesChange}
@@ -38,7 +32,7 @@ export const UsersCreateCustomerStep4View = ({
             },
           ]}
         >
-          <Input placeholder="Enter username" />
+          <Text mark>{customerData.step3.username}</Text>
         </Form.Item>
         <Form.Item
           label="Password"
@@ -50,7 +44,7 @@ export const UsersCreateCustomerStep4View = ({
             },
           ]}
         >
-          <Input.Password placeholder="Enter password" />
+          <Text mark>{customerData.step3.password}</Text>
         </Form.Item>
         <Form.Item
           label="Email"
@@ -63,13 +57,13 @@ export const UsersCreateCustomerStep4View = ({
             },
           ]}
         >
-          <Input placeholder="Enter email" />
+          <Text mark>{customerData.step1.email}</Text>
         </Form.Item>
         <Form.Item label="Name" name="displayName">
-          <Input placeholder="Enter name" />
+          <Text mark>{customerData.step1.phone}</Text>
         </Form.Item>
         <Form.Item label="Phone" name="phone">
-          <Input placeholder="Enter phone" />
+          <Text mark>{customerData.step1.phone}</Text>
         </Form.Item>
         <Form.Item
           label="Gender"
@@ -80,7 +74,7 @@ export const UsersCreateCustomerStep4View = ({
             },
           ]}
         >
-          <Input placeholder="Enter Gender" />
+          <Text mark>{customerData.step1.gender}</Text>
         </Form.Item>
       </Form>
 

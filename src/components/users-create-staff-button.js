@@ -7,9 +7,8 @@ import { useSelector } from 'react-redux';
 
 import { AUTH_ROLES, USER_GENDERS } from '../common/constants';
 
-export const UsersCreateStaffButton = ({ children, ...props }) => {
+export const UsersCreateStaffButton = ({ children, onSuccess, ...props }) => {
   const client = useApolloClient();
-  const me = useSelector(state => state?.user?.me);
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [disabled, setDisabled] = useState(false);
@@ -17,18 +16,7 @@ export const UsersCreateStaffButton = ({ children, ...props }) => {
     setVisible(true);
   };
 
-  // const onValuesChange = (_, allValues) => {
-  //   setDisabled(
-  //       allValues.username &&
-  //       allValues.phone &&
-  //       allValues.displayName &&
-  //       allValues.gender &&
-  //       allValues.email
-  //   );
-  // };
-
-  const indexRole = AUTH_ROLES.indexOf(me.role);
-  const roles = AUTH_ROLES.filter(r => AUTH_ROLES.indexOf(r) <= indexRole);
+  const { role } = props;
 
   const onFinish = async values => {
     const { confirmPassword, password } = values;
@@ -36,7 +24,7 @@ export const UsersCreateStaffButton = ({ children, ...props }) => {
       message.error('Password and confirm password do not match!');
     } else {
       try {
-        const { displayName, email, gender, phone, role, username } = values;
+        const { displayName, email, gender, phone, username } = values;
         await client.mutate({
           mutation: gql`
             mutation CreateUser(
@@ -78,10 +66,10 @@ export const UsersCreateStaffButton = ({ children, ...props }) => {
             username,
           },
         });
-        message.success('Create user succeed.');
+        message.success('Create user succeeded!');
         setVisible(false);
+        onSuccess();
       } catch (e) {
-        console.log(e.message);
         message.error(`${e.message.split(': ')[1]}!`);
       }
     }
@@ -180,23 +168,6 @@ export const UsersCreateStaffButton = ({ children, ...props }) => {
               {USER_GENDERS.map(gender => (
                 <Select.Option key={gender} value={gender}>
                   {gender}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label="Role"
-            name="role"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Select placeholder="Select role">
-              {roles.map(role => (
-                <Select.Option key={role} value={role}>
-                  {role}
                 </Select.Option>
               ))}
             </Select>

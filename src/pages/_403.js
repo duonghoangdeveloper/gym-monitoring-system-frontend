@@ -2,7 +2,7 @@ import { Button, Result } from 'antd';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 
-export const _404 = () => {
+export const _403 = () => {
   const history = useHistory();
 
   return (
@@ -10,7 +10,7 @@ export const _404 = () => {
       <Result
         extra={
           <>
-            <Button onClick={() => history.goBack()} type="primary">
+            <Button onClick={() => history.go(-2)} type="primary">
               Go Back
             </Button>
             <Button onClick={() => history.push('/')} type="primary">
@@ -18,9 +18,9 @@ export const _404 = () => {
             </Button>
           </>
         }
-        status="404"
-        subTitle="Sorry, the page you visited does not exist."
-        title="404"
+        status="403"
+        subTitle="Sorry, you are not authorized to access this page."
+        title="403"
       />
       ,
     </div>

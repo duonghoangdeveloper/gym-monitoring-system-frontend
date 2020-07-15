@@ -124,3 +124,6 @@ export const generateRolesToView = myRole => {
   const indexRole = AUTH_ROLES.indexOf(myRole);
   return AUTH_ROLES.filter(r => AUTH_ROLES.indexOf(r) <= indexRole);
 };
+
+export const hasError = obj =>
+  Object.keys(obj).some(key => Array.isArray(obj[key]) && obj[key].length > 0);

@@ -1,15 +1,6 @@
 import { SIGN_IN, SIGN_OUT, UPDATE_PROFILE, USERS } from '../types/user.types';
 
 const INITIAL_STATE = {
-  customer: {
-    _id: null,
-    displayName: null,
-    email: null,
-    gender: null,
-    phone: null,
-    username: null,
-  },
-
   me: {
     _id: null,
     displayName: null,

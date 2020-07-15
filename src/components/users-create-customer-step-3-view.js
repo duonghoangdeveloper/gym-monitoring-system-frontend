@@ -1,8 +1,7 @@
+import { useApolloClient } from '@apollo/react-hooks';
 import { Button, Form, Input, message, Select } from 'antd';
+import gql from 'graphql-tag';
 import React, { useForm } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { CREATE_CUSTOMER } from '../redux/types/user.types';
 
 export const UsersCreateCustomerStep3View = ({
   customerData,
@@ -10,20 +9,62 @@ export const UsersCreateCustomerStep3View = ({
   onPrev,
 }) => {
   const [form] = Form.useForm();
-  // const dispatch = useDispatch();
-  // const customer = useSelector(state => state?.user?.customer);
+  const client = useApolloClient();
   const onFinish = async values => {
     if (verifyPassword(values.password, values.confirmPassword)) {
-      // customer.username = values.username;
-      // customer.password = values.password;
-      // dispatch({
-      //   payload: customer,
-      //   type: CREATE_CUSTOMER,
-      // });
-      onNext(values);
+      const { password, username } = values;
+      try {
+        const result = await client.query({
+          query: gql`
+            query ValidateUser($data: ValidateUserInput) {
+              validateUser(data: $data) {
+                username
+                password
+              }
+            }
+          `,
+          variables: {
+            data: {
+              password,
+              username,
+            },
+          },
+        });
+        console.log(result);
+        if (
+          !Object.keys(result.data.validateUser).some(
+            key =>
+              Array.isArray(result.data.validateUser[key]) &&
+              result.data.validateUser[key].length > 0
+          )
+        ) {
+          onNext(values);
+        } else {
+          addErrorToInputField(result.data.validateUser);
+        }
+      } catch (e) {
+        message.error(`${e.message.split(': ')[1]}!`);
+        console.log(e.message);
+      }
     } else {
       message.error('Password and confirmed password do not match!');
     }
+  };
+  const addErrorToInputField = Errors => {
+    if (Errors.username.length > 0)
+      form.setFields([
+        {
+          errors: [Errors.username[0]],
+          name: 'username',
+        },
+      ]);
+    if (Errors.password.length > 0)
+      form.setFields([
+        {
+          errors: [Errors.password[0]],
+          name: 'password',
+        },
+      ]);
   };
 
   const handleOnNextClick = () => {
@@ -41,7 +82,6 @@ export const UsersCreateCustomerStep3View = ({
           username: customerData.step3?.username,
         }}
         layout="vertical"
-        // onValuesChange={onValuesChange}
         onFinish={onFinish}
       >
         <Form.Item

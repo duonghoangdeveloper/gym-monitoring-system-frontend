@@ -45,7 +45,7 @@ export const Profile = () => {
         type: UPDATE_PROFILE,
       });
 
-      message.success('Update profile succeed!');
+      message.success('Update profile succeeded!');
     } catch (e) {
       message.error(`${e.message.split(': ')[1]}!`);
     }

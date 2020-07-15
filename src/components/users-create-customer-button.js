@@ -14,15 +14,14 @@ import {
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
-import { USER_GENDERS } from '../common/constants';
 import { UsersCreateCustomerStep1View } from './users-create-customer-step-1-view';
 import { UsersCreateCustomerStep2View } from './users-create-customer-step-2-view';
 import { UsersCreateCustomerStep3View } from './users-create-customer-step-3-view';
 import { UsersCreateCustomerStep4View } from './users-create-customer-step-4-view';
 
-export const UsersCreateCustomerButton = () => {
+export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
   const [form] = Form.useForm();
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
   const [customerData, setCustomerData] = useState({
@@ -33,6 +32,45 @@ export const UsersCreateCustomerButton = () => {
 
   const handleClick = () => {
     setVisible(true);
+  };
+
+  const client = useApolloClient();
+  const createCustomer = async () => {
+    const { displayName, email, gender, phone } = customerData.step1;
+    const { password, username } = customerData.step3;
+    console.log('GOOO');
+    try {
+      await client.mutate({
+        mutation: gql`
+          mutation CreateUser($data: CreateUserInput!) {
+            createUser(data: $data) {
+              displayName
+              email
+              gender
+              phone
+              role
+              username
+            }
+          }
+        `,
+        variables: {
+          data: {
+            displayName,
+            email,
+            gender,
+            password,
+            phone,
+            role: 'CUSTOMER',
+            username,
+          },
+        },
+      });
+      message.success('Create customer succeeded!');
+      setVisible(false);
+      onSuccess();
+    } catch (e) {
+      message.error(`${e.message.split(': ')[1]}!`);
+    }
   };
 
   const generateStepView = step => {
@@ -89,8 +127,7 @@ export const UsersCreateCustomerButton = () => {
           <UsersCreateCustomerStep4View
             customerData={customerData}
             onDone={() => {
-              // Do something
-              // Combine 3 steps & submit data
+              createCustomer();
             }}
             onPrev={() => {
               setCurrentStep(2);
@@ -105,7 +142,7 @@ export const UsersCreateCustomerButton = () => {
 
   return (
     <>
-      <Button icon={<PlusOutlined />} onClick={handleClick}>
+      <Button icon={<PlusOutlined />} {...rest} onClick={handleClick}>
         Create Customer
       </Button>
       <Modal
@@ -114,7 +151,7 @@ export const UsersCreateCustomerButton = () => {
         maskClosable={false}
         onCancel={() => setVisible(false)}
         onOk={() => form.submit()}
-        title="Create User"
+        title="Create Customer"
         visible={visible}
         width="700px"
       >
