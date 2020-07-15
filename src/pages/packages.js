@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { getColumnSearchProps } from '../common/antd';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { PackagesCreatePackageButton } from '../components/packages-create-package-button';
+import { PackagesDeletePackageButton } from '../components/packages-delete-package-button';
 import { PackagesUpdatePackageButton } from '../components/packages-update-package-button';
 
 export const Packages = () => {
@@ -16,10 +17,9 @@ export const Packages = () => {
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [sort, setSort] = useState('');
-  const [search, setSearch] = useState({
-    name: '',
-  });
+  const [search, setSearch] = useState({ name: '' });
   const [searchAll, setSearchAll] = useState('');
+  const [_delete, setDelete] = useState(false);
 
   const fetchPackagesData = async () => {
     setLoading(true);
@@ -61,7 +61,7 @@ export const Packages = () => {
 
   useEffect(() => {
     fetchPackagesData();
-  }, [skip, sort, search]);
+  }, [skip, sort, search, _delete]);
 
   const generateOnSearch = dataIndex => value => {
     setSearch({
@@ -135,30 +135,18 @@ export const Packages = () => {
     {
       key: 'delete',
       render: (text, _package) => (
-        <PackagesUpdatePackageButton
+        <PackagesDeletePackageButton
           _package={_package}
-          onSuccess={updatedPackage =>
-            setPackages(
-              packages.map(currentPackage =>
-                currentPackage._id === updatedPackage._id
-                  ? {
-                      ...currentPackage,
-                      ...updatedPackage,
-                    }
-                  : currentPackage
+          onSuccess={deletedPackage =>
+            setPackages(packages =>
+              packages.filter(
+                currentPackage => currentPackage.key !== deletedPackage._id
               )
             )
           }
         />
       ),
-      title: 'Update',
-    },
-    {
-      key: 'active',
-      render: _package => (
-        <Switch _package={_package} unCheckedChildren={<CloseOutlined />} />
-      ),
-      title: 'Active',
+      title: 'Delete',
     },
   ];
 
