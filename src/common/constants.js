@@ -33,4 +33,4 @@ export const USER_GENDERS = ['MALE', 'FEMALE', 'OTHER'];
 
 export const DATE_FORMAT = 'DD/MM/YYYY';
 
-export const DELAY = 100;
+export const DELAY = 200;
