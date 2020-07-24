@@ -7,6 +7,7 @@ import { USER_GENDERS } from '../common/constants';
 
 export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
   const client = useApolloClient();
+  // add loading
   const onFinish = async values => {
     const { displayName, email, gender, phone } = values;
     try {
@@ -42,8 +43,8 @@ export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
         addErrorToInputField(result.data.validateUser);
       }
     } catch (e) {
-      message.error(`${e.message.split(': ')[1]}!`);
       console.log(e.message);
+      message.error(`${e.message.split(': ')[1]}!`);
     }
   };
 
@@ -53,32 +54,33 @@ export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
 
   const [form] = Form.useForm();
 
-  const addErrorToInputField = Errors => {
-    if (Errors.email.length > 0)
+  // need to optimize
+  const addErrorToInputField = errors => {
+    if (errors.email?.length > 0)
       form.setFields([
         {
-          errors: [Errors.email[0]],
+          errors: [errors.email[0]],
           name: 'email',
         },
       ]);
-    if (Errors.displayName.length > 0)
+    if (errors.displayName?.length > 0)
       form.setFields([
         {
-          errors: [Errors.displayName[0]],
+          errors: [errors.displayName[0]],
           name: 'displayName',
         },
       ]);
-    if (Errors.phone.length > 0)
+    if (errors.phone?.length > 0)
       form.setFields([
         {
-          errors: [Errors.phone[0]],
+          errors: [errors.phone[0]],
           name: 'phone',
         },
       ]);
-    if (Errors.gender.length > 0)
+    if (errors.gender?.length > 0)
       form.setFields([
         {
-          errors: [Errors.gender[0]],
+          errors: [errors.gender[0]],
           name: 'gender',
         },
       ]);
@@ -96,17 +98,7 @@ export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
         layout="vertical"
         onFinish={onFinish}
       >
-        <Form.Item
-          label="Email"
-          name="email"
-          rules={[
-            {
-              message: 'Email is invalid',
-              required: true,
-              type: 'email',
-            },
-          ]}
-        >
+        <Form.Item label="Email" name="email">
           <Input placeholder="Enter email" />
         </Form.Item>
         <Form.Item label="Name" name="displayName">
@@ -115,15 +107,7 @@ export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
         <Form.Item label="Phone" name="phone">
           <Input placeholder="Enter phone" />
         </Form.Item>
-        <Form.Item
-          label="Gender"
-          name="gender"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
+        <Form.Item label="Gender" name="gender">
           <Select placeholder="Select gender">
             {USER_GENDERS.map(gender => (
               <Select.Option key={gender} value={gender}>

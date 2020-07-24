@@ -20,17 +20,19 @@ import { SET_OPEN_KEYS, TOGGLE_COLLAPSED } from '../redux/types/common.types';
 import { SIGN_OUT } from '../redux/types/user.types';
 
 export const LayoutDashboard = ({ children }) => {
-  const me = useSelector(state => state?.user?.me);
-  const rolesToView = generateRolesToView(me.role);
   const location = useLocation();
+  const client = useApolloClient();
+  const dispatch = useDispatch();
+  const history = useHistory();
+
   const username = useSelector(state => state.user?.me?.username);
+  const role = useSelector(state => state.user?.me?.role);
+  const rolesToView = generateRolesToView(role);
+
   const collapsed = useSelector(
     state => state.common?.sider?.collapsed ?? false
   );
   const openKeys = useSelector(state => state.common?.sider?.openKeys ?? []);
-  const client = useApolloClient();
-  const dispatch = useDispatch();
-  const history = useHistory();
 
   const handleSignOutClick = async () => {
     try {
@@ -98,12 +100,18 @@ export const LayoutDashboard = ({ children }) => {
       title: 'User Management',
     },
     {
+      hidden: !(
+        rolesToView.includes('GYM_OWNER') || rolesToView.includes('GYM_OWNER')
+      ),
       icon: <FileSearchOutlined />,
       key: 'feedbacks',
       onClick: () => history.push('/feedbacks'),
       title: 'Feedbacks',
     },
     {
+      hidden: !(
+        rolesToView.includes('GYM_OWNER') || rolesToView.includes('GYM_OWNER')
+      ),
       icon: <FolderAddOutlined />,
       key: 'packages',
       onClick: () => history.push('/packages'),
@@ -174,13 +182,15 @@ export const LayoutDashboard = ({ children }) => {
                 )}
               </Menu.SubMenu>
             ) : (
-              <Menu.Item
-                icon={submenu.icon}
-                key={submenu.key}
-                onClick={submenu.onClick}
-              >
-                {submenu.title}
-              </Menu.Item>
+              !submenu.hidden && (
+                <Menu.Item
+                  icon={submenu.icon}
+                  key={submenu.key}
+                  onClick={submenu.onClick}
+                >
+                  {submenu.title}
+                </Menu.Item>
+              )
             )
           )}
         </Menu>

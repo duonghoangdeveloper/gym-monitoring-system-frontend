@@ -62,7 +62,6 @@ export const Staffs = () => {
           },
         },
       });
-      console.log(result?.data?.users?.data);
       const fetchedStaffsData = result?.data?.users?.data ?? [];
       const fetchedStaffsTotal = result?.data?.users?.total ?? 0;
       setStaffs(
@@ -92,8 +91,6 @@ export const Staffs = () => {
   };
 
   const handleTableChange = (pagination, filters, sorter) => {
-    // console.log(pagination, filters, sorter);
-
     // Pagination
     setSkip((pagination.current - 1) * PAGE_SIZE);
 

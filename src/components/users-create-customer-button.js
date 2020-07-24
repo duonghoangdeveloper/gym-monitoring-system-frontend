@@ -20,9 +20,10 @@ import { UsersCreateCustomerStep3View } from './users-create-customer-step-3-vie
 import { UsersCreateCustomerStep4View } from './users-create-customer-step-4-view';
 
 export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
+  const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [currentStep, setCurrentStep] = useState(3);
 
   const [customerData, setCustomerData] = useState({
     step1: null,
@@ -33,13 +34,11 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
   const handleClick = () => {
     setVisible(true);
   };
-
-  const client = useApolloClient();
   const createCustomer = async () => {
-    const { displayName, email, gender, phone } = customerData.step1;
-    const { password, username } = customerData.step3;
-    console.log('GOOO');
     try {
+      const { displayName, email, gender, phone } = customerData.step1;
+      const { password, username } = customerData.step3;
+
       await client.mutate({
         mutation: gql`
           mutation CreateUser($data: CreateUserInput!) {
@@ -69,7 +68,8 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
       setVisible(false);
       onSuccess();
     } catch (e) {
-      message.error(`${e.message.split(': ')[1]}!`);
+      const msg = e.message.split(': ')[1] ?? e.message;
+      message.error(`${msg}!`);
     }
   };
 
@@ -94,12 +94,9 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
             customerData={customerData}
             onNext={() => {
               setCurrentStep(2);
-              // Do something
-              // setStep2Data
             }}
             onPrev={() => {
               setCurrentStep(0);
-              // Do something
             }}
           />
         );
@@ -113,12 +110,9 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
                 step3: values,
               });
               setCurrentStep(3);
-              // Do something
-              // setStep3Data
             }}
             onPrev={() => {
               setCurrentStep(1);
-              // Do something
             }}
           />
         );
@@ -131,7 +125,6 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
             }}
             onPrev={() => {
               setCurrentStep(2);
-              // Do something
             }}
           />
         );
@@ -146,14 +139,14 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
         Create Customer
       </Button>
       <Modal
-        className="select-none w-screen"
+        className="select-none"
         footer={null}
         maskClosable={false}
         onCancel={() => setVisible(false)}
         onOk={() => form.submit()}
         title="Create Customer"
         visible={visible}
-        width="700px"
+        width={640}
       >
         <div>
           <Steps current={currentStep}>

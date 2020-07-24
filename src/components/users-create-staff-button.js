@@ -94,12 +94,7 @@ export const UsersCreateStaffButton = ({ children, onSuccess, ...props }) => {
         title={children}
         visible={visible}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          // onValuesChange={onValuesChange}
-        >
+        <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
             label="Username"
             name="username"

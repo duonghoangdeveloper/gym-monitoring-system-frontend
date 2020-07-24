@@ -1,7 +1,7 @@
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Form, Input, message, Select } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import gql from 'graphql-tag';
-import React, { useForm } from 'react';
+import React from 'react';
 
 export const UsersCreateCustomerStep3View = ({
   customerData,
@@ -11,8 +11,8 @@ export const UsersCreateCustomerStep3View = ({
   const [form] = Form.useForm();
   const client = useApolloClient();
   const onFinish = async values => {
-    if (verifyPassword(values.password, values.confirmPassword)) {
-      const { password, username } = values;
+    const { confirmPassword, password, username } = values;
+    if (password === confirmPassword) {
       try {
         const result = await client.query({
           query: gql`
@@ -30,7 +30,6 @@ export const UsersCreateCustomerStep3View = ({
             },
           },
         });
-        console.log(result);
         if (
           !Object.keys(result.data.validateUser).some(
             key =>
@@ -44,24 +43,23 @@ export const UsersCreateCustomerStep3View = ({
         }
       } catch (e) {
         message.error(`${e.message.split(': ')[1]}!`);
-        console.log(e.message);
       }
     } else {
       message.error('Password and confirmed password do not match!');
     }
   };
-  const addErrorToInputField = Errors => {
-    if (Errors.username.length > 0)
+  const addErrorToInputField = errors => {
+    if (errors.username.length > 0)
       form.setFields([
         {
-          errors: [Errors.username[0]],
+          errors: [errors.username[0]],
           name: 'username',
         },
       ]);
-    if (Errors.password.length > 0)
+    if (errors.password.length > 0)
       form.setFields([
         {
-          errors: [Errors.password[0]],
+          errors: [errors.password[0]],
           name: 'password',
         },
       ]);
@@ -131,5 +129,3 @@ export const UsersCreateCustomerStep3View = ({
     </div>
   );
 };
-const verifyPassword = (password, comfirmPassword) =>
-  password === comfirmPassword;

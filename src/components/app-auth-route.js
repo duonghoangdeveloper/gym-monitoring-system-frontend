@@ -35,7 +35,7 @@ export const AppAuthRoute = ({
   if (!authRoles.includes(role)) {
     setTimeout(() =>
       history.push({
-        pathname: '/unauthorized',
+        pathname: '/forbidden',
       })
     );
 
