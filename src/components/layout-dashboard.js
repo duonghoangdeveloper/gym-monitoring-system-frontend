@@ -14,20 +14,25 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { TOKEN_KEY } from '../common/constants';
+import { AUTH_ROLES, TOKEN_KEY } from '../common/constants';
+import { generateRolesToView } from '../common/services';
 import { SET_OPEN_KEYS, TOGGLE_COLLAPSED } from '../redux/types/common.types';
 import { SIGN_OUT } from '../redux/types/user.types';
 
 export const LayoutDashboard = ({ children }) => {
   const location = useLocation();
+  const client = useApolloClient();
+  const dispatch = useDispatch();
+  const history = useHistory();
+
   const username = useSelector(state => state.user?.me?.username);
+  const role = useSelector(state => state.user?.me?.role);
+  const rolesToView = generateRolesToView(role);
+
   const collapsed = useSelector(
     state => state.common?.sider?.collapsed ?? false
   );
   const openKeys = useSelector(state => state.common?.sider?.openKeys ?? []);
-  const client = useApolloClient();
-  const dispatch = useDispatch();
-  const history = useHistory();
 
   const handleSignOutClick = async () => {
     try {
@@ -55,16 +60,39 @@ export const LayoutDashboard = ({ children }) => {
     {
       children: [
         {
-          icon: <UserOutlined />,
-          key: 'staffs',
-          onClick: () => history.push('/staffs'),
-          title: 'Staff',
-        },
-        {
+          hidden: !rolesToView.includes('CUSTOMER'),
           icon: <UserOutlined />,
           key: 'customers',
           onClick: () => history.push('/customers'),
-          title: 'Customer',
+          title: 'Customers',
+        },
+        {
+          hidden: !rolesToView.includes('TRAINER'),
+          icon: <UserOutlined />,
+          key: 'trainers',
+          onClick: () => history.push('/trainers'),
+          title: 'Trainers',
+        },
+        {
+          hidden: !rolesToView.includes('MANAGER'),
+          icon: <UserOutlined />,
+          key: 'managers',
+          onClick: () => history.push('/managers'),
+          title: 'Managers',
+        },
+        {
+          hidden: !rolesToView.includes('GYM_OWNER'),
+          icon: <UserOutlined />,
+          key: 'owners',
+          onClick: () => history.push('/owners'),
+          title: 'Gym owners',
+        },
+        {
+          hidden: !rolesToView.includes('SYSTEM_ADMIN'),
+          icon: <UserOutlined />,
+          key: 'admins',
+          onClick: () => history.push('/admins'),
+          title: 'Admins',
         },
       ],
       icon: <UserOutlined />,
@@ -72,12 +100,14 @@ export const LayoutDashboard = ({ children }) => {
       title: 'User Management',
     },
     {
+      hidden: role !== 'GYM_OWNER' || role !== 'SYSTEM_ADMIN',
       icon: <FileSearchOutlined />,
       key: 'feedbacks',
       onClick: () => history.push('/feedbacks'),
       title: 'Feedbacks',
     },
     {
+      hidden: role !== 'GYM_OWNER' || role !== 'SYSTEM_ADMIN',
       icon: <FolderAddOutlined />,
       key: 'packages',
       onClick: () => history.push('/packages'),
@@ -134,24 +164,29 @@ export const LayoutDashboard = ({ children }) => {
                 key={submenu.key}
                 title={submenu.title}
               >
-                {submenu.children.map(menu => (
-                  <Menu.Item
-                    icon={menu.icon}
-                    key={menu.key}
-                    onClick={menu.onClick}
-                  >
-                    {menu.title}
-                  </Menu.Item>
-                ))}
+                {submenu.children.map(
+                  menu =>
+                    !menu.hidden && (
+                      <Menu.Item
+                        icon={menu.icon}
+                        key={menu.key}
+                        onClick={menu.onClick}
+                      >
+                        {menu.title}
+                      </Menu.Item>
+                    )
+                )}
               </Menu.SubMenu>
             ) : (
-              <Menu.Item
-                icon={submenu.icon}
-                key={submenu.key}
-                onClick={submenu.onClick}
-              >
-                {submenu.title}
-              </Menu.Item>
+              !submenu.hidden && (
+                <Menu.Item
+                  icon={submenu.icon}
+                  key={submenu.key}
+                  onClick={submenu.onClick}
+                >
+                  {submenu.title}
+                </Menu.Item>
+              )
             )
           )}
         </Menu>
@@ -202,10 +237,16 @@ export const LayoutDashboard = ({ children }) => {
 };
 
 const getSelectedKey = pathname =>
-  pathname === '/' || /^\/staffs/.test(pathname)
-    ? 'staffs'
-    : /^\/customers/.test(pathname)
+  pathname === '/' || /^\/customers/.test(pathname)
     ? 'customers'
+    : /^\/trainers/.test(pathname)
+    ? 'trainers'
+    : /^\/managers/.test(pathname)
+    ? 'managers'
+    : /^\/owners/.test(pathname)
+    ? 'owners'
+    : /^\/admins/.test(pathname)
+    ? 'admins'
     : /^\/feedbacks/.test(pathname)
     ? 'feedbacks'
     : /^\/packages/.test(pathname)
