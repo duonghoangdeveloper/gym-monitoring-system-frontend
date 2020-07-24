@@ -1,7 +1,9 @@
 import { useApolloClient } from '@apollo/react-hooks';
 import { Button, Form, Input, message } from 'antd';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, { useState } from 'react';
+
+import { hasError } from '../common/services';
 
 export const UsersCreateCustomerStep3View = ({
   customerData,
@@ -9,11 +11,13 @@ export const UsersCreateCustomerStep3View = ({
   onPrev,
 }) => {
   const [form] = Form.useForm();
+  const [loading, setLoading] = useState(false);
   const client = useApolloClient();
   const onFinish = async values => {
     const { confirmPassword, password, username } = values;
     if (password === confirmPassword) {
       try {
+        setLoading(true);
         const result = await client.query({
           query: gql`
             query ValidateUser($data: ValidateUserInput) {
@@ -30,39 +34,31 @@ export const UsersCreateCustomerStep3View = ({
             },
           },
         });
-        if (
-          !Object.keys(result.data.validateUser).some(
-            key =>
-              Array.isArray(result.data.validateUser[key]) &&
-              result.data.validateUser[key].length > 0
-          )
-        ) {
+
+        if (!hasError(result.data.validateUser)) {
           onNext(values);
         } else {
-          addErrorToInputField(result.data.validateUser);
+          addErrorsToForm(result.data.validateUser);
+          setLoading(false);
         }
       } catch (e) {
         message.error(`${e.message.split(': ')[1]}!`);
+        setLoading(false);
       }
     } else {
       message.error('Password and confirmed password do not match!');
     }
   };
-  const addErrorToInputField = errors => {
-    if (errors.username.length > 0)
-      form.setFields([
-        {
-          errors: [errors.username[0]],
-          name: 'username',
-        },
-      ]);
-    if (errors.password.length > 0)
-      form.setFields([
-        {
-          errors: [errors.password[0]],
-          name: 'password',
-        },
-      ]);
+  const addErrorsToForm = errors => {
+    Object.keys(errors).forEach(key => {
+      if (Array.isArray(errors[key]) && errors[key]?.length > 0)
+        form.setFields([
+          {
+            errors: [errors[key][0]],
+            name: key,
+          },
+        ]);
+    });
   };
 
   const handleOnNextClick = () => {
@@ -122,7 +118,12 @@ export const UsersCreateCustomerStep3View = ({
 
       <div className="flex justify-end">
         <Button onClick={onPrev}>Previous</Button>
-        <Button className="ml-2" onClick={handleOnNextClick} type="primary">
+        <Button
+          className="ml-2"
+          loading={loading}
+          onClick={handleOnNextClick}
+          type="primary"
+        >
           Next
         </Button>
       </div>

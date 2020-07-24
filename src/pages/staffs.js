@@ -9,15 +9,9 @@ import { useLocation } from 'react-router-dom';
 import { getColumnSearchProps } from '../common/antd';
 import { PAGE_SIZE } from '../common/constants';
 import { LayoutDashboard } from '../components/layout-dashboard';
+import { TrainerOnlineStatusSwitch } from '../components/trainer-online-status-switch';
 import { UsersCreateStaffButton } from '../components/users-create-staff-button';
-import { UserEnableDisbleSwitch } from '../components/users-enable-disable-switch';
 import { UsersUpdateStaffButton } from '../components/users-update-staff-button';
-
-const INIT_SEARCH = {
-  displayName: '',
-  email: '',
-  username: '',
-};
 
 export const Staffs = () => {
   const { pathname } = useLocation();
@@ -141,12 +135,12 @@ export const Staffs = () => {
       title: 'Email',
       ...getColumnSearchProps('email', generateOnSearch('email'), search.email),
     },
-    ...(pageRole === 'MANAGER' || pageRole === 'TRAINER'
+    ...(pageRole === 'TRAINER'
       ? [
           {
             key: 'online',
             render: user => (
-              <UserEnableDisbleSwitch
+              <TrainerOnlineStatusSwitch
                 status={user.isOnline}
                 type="online"
                 user={user}
@@ -267,4 +261,10 @@ const generatePageRole = pathname => {
     default:
       return null;
   }
+};
+
+const INIT_SEARCH = {
+  displayName: '',
+  email: '',
+  username: '',
 };

@@ -1,16 +1,18 @@
 import { useApolloClient } from '@apollo/react-hooks';
 import { Button, Form, Input, message, Select } from 'antd';
 import gql from 'graphql-tag';
-import React from 'react';
+import React, { useState } from 'react';
 
 import { USER_GENDERS } from '../common/constants';
+import { hasError } from '../common/services';
 
 export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
   const client = useApolloClient();
-  // add loading
+  const [loading, setLoading] = useState(false);
   const onFinish = async values => {
     const { displayName, email, gender, phone } = values;
     try {
+      setLoading(true);
       const result = await client.query({
         query: gql`
           query ValidateUser($data: ValidateUserInput) {
@@ -31,19 +33,15 @@ export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
           },
         },
       });
-      if (
-        !Object.keys(result.data.validateUser).some(
-          key =>
-            Array.isArray(result.data.validateUser[key]) &&
-            result.data.validateUser[key].length > 0
-        )
-      ) {
+
+      if (!hasError(result.data.validateUser)) {
         onNext(values);
       } else {
-        addErrorToInputField(result.data.validateUser);
+        addErrorsToForm(result.data.validateUser);
+        setLoading(false);
       }
     } catch (e) {
-      console.log(e.message);
+      setLoading(false);
       message.error(`${e.message.split(': ')[1]}!`);
     }
   };
@@ -55,36 +53,18 @@ export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
   const [form] = Form.useForm();
 
   // need to optimize
-  const addErrorToInputField = errors => {
-    if (errors.email?.length > 0)
-      form.setFields([
-        {
-          errors: [errors.email[0]],
-          name: 'email',
-        },
-      ]);
-    if (errors.displayName?.length > 0)
-      form.setFields([
-        {
-          errors: [errors.displayName[0]],
-          name: 'displayName',
-        },
-      ]);
-    if (errors.phone?.length > 0)
-      form.setFields([
-        {
-          errors: [errors.phone[0]],
-          name: 'phone',
-        },
-      ]);
-    if (errors.gender?.length > 0)
-      form.setFields([
-        {
-          errors: [errors.gender[0]],
-          name: 'gender',
-        },
-      ]);
+  const addErrorsToForm = errors => {
+    Object.keys(errors).forEach(key => {
+      if (Array.isArray(errors[key]) && errors[key]?.length > 0)
+        form.setFields([
+          {
+            errors: [errors[key][0]],
+            name: key,
+          },
+        ]);
+    });
   };
+
   return (
     <div>
       <Form
@@ -118,7 +98,7 @@ export const UsersCreateCustomerStep1View = ({ customerData, onNext }) => {
         </Form.Item>
       </Form>
       <div className="flex justify-end">
-        <Button onClick={handleOnNextClick} type="primary">
+        <Button loading={loading} onClick={handleOnNextClick} type="primary">
           Next
         </Button>
       </div>

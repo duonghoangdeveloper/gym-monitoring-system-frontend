@@ -6,26 +6,27 @@ import Webcam from 'react-webcam';
 const MODEL_URL = 'models';
 
 Promise.all([faceapi.nets.mtcnn.loadFromUri(MODEL_URL)])
-  .then(console.log('Models loaded'))
-  .catch(e => console.log(e));
+  .then(console.log('Load models succeeded!'))
+  .catch(e => console.log(`Load models failed!`));
 
 export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
   const webcamRef = useRef(null);
   const [images, setImages] = useState([]);
+  const [initLoading, setInitLoading] = useState(true);
 
-  const [devices, setDevices] = useState([]);
+  const [device, setDevice] = useState([]);
 
-  const handleDevices = React.useCallback(
+  const detectDevice = React.useCallback(
     mediaDevices =>
-      setDevices(
-        mediaDevices.filter(({ kind }) => kind === 'videoinput').slice(1)
+      setDevice(
+        mediaDevices.filter(({ kind }) => kind === 'videoinput').slice(-1)[0]
       ),
-    [setDevices]
+    []
   );
 
   useEffect(() => {
-    navigator.mediaDevices.enumerateDevices().then(handleDevices);
-  }, [handleDevices]);
+    navigator.mediaDevices.enumerateDevices().then(detectDevice);
+  }, []);
 
   const capture = useCallback(async () => {
     const imageSrc = webcamRef.current.getScreenshot();
@@ -36,17 +37,15 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
 
   return (
     <div>
-      {devices.map((device, key) => (
-        <div className="flex items-center rounded" key={key}>
-          <Webcam
-            audio={false}
-            ref={webcamRef}
-            screenshotFormat="image/jpeg"
-            style={{ height: 444, width: 592 }}
-            videoConstraints={{ deviceId: device.deviceId }}
-          />
-        </div>
-      ))}
+      <div className="flex items-center">
+        <Webcam
+          audio={false}
+          ref={webcamRef}
+          screenshotFormat="image/jpeg"
+          style={{ borderRadius: 2, height: 444, width: 592 }}
+          videoConstraints={{ deviceId: device.deviceId }}
+        />
+      </div>
       <div className="flex items-center flex-row flex-wrap">
         {images
           ? images.map((image, i) => (

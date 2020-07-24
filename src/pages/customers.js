@@ -12,11 +12,6 @@ import { UsersUpdateStaffButton } from '../components/users-update-staff-button'
 
 export const Customers = () => {
   const client = useApolloClient();
-  const INIT_SEARCH = {
-    displayName: '',
-    email: '',
-    username: '',
-  };
 
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState([]);
@@ -191,4 +186,10 @@ export const Customers = () => {
       </div>
     </LayoutDashboard>
   );
+};
+
+const INIT_SEARCH = {
+  displayName: '',
+  email: '',
+  username: '',
 };

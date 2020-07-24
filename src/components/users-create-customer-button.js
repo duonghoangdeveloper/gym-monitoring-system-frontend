@@ -1,18 +1,8 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import {
-  Button,
-  Form,
-  Input,
-  message,
-  Modal,
-  Popover,
-  Select,
-  Step,
-  Steps,
-} from 'antd';
+import { Button, Form, message, Modal, Steps } from 'antd';
 import gql from 'graphql-tag';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import { UsersCreateCustomerStep1View } from './users-create-customer-step-1-view';
 import { UsersCreateCustomerStep2View } from './users-create-customer-step-2-view';
@@ -23,12 +13,12 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
   const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
-  const [currentStep, setCurrentStep] = useState(3);
+  const [currentStep, setCurrentStep] = useState(0);
 
   const [customerData, setCustomerData] = useState({
-    step1: null,
-    step2: null,
-    step3: null,
+    step1: {},
+    step2: {},
+    step3: {},
   });
 
   const handleClick = () => {

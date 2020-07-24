@@ -100,18 +100,14 @@ export const LayoutDashboard = ({ children }) => {
       title: 'User Management',
     },
     {
-      hidden: !(
-        rolesToView.includes('GYM_OWNER') || rolesToView.includes('GYM_OWNER')
-      ),
+      hidden: role !== 'GYM_OWNER' || role !== 'SYSTEM_ADMIN',
       icon: <FileSearchOutlined />,
       key: 'feedbacks',
       onClick: () => history.push('/feedbacks'),
       title: 'Feedbacks',
     },
     {
-      hidden: !(
-        rolesToView.includes('GYM_OWNER') || rolesToView.includes('GYM_OWNER')
-      ),
+      hidden: role !== 'GYM_OWNER' || role !== 'SYSTEM_ADMIN',
       icon: <FolderAddOutlined />,
       key: 'packages',
       onClick: () => history.push('/packages'),

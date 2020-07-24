@@ -16,7 +16,6 @@
     "apollo-upload-client": "^13.0.0",
     "arraybuffer-to-string": "^1.0.2",
     "autoprefixer": "^9.8.0",
-    "cropperjs": "^1.5.7",
     "eslint-plugin-sort-exports": "^0.2.0",
     "face-api.js": "^0.22.2",
     "graphql": "^15.1.0",
