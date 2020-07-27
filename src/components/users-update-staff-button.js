@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 
 import { USER_GENDERS } from '../common/constants';
 
-export const UsersUpdateStaffButton = ({ user }) => {
+export const UsersUpdateStaffButton = ({ onSuccess, user }) => {
   const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
@@ -15,18 +15,6 @@ export const UsersUpdateStaffButton = ({ user }) => {
   const handleClick = () => {
     setVisible(true);
   };
-
-  useEffect(() => {
-    if (visible) {
-      // Do something
-    } else {
-      try {
-        setTimeout(() => form.resetFields(), 500);
-      } catch (_) {
-        // Do nothing
-      }
-    }
-  }, [visible]);
 
   const onFinish = async values => {
     if (!values.displayName) {
@@ -77,8 +65,9 @@ export const UsersUpdateStaffButton = ({ user }) => {
           username,
         },
       });
-      message.success('Update profile succeed!');
+      message.success('Update profile succeeded!');
       setVisible(false);
+      onSuccess();
     } catch (e) {
       message.error(`${e.message.split(': ')[1]}!`);
     }
@@ -106,7 +95,10 @@ export const UsersUpdateStaffButton = ({ user }) => {
         okButtonProps={{
           disabled,
         }}
-        onCancel={() => setVisible(false)}
+        onCancel={() => {
+          setTimeout(() => form.resetFields(), 500);
+          setVisible(false);
+        }}
         onOk={() => form.submit()}
         title="Update user"
         visible={visible}

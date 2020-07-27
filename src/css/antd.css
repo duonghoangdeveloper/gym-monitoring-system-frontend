@@ -31,3 +31,7 @@
 .ant-menu-submenu-title .anticon {
   transform: translateY(-3px);
 }
+
+.ant-steps-item-icon .anticon {
+  transform: translateY(-3px);
+}

@@ -1,7 +1,8 @@
+/* eslint-disable no-bitwise */
 // import { SIGN_OUT } from '../apollo/mutation';
 import gql from 'graphql-tag';
 
-import { TOKEN_KEY } from './constants';
+import { AUTH_ROLES, TOKEN_KEY } from './constants';
 
 export const clearAuthMemory = async () => {
   // Clear user token
@@ -106,9 +107,10 @@ export const encode = input => {
     enc3 = ((chr2 & 15) << 2) | (chr3 >> 6);
     enc4 = chr3 & 63;
 
-    if (isNaN(chr2)) {
-      enc3 = enc4 = 64;
-    } else if (isNaN(chr3)) {
+    if (Number.isNaN(chr2)) {
+      enc3 = 64;
+      enc4 = 64;
+    } else if (Number.isNaN(chr3)) {
       enc4 = 64;
     }
     output +=
@@ -118,4 +120,34 @@ export const encode = input => {
       keyStr.charAt(enc4);
   }
   return output;
+};
+
+export const generateRolesToView = myRole => {
+  const indexRole = AUTH_ROLES.indexOf(myRole);
+  return AUTH_ROLES.filter(r => AUTH_ROLES.indexOf(r) <= indexRole);
+};
+
+export const hasError = obj =>
+  Object.keys(obj).some(key => Array.isArray(obj[key]) && obj[key].length > 0);
+
+export const base64toBlob = dataURI => {
+  // Convert base64/URLEncoded data component to raw binary data held in a string
+  let byteString;
+  if (dataURI.split(',')[0].indexOf('base64') >= 0)
+    byteString = atob(dataURI.split(',')[1]);
+  else byteString = unescape(dataURI.split(',')[1]);
+
+  // Separate out the mime component
+  const mimeString = dataURI
+    .split(',')[0]
+    .split(':')[1]
+    .split(';')[0];
+
+  // Write the bytes of the string to a typed array
+  const ia = new Uint8Array(byteString.length);
+  for (let i = 0; i < byteString.length; i++) {
+    ia[i] = byteString.charCodeAt(i);
+  }
+
+  return new Blob([ia], { type: mimeString });
 };

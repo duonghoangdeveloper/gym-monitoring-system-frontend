@@ -7,9 +7,8 @@ import { useSelector } from 'react-redux';
 
 import { AUTH_ROLES, USER_GENDERS } from '../common/constants';
 
-export const UsersCreateStaffButton = () => {
+export const UsersCreateStaffButton = ({ children, onSuccess, ...props }) => {
   const client = useApolloClient();
-  const me = useSelector(state => state?.user?.me);
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [disabled, setDisabled] = useState(false);
@@ -17,29 +16,7 @@ export const UsersCreateStaffButton = () => {
     setVisible(true);
   };
 
-  useEffect(() => {
-    if (visible) {
-      // Do something
-    } else {
-      try {
-        setTimeout(() => form.resetFields(), 500);
-      } catch (_) {
-        // Do nothing
-      }
-    }
-  }, [visible]);
-  // const onValuesChange = (_, allValues) => {
-  //   setDisabled(
-  //       allValues.username &&
-  //       allValues.phone &&
-  //       allValues.displayName &&
-  //       allValues.gender &&
-  //       allValues.email
-  //   );
-  // };
-
-  const indexRole = AUTH_ROLES.indexOf(me.role);
-  const roles = AUTH_ROLES.filter(r => AUTH_ROLES.indexOf(r) <= indexRole);
+  const { role } = props;
 
   const onFinish = async values => {
     const { confirmPassword, password } = values;
@@ -47,7 +24,7 @@ export const UsersCreateStaffButton = () => {
       message.error('Password and confirm password do not match!');
     } else {
       try {
-        const { displayName, email, gender, phone, role, username } = values;
+        const { displayName, email, gender, phone, username } = values;
         await client.mutate({
           mutation: gql`
             mutation CreateUser(
@@ -89,10 +66,10 @@ export const UsersCreateStaffButton = () => {
             username,
           },
         });
-        message.success('Create user succeed.');
+        message.success('Create user succeeded!');
         setVisible(false);
+        onSuccess();
       } catch (e) {
-        console.log(e.message);
         message.error(`${e.message.split(': ')[1]}!`);
       }
     }
@@ -100,8 +77,8 @@ export const UsersCreateStaffButton = () => {
 
   return (
     <>
-      <Button icon={<PlusOutlined />} onClick={handleClick}>
-        Create Customer
+      <Button icon={<PlusOutlined />} {...props} onClick={handleClick}>
+        {children}
       </Button>
       <Modal
         className="select-none"
@@ -109,17 +86,15 @@ export const UsersCreateStaffButton = () => {
         okButtonProps={{
           disabled,
         }}
-        onCancel={() => setVisible(false)}
+        onCancel={() => {
+          setTimeout(() => form.resetFields(), 500);
+          setVisible(false);
+        }}
         onOk={() => form.submit()}
-        title="Create User"
+        title={children}
         visible={visible}
       >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          // onValuesChange={onValuesChange}
-        >
+        <Form form={form} layout="vertical" onFinish={onFinish}>
           <Form.Item
             label="Username"
             name="username"
@@ -188,23 +163,6 @@ export const UsersCreateStaffButton = () => {
               {USER_GENDERS.map(gender => (
                 <Select.Option key={gender} value={gender}>
                   {gender}
-                </Select.Option>
-              ))}
-            </Select>
-          </Form.Item>
-          <Form.Item
-            label="Role"
-            name="role"
-            rules={[
-              {
-                required: true,
-              },
-            ]}
-          >
-            <Select placeholder="Select role">
-              {roles.map(role => (
-                <Select.Option key={role} value={role}>
-                  {role}
                 </Select.Option>
               ))}
             </Select>
