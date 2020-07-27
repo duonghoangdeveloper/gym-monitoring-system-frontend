@@ -19,3 +19,7 @@ code {
 .ant-modal-close .anticon {
   transform: translateY(-3px);
 }
+
+* {
+  outline: none !important;
+}

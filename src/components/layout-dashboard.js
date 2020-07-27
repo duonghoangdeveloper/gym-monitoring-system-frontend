@@ -1,4 +1,5 @@
 import {
+  BarChartOutlined,
   DownOutlined,
   FileSearchOutlined,
   FolderAddOutlined,
@@ -52,6 +53,12 @@ export const LayoutDashboard = ({ children }) => {
   };
 
   const SIDER_MENU = [
+    {
+      icon: <BarChartOutlined />,
+      key: 'dashboard',
+      onClick: () => history.push('/dashboard'),
+      title: 'Dashboard',
+    },
     {
       children: [
         {
@@ -202,7 +209,9 @@ export const LayoutDashboard = ({ children }) => {
 };
 
 const getSelectedKey = pathname =>
-  pathname === '/' || /^\/staffs/.test(pathname)
+  pathname === '/' || /^\/dashboard/.test(pathname)
+    ? 'dashboard'
+    : /^\/staffs/.test(pathname)
     ? 'staffs'
     : /^\/customers/.test(pathname)
     ? 'customers'

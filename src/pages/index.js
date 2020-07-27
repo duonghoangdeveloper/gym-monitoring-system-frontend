@@ -5,12 +5,12 @@ import { AppAuthRoute } from '../components/app-auth-route';
 import { _404 } from './_404';
 import { Cameras } from './cameras';
 import { Customers } from './customers';
+import { Dashboard } from './dashboard';
 import { Feedbacks } from './feedbacks';
 import { Packages } from './packages';
 import { Profile } from './profile';
 import { SignIn } from './sign-in';
 import { Staffs } from './staffs';
-
 // Everyone can access
 const publicRoutes = [
   {
@@ -23,7 +23,7 @@ const publicRoutes = [
 
 const authRoutes = [
   {
-    component: Staffs,
+    component: Dashboard,
     exact: true,
     key: 'home',
     path: '/',
@@ -63,6 +63,12 @@ const authRoutes = [
     exact: true,
     key: 'packages',
     path: '/packages',
+  },
+  {
+    component: Dashboard,
+    exact: true,
+    key: 'dashboard',
+    path: '/dashboard',
   },
 ];
 

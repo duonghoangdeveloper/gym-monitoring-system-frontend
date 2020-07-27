@@ -57,6 +57,12 @@ const authRoutes = [
     key: 'packages',
     path: '/packages',
   },
+  {
+    component: pages.Dasboard,
+    exact: true,
+    key: 'dashboard',
+    path: '/dashboard',
+  },
 ];
 
 export const allRoutes = [...publicRoutes, ...authRoutes];
