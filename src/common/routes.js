@@ -4,6 +4,7 @@ import { Route } from 'react-router-dom';
 import { AppAuthRoute } from '../components/app-auth-route';
 import { _403 } from '../pages/_403';
 import { _404 } from '../pages/_404';
+import { Bin } from '../pages/bin';
 import { Cameras } from '../pages/cameras';
 import { Customers } from '../pages/customers';
 import { Feedbacks } from '../pages/feedbacks';
@@ -96,6 +97,12 @@ export const adminRoutes = [
     exact: true,
     key: 'admins',
     path: '/admins',
+  },
+  {
+    component: Bin,
+    exact: true,
+    key: 'bin',
+    path: '/bin',
   },
 ];
 

@@ -8,6 +8,7 @@ import { getColumnSearchProps } from '../common/antd';
 import { PAGE_SIZE } from '../common/constants';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { UsersCreateCustomerButton } from '../components/users-create-customer-button';
+import { UsersRemoveUserButton } from '../components/users-remove-user-button';
 import { UsersUpdateStaffButton } from '../components/users-update-staff-button';
 
 export const Customers = () => {
@@ -136,14 +137,11 @@ export const Customers = () => {
       title: 'Update',
     },
     {
-      key: 'delete',
+      key: 'remove',
       render: (text, user) => (
-        <a>
-          <DeleteOutlined />
-          &nbsp;&nbsp;Delete
-        </a>
+        <UsersRemoveUserButton onSuccess={fetchedCustomers} user={user} />
       ),
-      title: 'Delete',
+      title: 'Remove',
     },
   ];
 

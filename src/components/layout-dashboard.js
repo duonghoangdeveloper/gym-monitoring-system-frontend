@@ -1,4 +1,5 @@
 import {
+  DeleteOutlined,
   DownOutlined,
   FileSearchOutlined,
   FolderAddOutlined,
@@ -100,14 +101,14 @@ export const LayoutDashboard = ({ children }) => {
       title: 'User Management',
     },
     {
-      hidden: role !== 'GYM_OWNER' || role !== 'SYSTEM_ADMIN',
+      hidden: role !== 'GYM_OWNER' && role !== 'SYSTEM_ADMIN',
       icon: <FileSearchOutlined />,
       key: 'feedbacks',
       onClick: () => history.push('/feedbacks'),
       title: 'Feedbacks',
     },
     {
-      hidden: role !== 'GYM_OWNER' || role !== 'SYSTEM_ADMIN',
+      hidden: role !== 'GYM_OWNER' && role !== 'SYSTEM_ADMIN',
       icon: <FolderAddOutlined />,
       key: 'packages',
       onClick: () => history.push('/packages'),
@@ -118,6 +119,13 @@ export const LayoutDashboard = ({ children }) => {
       key: 'cameras',
       onClick: () => history.push('/cameras'),
       title: 'Cameras',
+    },
+    {
+      hidden: role !== 'SYSTEM_ADMIN',
+      icon: <DeleteOutlined />,
+      key: 'bin',
+      onClick: () => history.push('/bin'),
+      title: 'Bin',
     },
   ];
 
@@ -253,4 +261,6 @@ const getSelectedKey = pathname =>
     ? 'packages'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
+    : /^\/bin/.test(pathname)
+    ? 'bin'
     : null;

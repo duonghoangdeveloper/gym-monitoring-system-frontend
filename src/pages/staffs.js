@@ -160,14 +160,14 @@ export const Staffs = () => {
     ...(role === 'GYM_OWNER' || role === 'SYSTEM_ADMIN'
       ? [
           {
-            key: 'delete',
+            key: 'remove',
             render: () => (
               <a>
                 <DeleteOutlined />
-                &nbsp;&nbsp;Delete
+                &nbsp;&nbsp;Remove
               </a>
             ),
-            title: 'Delete',
+            title: 'Remove',
           },
         ]
       : []),
