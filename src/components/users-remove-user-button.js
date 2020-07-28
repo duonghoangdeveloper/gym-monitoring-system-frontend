@@ -1,8 +1,8 @@
 import { DeleteOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { message, Modal, Popconfirm } from 'antd';
+import { message, Popconfirm } from 'antd';
 import gql from 'graphql-tag';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 
 export const UsersRemoveUserButton = ({ onSuccess, user }) => {
   const client = useApolloClient();
@@ -13,8 +13,8 @@ export const UsersRemoveUserButton = ({ onSuccess, user }) => {
     try {
       await client.mutate({
         mutation: gql`
-          mutation RemoveUserToBin($_id: ID!) {
-            removeUserToBin(_id: $_id) {
+          mutation DeactivateUser($_id: ID!) {
+            deactivateUser(_id: $_id) {
               _id
             }
           }
@@ -24,6 +24,9 @@ export const UsersRemoveUserButton = ({ onSuccess, user }) => {
         },
       });
       message.info('Remove success');
+      if (onSuccess instanceof Function) {
+        onSuccess();
+      }
     } catch (e) {
       message.error(`${e.message.split(': ')[1]}!`);
     }

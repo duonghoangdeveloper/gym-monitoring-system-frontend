@@ -1,8 +1,21 @@
-import { applyMiddleware, createStore } from 'redux';
+import { applyMiddleware, combineReducers, createStore } from 'redux';
 import { composeWithDevTools } from 'redux-devtools-extension';
-import { persistStore } from 'redux-persist';
+import { persistReducer, persistStore } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
 
-import { rootReducer } from './reducers';
+import { commonReducer } from './common/common.reducer';
+import { userReducer } from './user/user.reducer';
+
+const userPersistConfig = {
+  key: 'user',
+  storage,
+  whitelist: ['me'],
+};
+
+export const rootReducer = combineReducers({
+  common: commonReducer,
+  user: persistReducer(userPersistConfig, userReducer),
+});
 
 const composeEnhancer = composeWithDevTools({});
 

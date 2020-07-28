@@ -17,8 +17,8 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 import { AUTH_ROLES, TOKEN_KEY } from '../common/constants';
 import { generateRolesToView } from '../common/services';
-import { SET_OPEN_KEYS, TOGGLE_COLLAPSED } from '../redux/types/common.types';
-import { SIGN_OUT } from '../redux/types/user.types';
+import { SET_OPEN_KEYS, TOGGLE_COLLAPSED } from '../redux/common/common.types';
+import { SIGN_OUT } from '../redux/user/user.types';
 
 export const LayoutDashboard = ({ children }) => {
   const location = useLocation();

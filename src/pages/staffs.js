@@ -1,4 +1,3 @@
-import { DeleteOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Input, Table } from 'antd';
 import gql from 'graphql-tag';
@@ -11,6 +10,7 @@ import { PAGE_SIZE } from '../common/constants';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { TrainerOnlineStatusSwitch } from '../components/trainer-online-status-switch';
 import { UsersCreateStaffButton } from '../components/users-create-staff-button';
+import { UsersRemoveUserButton } from '../components/users-remove-user-button';
 import { UsersUpdateStaffButton } from '../components/users-update-staff-button';
 
 export const Staffs = () => {
@@ -49,6 +49,7 @@ export const Staffs = () => {
         variables: {
           query: {
             filter: { role: pageRole },
+            isActive: true,
             limit: PAGE_SIZE,
             search,
             skip,
@@ -161,11 +162,8 @@ export const Staffs = () => {
       ? [
           {
             key: 'remove',
-            render: () => (
-              <a>
-                <DeleteOutlined />
-                &nbsp;&nbsp;Remove
-              </a>
+            render: (text, user) => (
+              <UsersRemoveUserButton onSuccess={fetchUsersData} user={user} />
             ),
             title: 'Remove',
           },

@@ -1,4 +1,3 @@
-import { DeleteOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Input, Table } from 'antd';
 import gql from 'graphql-tag';
@@ -43,6 +42,7 @@ export const Customers = () => {
         variables: {
           query: {
             filter: { role: 'CUSTOMER' },
+            isActive: true,
             limit: PAGE_SIZE,
             search,
             skip,
