@@ -1,7 +1,7 @@
 import {
   CloseOutlined,
-  DeleteOutlined,
   PauseOutlined,
+  ReloadOutlined,
   SettingOutlined,
   ThunderboltOutlined,
 } from '@ant-design/icons';
@@ -39,12 +39,12 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
   );
   const webcamRef = useRef(null);
   const detectingRef = useRef(false);
-  const [faces, setFaces] = useState(Array(9).fill([]));
-  // const [error, setError] = useState(false);
+  const [faces, setFaces] = useState(INIT_FACES);
+  const [error, setError] = useState(false);
   const [device, setDevice] = useState();
   const [streamLoaded, setStreamLoaded] = useState(false);
-  const [captureTested, setCaptureTested] = useState(false);
   const [detecting, setDetecting] = useState(false);
+  const [captureTested, setCaptureTested] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [faceFound, setFaceFound] = useState(false);
 
@@ -60,10 +60,17 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
 
   useEffect(() => {
     if (device && streamLoaded && !captureTested && webcamRef.current) {
+      // setTimeout(() => {
+      //   setCaptureTested(true);
+      //   if (autoDetect) {
+      //     setDetecting(true);
+      //   }
+      // }, 100);
+
       setTimeout(async () => {
         try {
           const imageSrc = webcamRef.current.getScreenshot();
-          await detectFaceFromBase64(imageSrc);
+          await hasFace(imageSrc);
         } catch (_) {
           // Do nothing
         }
@@ -71,7 +78,7 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
         if (autoDetect) {
           setDetecting(true);
         }
-      }, 200);
+      }, 1000);
     }
   }, [device, streamLoaded, captureTested, webcamRef.current]);
 
@@ -80,9 +87,10 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
       if (faceFound) {
         message.success({
           content: 'Face detected!',
-          duration: 1.5,
+          duration: 1,
           key: MESSAGE_KEY,
         });
+        // message.destroy()
       } else {
         message.loading({
           content: 'Face detecting...',
@@ -92,49 +100,63 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
       }
 
       const detectFace = throttle(100, true, async () => {
-        // detectingRef.current = true;
+        detectingRef.current = true;
         try {
-          const imageSrc = webcamRef.current.getScreenshot();
-          const detectionResult = await detectFaceFromBase64(imageSrc);
-          if (detectionResult) {
-            const { image, landmarks } = detectionResult;
-
+          const base64Screenshot = webcamRef.current.getScreenshot();
+          if (await hasFace(base64Screenshot)) {
             if (!faceFound) {
               setFaceFound(true);
             }
-            const blob = base64toBlob(image);
             const formData = new FormData(document.forms[0]);
-            formData.append('image', blob);
-            formData.append('landmarks', JSON.stringify(landmarks));
-            const result = await axios.post(
-              `${URI_PYTHON}/face-pose-estimation/`,
+            formData.append('image', base64toBlob(base64Screenshot));
+            const response = await axios.post(
+              `${URI_PYTHON}/register-face/`,
               formData,
               {
                 headers: {
                   'Content-Type': 'multipart/form-data',
                 },
+                responseType: 'arraybuffer',
               }
             );
-            const { pitch, roll, yaw } = result.data;
-            const faceClass = classifyFacePose(yaw, pitch, roll);
-
-            if (faceClass > -1) {
+            if (response.headers['content-type'] === 'image/png') {
+              const base64Face = `data:image/png;base64,${Buffer.from(
+                response.data,
+                'binary'
+              ).toString('base64')}`;
+              const { faceClass /* yaw, pitch, roll */ } = JSON.parse(
+                response.headers.payload
+              );
               if (faces[faceClass].length < 5) {
                 setFaces(currentFaces =>
-                  generateNewFaces(currentFaces, faceClass, image)
+                  generateNewFaces(currentFaces, faceClass, base64Face)
                 );
               }
             }
+            // console.log(
+            //   Buffer.from(response.data, 'binary').toString('base64')
+            // );
+            // const { pitch, roll, yaw } = result.data;
+            // const faceClass = classifyFacePose(yaw, pitch, roll);
+
+            // if (faceClass > -1) {
+            //   if (faces[faceClass].length < 5) {
+            //     setFaces(currentFaces =>
+            //       generateNewFaces(currentFaces, faceClass, image)
+            //     );
+            //   }
+            // }
           }
         } catch (_) {
+          console.log(_);
           // Do nothing
         }
-        // detectingRef.current = false;
+        detectingRef.current = false;
       });
       const intervalId = setInterval(() => {
-        // if (!detectingRef.current) {
-        detectFace();
-        // }
+        if (!detectingRef.current) {
+          detectFace();
+        }
       }, 100);
       return () => clearInterval(intervalId);
     }
@@ -159,9 +181,20 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
       );
     }
 
-    // if (error) {
-    //   return 'Error!';
-    // }
+    if (error) {
+      return (
+        <div className="flex flex-col space-y-2">
+          <span>Can not access the webcam! Try 3 steps below to fix the problem:</span>
+          <a href="images/fix-webcam-tutorial-1.png" target="_blank">
+            Allow this website to access the webcam.
+          </a>
+          <a href="images/fix-webcam-tutorial-2.png" target="_blank">
+            Make sure the webcam is not used elsewhere.
+          </a>
+          <span>Simply click "Previous" button below, then click "Next" to reload this view.</span>
+        </div>
+      );
+    }
 
     if (!device) {
       return (
@@ -183,7 +216,7 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
           detecting={detecting}
           loading={!streamLoaded || !captureTested}
           onUserMedia={() => setStreamLoaded(true)}
-          onUserMediaError={e => console.log(e)}
+          onUserMediaError={() => setError(true)}
           ref={webcamRef}
           videoConstraints={{ deviceId: device.deviceId }}
         />
@@ -191,12 +224,18 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
     );
   };
 
-  const faceClassDoneCount = countFaceClassDone(faces)
+  const faceClassDoneCount = countFaceClassDone(faces);
 
   return (
     <div>
       {generateWebcamView()}
-      <Progress percent={Math.round(faceClassDoneCount > 0 ? 100 / 9 * faceClassDoneCount : 0)} />
+      <div className="mt-2">
+        <Progress
+          percent={Math.round(
+            faceClassDoneCount > 0 ? (100 / 9) * faceClassDoneCount : 0
+          )}
+        />
+      </div>
       <div className="flex justify-between space-x-2 mt-2">
         {faces.map((sameAngleFaces, i) => (
           <div className="flex-1" key={i}>
@@ -207,7 +246,11 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
               }}
             >
               <div className="absolute inset-0">
-                <FaceView sameAngleFaces={sameAngleFaces} setFaces={setFaces} faceClass={i}/>
+                <FaceView
+                  faceClass={i}
+                  sameAngleFaces={sameAngleFaces}
+                  setFaces={setFaces}
+                />
               </div>
             </div>
           </div>
@@ -253,7 +296,7 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
                   value={facesLayout}
                 >
                   {FACES_LAYOUT.map(layout => (
-                    <Radio.Button value={layout}>
+                    <Radio.Button key={layout} value={layout}>
                       {layout.charAt(0).toUpperCase() +
                         layout.slice(1).toLowerCase()}
                     </Radio.Button>
@@ -271,6 +314,13 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
         </Popover>
         <Button
           className="ml-2"
+          icon={<ReloadOutlined />}
+          onClick={() => setFaces(INIT_FACES)}
+        >
+          Reset result
+        </Button>
+        <Button
+          className="ml-2"
           icon={detecting ? <PauseOutlined /> : <ThunderboltOutlined />}
           loading={!streamLoaded || !captureTested}
           onClick={handleDetectionToggle}
@@ -280,7 +330,12 @@ export const UsersCreateCustomerStep2View = ({ onNext, onPrev }) => {
         <Button className="ml-2" onClick={onPrev}>
           Previous
         </Button>
-        <Button className="ml-2" onClick={onNext} type="primary" disabled={faceClassDoneCount < 9}>
+        <Button
+          className="ml-2"
+          disabled={faceClassDoneCount < 9}
+          onClick={onNext}
+          type="primary"
+        >
           Next
         </Button>
       </div>
@@ -310,58 +365,21 @@ const WebcamWrapper = forwardRef(({ detecting, loading, ...rest }, ref) => (
   </div>
 ));
 
-const detectFaceFromBase64 = async base64 => {
+const hasFace = async base64 => {
   try {
     const inputImg = new Image();
     inputImg.src = base64;
 
-    const { detection, landmarks } = await faceapi
-      .detectSingleFace(
-        inputImg,
-        new faceapi.MtcnnOptions({
-          minFaceSize: 100,
-        })
-      )
-      .withFaceLandmarks();
+    // const { detection } =
 
-    if (detection && landmarks) {
-      const { _height, _width, _x, _y } = detection._box;
-
-      const canvas = document.createElement('canvas');
-      canvas.width = _width;
-      canvas.height = _height;
-      const ctx = canvas.getContext('2d');
-
-      ctx.drawImage(inputImg, _x, _y, _width, _height, 0, 0, _width, _height);
-
-      return {
-        image: canvas.toDataURL('image/jpeg'),
-        landmarks: landmarks._positions.map(point => [
-          point._x - _x,
-          point._y - _y,
-        ]),
-      };
-    }
-
-    // if (detections.length === 0) {
-    //   return null;
-    // }
-
-    // const nearestFaceDetection = detections.reduce((prev, current) =>
-    //   prev._width > current._width ? prev : current
-    // );
-
-    // const { _height, _width, _x, _y } = nearestFaceDetection._box;
-    // const canvas = document.createElement('canvas');
-    // canvas.width = _width;
-    // canvas.height = _height;
-    // const ctx = canvas.getContext('2d');
-
-    // ctx.drawImage(inputImg, _x, _y, _width, _height, 0, 0, _width, _height);
-
-    // return canvas.toDataURL('image/jpeg');
+    return !!(await faceapi.detectSingleFace(
+      inputImg,
+      new faceapi.MtcnnOptions({
+        minFaceSize: 128,
+      })
+    ));
   } catch (e) {
-    // console.log('x', e);
+    return false;
   }
 };
 
@@ -371,101 +389,13 @@ const MESSAGE_KEY = 'face-found';
 
 Promise.all([
   faceapi.nets.mtcnn.loadFromUri(MODEL_URL),
-  faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
-  faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
-  faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
-  faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+  // faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL),
+  // faceapi.nets.ssdMobilenetv1.loadFromUri(MODEL_URL),
+  // faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+  // faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
 ])
   .then(console.log('Load models succeeded!'))
   .catch(() => console.log(`Load models failed!`));
-
-const classifyFacePose = (yaw, pitch, roll) => {
-  if (
-    typeof yaw === 'number' &&
-    typeof pitch === 'number' &&
-    typeof roll === 'number'
-  ) {
-    return -1;
-  }
-
-  if (
-    checkApproximation(yaw, -20) &&
-    checkApproximation(pitch, -20) &&
-    checkApproximation(roll, 0)
-  ) {
-    return 0;
-  }
-
-  if (
-    checkApproximation(yaw, 0) &&
-    checkApproximation(pitch, -20) &&
-    checkApproximation(roll, 0)
-  ) {
-    return 1;
-  }
-
-  if (
-    checkApproximation(yaw, 20) &&
-    checkApproximation(pitch, -20) &&
-    checkApproximation(roll, 0)
-  ) {
-    return 2;
-  }
-
-  if (
-    checkApproximation(yaw, -30) &&
-    checkApproximation(pitch, 0) &&
-    checkApproximation(roll, 0)
-  ) {
-    return 3;
-  }
-
-  if (
-    checkApproximation(yaw, 0) &&
-    checkApproximation(pitch, 0) &&
-    checkApproximation(roll, 0)
-  ) {
-    return 4;
-  }
-
-  if (
-    checkApproximation(yaw, 30) &&
-    checkApproximation(pitch, 0) &&
-    checkApproximation(roll, 0)
-  ) {
-    return 5;
-  }
-
-  if (
-    checkApproximation(yaw, -20) &&
-    checkApproximation(pitch, 20) &&
-    checkApproximation(roll, 0)
-  ) {
-    return 6;
-  }
-
-  if (
-    checkApproximation(yaw, 0) &&
-    checkApproximation(pitch, 20) &&
-    checkApproximation(roll, 0)
-  ) {
-    return 7;
-  }
-
-  if (
-    checkApproximation(yaw, 20) &&
-    checkApproximation(pitch, 20) &&
-    checkApproximation(roll, 0)
-  ) {
-    return 8;
-  }
-
-  return -1;
-};
-
-const ERROR = 6;
-const checkApproximation = (number1, number2) =>
-  Math.abs(number1 - number2) < ERROR;
 
 const generateNewFaces = (currentFaces, faceClass, newFace) => {
   if (currentFaces[faceClass].length < 4) {
@@ -498,7 +428,7 @@ const generateNewFaces = (currentFaces, faceClass, newFace) => {
   return currentFaces;
 };
 
-const FaceView = ({ sameAngleFaces, setFaces, faceClass }) => {
+const FaceView = ({ faceClass, sameAngleFaces, setFaces }) => {
   const [visible, setVisible] = useState(false);
 
   return (
@@ -522,30 +452,48 @@ const FaceView = ({ sameAngleFaces, setFaces, faceClass }) => {
                       paddingTop: '100%',
                     }}
                   >
-                    <div className="absolute inset-0">
+                    <div
+                      className="absolute inset-0"
+                      onClick={() => {
+                        setFaces(currentFaces =>
+                          currentFaces.map((_sameAngleFaces, _faceClass) =>
+                            _faceClass === faceClass && i > 0
+                              ? _sameAngleFaces.map((_face, j) =>
+                                j === 1
+                                  ? face
+                                  : j === i + 1
+                                    ? _sameAngleFaces[1]
+                                    : _face
+                              )
+                              : _sameAngleFaces
+                          )
+                        );
+                        setVisible(false);
+                      }}
+                    >
                       <img
                         alt="face"
                         className="rounded cursor-pointer"
                         src={face}
-                        onClick={() => {
-                          setFaces(currentFaces => currentFaces.map((_sameAngleFaces, _faceClass) => _faceClass === faceClass && i > 0 ? _sameAngleFaces.map(
-                          (_face, j) => j === 1 ? face : j === i + 1 ? _sameAngleFaces[1] : _face
-                        ) : _sameAngleFaces))
-                          setVisible(false)
-                        }}
                       />
 
                       <div className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 z-10">
                         <Button
                           danger
                           icon={<CloseOutlined />}
+                          onClick={() => {
+                            setFaces(currentFaces =>
+                              currentFaces.map((_sameAngleFaces, _faceClass) =>
+                                _faceClass === faceClass
+                                  ? _sameAngleFaces.filter(
+                                    (_, j) => j !== i + 1
+                                  )
+                                  : _sameAngleFaces
+                              )
+                            );
+                          }}
                           size="small"
                           type="primary"
-                          onClick={() => {
-                            setFaces(currentFaces => currentFaces.map((_sameAngleFaces, _faceClass) => _faceClass === faceClass ? _sameAngleFaces.filter(
-                            (_, j) => j !== i + 1
-                          ) : _sameAngleFaces))
-                          }}
                         />
                       </div>
                     </div>
@@ -562,20 +510,6 @@ const FaceView = ({ sameAngleFaces, setFaces, faceClass }) => {
           <img alt="face" className="rounded" src={sameAngleFaces[1]} />
         </Popover>
       )}
-      {/* {sameAngleFaces.length === 1 && (
-        <div className="absolute top-0 right-0 transform -translate-y-1/2 z-10">
-          <Button
-                          danger
-                          icon={<CloseOutlined />}
-                          size="small"
-                          type="primary"
-                          onClick={() => {
-                            setFaces((currentFaces, faceClass) => currentFaces.map(face))
-                          ) : _sameAngleFaces))
-                          }}
-                        />
-        </div>
-      )} */}
       {sameAngleFaces.length > 2 && (
         <div className="absolute top-0 right-0 transform translate-x-1/2 -translate-y-1/2 z-10">
           <Badge
@@ -588,4 +522,7 @@ const FaceView = ({ sameAngleFaces, setFaces, faceClass }) => {
   );
 };
 
-const countFaceClassDone = faces => faces.filter(sameAngleFaces => sameAngleFaces.length > 0).length
+const countFaceClassDone = faces =>
+  faces.filter(sameAngleFaces => sameAngleFaces.length > 0).length;
+
+const INIT_FACES = Array(9).fill([]);
