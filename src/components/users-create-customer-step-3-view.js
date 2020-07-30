@@ -1,3 +1,4 @@
+import { SyncOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Button, Form, Input, message } from 'antd';
 import gql from 'graphql-tag';
@@ -14,39 +15,35 @@ export const UsersCreateCustomerStep3View = ({
   const [loading, setLoading] = useState(false);
   const client = useApolloClient();
   const onFinish = async values => {
-    const { confirmPassword, password, username } = values;
-    if (password === confirmPassword) {
-      try {
-        setLoading(true);
-        const result = await client.query({
-          query: gql`
-            query ValidateUser($data: ValidateUserInput) {
-              validateUser(data: $data) {
-                username
-                password
-              }
+    const { password, username } = values;
+    try {
+      setLoading(true);
+      const result = await client.query({
+        query: gql`
+          query ValidateUser($data: ValidateUserInput) {
+            validateUser(data: $data) {
+              username
+              password
             }
-          `,
-          variables: {
-            data: {
-              password,
-              username,
-            },
+          }
+        `,
+        variables: {
+          data: {
+            password,
+            username,
           },
-        });
+        },
+      });
 
-        if (!hasError(result.data.validateUser)) {
-          onNext(values);
-        } else {
-          addErrorsToForm(result.data.validateUser);
-          setLoading(false);
-        }
-      } catch (e) {
-        message.error(`${e.message.split(': ')[1]}!`);
+      if (!hasError(result.data.validateUser)) {
+        onNext(values);
+      } else {
+        addErrorsToForm(result.data.validateUser);
         setLoading(false);
       }
-    } else {
-      message.error('Password and confirmed password do not match!');
+    } catch (e) {
+      message.error(`${e.message.split(': ')[1]}!`);
+      setLoading(false);
     }
   };
   const addErrorsToForm = errors => {
@@ -69,11 +66,8 @@ export const UsersCreateCustomerStep3View = ({
       <Form
         form={form}
         initialValues={{
-          confirmPassword: customerData.step3?.password
-            ? customerData.step3?.password
-            : null,
-          password: customerData.step3?.password,
-          username: customerData.step3?.username,
+          password: customerData.step3?.password || generateRandomString(10),
+          username: customerData.step3?.username || generateRandomString(10),
         }}
         layout="vertical"
         onFinish={onFinish}
@@ -88,7 +82,20 @@ export const UsersCreateCustomerStep3View = ({
             },
           ]}
         >
-          <Input placeholder="Enter username" />
+          <Input
+            addonAfter={
+              <SyncOutlined
+                onClick={() => {
+                  form.setFieldsValue({
+                    ...form.getFieldsValue(),
+                    username: generateRandomString(10),
+                  });
+                }}
+              />
+            }
+            allowClear
+            placeholder="Enter username"
+          />
         </Form.Item>
         <Form.Item
           label="Password"
@@ -100,24 +107,27 @@ export const UsersCreateCustomerStep3View = ({
             },
           ]}
         >
-          <Input.Password placeholder="Enter password" />
-        </Form.Item>
-        <Form.Item
-          label="Confirm Password"
-          name="confirmPassword"
-          rules={[
-            {
-              message: 'Please input confirm password!',
-              required: true,
-            },
-          ]}
-        >
-          <Input.Password placeholder="Enter password" />
+          <Input
+            addonAfter={
+              <SyncOutlined
+                onClick={() => {
+                  form.setFieldsValue({
+                    ...form.getFieldsValue(),
+                    password: generateRandomString(10),
+                  });
+                }}
+              />
+            }
+            allowClear
+            placeholder="Enter password"
+          />
         </Form.Item>
       </Form>
 
       <div className="flex justify-end">
-        <Button onClick={onPrev}>Previous</Button>
+        <Button className="ml-2" onClick={onPrev}>
+          Previous
+        </Button>
         <Button
           className="ml-2"
           loading={loading}
@@ -129,4 +139,12 @@ export const UsersCreateCustomerStep3View = ({
       </div>
     </div>
   );
+};
+
+const generateRandomString = length => {
+  const characters = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  return new Array(length)
+    .fill()
+    .map(() => characters.charAt(Math.floor(Math.random() * characters.length)))
+    .join('');
 };

@@ -177,7 +177,9 @@ export const Staffs = () => {
     <LayoutDashboard>
       <div className="bg-white shadow p-6 rounded-sm">
         <div className="flex items-center">
-          <h1 className="text-3xl flex-1">{generatePageTitle(pathname)}</h1>
+          <h1 className="text-3xl flex-1 mr-4">
+            {generatePageTitle(pathname)}
+          </h1>
           <Input.Search
             allowClear
             onChange={e => setSearchAll(e.target.value)}

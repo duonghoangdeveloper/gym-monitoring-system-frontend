@@ -25,14 +25,15 @@ export const LayoutDashboard = ({ children }) => {
   const dispatch = useDispatch();
   const history = useHistory();
 
-  const username = useSelector(state => state.user ?.me ?.username);
-  const role = useSelector(state => state.user ?.me ?.role);
+  const username = useSelector(state => state.user?.me?.username);
+  const role = useSelector(state => state.user?.me?.role);
+  const avatarUrl = useSelector(state => state.user.me.avatar?.url);
   const rolesToView = generateRolesToView(role);
 
   const collapsed = useSelector(
-    state => state.common ?.sider ?.collapsed ?? false
+    state => state.common?.sider?.collapsed ?? false
   );
-  const openKeys = useSelector(state => state.common ?.sider ?.openKeys ?? []);
+  const openKeys = useSelector(state => state.common?.sider?.openKeys ?? []);
 
   const handleSignOutClick = async () => {
     try {
@@ -178,16 +179,16 @@ export const LayoutDashboard = ({ children }) => {
                 )}
               </Menu.SubMenu>
             ) : (
-                !submenu.hidden && (
-                  <Menu.Item
-                    icon={submenu.icon}
-                    key={submenu.key}
-                    onClick={submenu.onClick}
-                  >
-                    {submenu.title}
-                  </Menu.Item>
-                )
+              !submenu.hidden && (
+                <Menu.Item
+                  icon={submenu.icon}
+                  key={submenu.key}
+                  onClick={submenu.onClick}
+                >
+                  {submenu.title}
+                </Menu.Item>
               )
+            )
           )}
         </Menu>
       </Layout.Sider>
@@ -219,7 +220,12 @@ export const LayoutDashboard = ({ children }) => {
           >
             <div className="flex items-center cursor-pointer">
               <div className="mx-2">
-                <Avatar icon={<UserOutlined />} shape="square" />
+                <Avatar
+                  className="border border-solid border-gray-300"
+                  icon={<UserOutlined />}
+                  shape="square"
+                  src={avatarUrl}
+                />
               </div>
               <DownOutlined
                 className="text-xs"
@@ -240,17 +246,17 @@ const getSelectedKey = pathname =>
   pathname === '/' || /^\/customers/.test(pathname)
     ? 'customers'
     : /^\/trainers/.test(pathname)
-      ? 'trainers'
-      : /^\/managers/.test(pathname)
-        ? 'managers'
-        : /^\/owners/.test(pathname)
-          ? 'owners'
-          : /^\/admins/.test(pathname)
-            ? 'admins'
-            : /^\/feedbacks/.test(pathname)
-              ? 'feedbacks'
-              : /^\/packages/.test(pathname)
-                ? 'packages'
-                : /^\/cameras/.test(pathname)
-                  ? 'cameras'
-                  : null;
+    ? 'trainers'
+    : /^\/managers/.test(pathname)
+    ? 'managers'
+    : /^\/owners/.test(pathname)
+    ? 'owners'
+    : /^\/admins/.test(pathname)
+    ? 'admins'
+    : /^\/feedbacks/.test(pathname)
+    ? 'feedbacks'
+    : /^\/packages/.test(pathname)
+    ? 'packages'
+    : /^\/cameras/.test(pathname)
+    ? 'cameras'
+    : null;

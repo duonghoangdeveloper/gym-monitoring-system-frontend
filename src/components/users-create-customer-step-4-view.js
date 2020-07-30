@@ -46,7 +46,7 @@ export const UsersCreateCustomerStep4View = ({
       <div className="flex justify-end">
         <Button onClick={onPrev}>Previous</Button>
         <Button className="ml-2" onClick={onDone} type="primary">
-          Done
+          Create customer
         </Button>
       </div>
     </div>

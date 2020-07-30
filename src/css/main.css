@@ -15,7 +15,3 @@ code {
 #root {
   min-height: 100vh;
 }
-
-.ant-modal-close .anticon {
-  transform: translateY(-3px);
-}

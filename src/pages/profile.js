@@ -7,14 +7,13 @@ import { useHistory } from 'react-router-dom';
 
 import { formItemLayout, tailFormItemLayout } from '../common/antd';
 import { LayoutDashboard } from '../components/layout-dashboard';
+import { ProfileAvatar } from '../components/profile-avatar';
 import { UpdatePasswordButton } from '../components/profile-update-password-button';
 import { UPDATE_PROFILE } from '../redux/user/user.types';
 
 export const Profile = () => {
   const client = useApolloClient();
   const dispatch = useDispatch();
-  const history = useHistory();
-
   const [loading, setLoading] = useState(false);
 
   const onFinish = async values => {
@@ -97,11 +96,14 @@ export const Profile = () => {
           >
             <Input />
           </Form.Item>
+          <Form.Item label="Avatar">
+            <ProfileAvatar />
+          </Form.Item>
           <Form.Item {...tailFormItemLayout}>
             <Button htmlType="submit" loading={loading} type="primary">
               Update profile
             </Button>
-            <UpdatePasswordButton className="ml-4" />
+            <UpdatePasswordButton className="ml-2" />
           </Form.Item>
         </Form>
       </div>
