@@ -22,18 +22,16 @@ import * as faceapi from 'face-api.js';
 import React, { forwardRef, useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Webcam from 'react-webcam';
-import { throttle } from 'throttle-debounce';
 
-import { URI_PYTHON } from '../common/constants';
+import { PYTHON_SERVER_URI } from '../common/constants';
 import { base64toBlob } from '../common/services';
 import {
-  SET_FACES_LAYOUT,
+  // SET_FACES_LAYOUT,
   TOGGLE_AUTO_DETECT,
   TOGGLE_WEBCAM_VISIBLE,
 } from '../redux/common/common.types';
 
 const { CancelToken } = axios;
-const source = CancelToken.source();
 
 export const UsersCreateCustomerStep2View = ({
   customerData,
@@ -46,18 +44,18 @@ export const UsersCreateCustomerStep2View = ({
   );
   const webcamRef = useRef(null);
   const detectingRef = useRef(false);
+  const cancelTokenRef = useRef(null);
   const [faces, setFaces] = useState(customerData.step2 || INIT_FACES);
   const [error, setError] = useState(false);
   const [device, setDevice] = useState();
   const [streamLoaded, setStreamLoaded] = useState(false);
   const [detecting, setDetecting] = useState(false);
-  const [captureTested, setCaptureTested] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
   const [faceFound, setFaceFound] = useState(false);
   const [networkError, setNetworkError] = useState(false);
-  // const [unmountable, setUnmountable] = useState(false);
 
   useEffect(() => {
+    cancelTokenRef.current = CancelToken.source();
     navigator.mediaDevices
       .enumerateDevices()
       .then(mediaDevices =>
@@ -68,28 +66,9 @@ export const UsersCreateCustomerStep2View = ({
 
     return () => {
       message.destroy();
-      source.cancel();
+      cancelTokenRef.current.cancel();
     };
   }, []);
-
-  useEffect(() => {
-    if (device && streamLoaded && !captureTested && webcamRef.current) {
-      const timeoutId = setTimeout(async () => {
-        try {
-          const imageSrc = webcamRef.current.getScreenshot();
-          await hasFace(imageSrc);
-        } catch (_) {
-          // Do nothing
-        }
-        setCaptureTested(true);
-        if (autoDetect) {
-          setDetecting(true);
-        }
-      }, 1000);
-
-      return () => clearTimeout(timeoutId);
-    }
-  }, [device, streamLoaded, captureTested, webcamRef, webcamRef.current]);
 
   useEffect(() => {
     if (detecting) {
@@ -109,63 +88,60 @@ export const UsersCreateCustomerStep2View = ({
         });
       }
 
-      const detectFace = throttle(100, true, async () => {
+      const detectFace = async () => {
         detectingRef.current = true;
         try {
           const base64Screenshot = webcamRef.current.getScreenshot();
-          if (await hasFace(base64Screenshot)) {
-            if (!faceFound) {
-              message.success({
-                content: 'Face detected!',
-                duration: 1.5,
-                key: FACE_FOUND_MESSAGE_KEY,
-              });
-              setFaceFound(true);
+          if (!faceFound) {
+            message.success({
+              content: 'Face detected!',
+              duration: 1.5,
+              key: FACE_FOUND_MESSAGE_KEY,
+            });
+            setFaceFound(true);
+          }
+          const formData = new FormData(document.forms[0]);
+          formData.append('image', base64toBlob(base64Screenshot));
+          const response = await axios.post(
+            `${PYTHON_SERVER_URI}/register-face/`,
+            formData,
+            {
+              cancelToken: cancelTokenRef.current.token,
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
+              responseType: 'arraybuffer',
             }
-            const formData = new FormData(document.forms[0]);
-            formData.append('image', base64toBlob(base64Screenshot));
-            const response = await axios.post(
-              `${URI_PYTHON}/register-face/`,
-              formData,
-              {
-                cancelToken: source.token,
-                headers: {
-                  'Content-Type': 'multipart/form-data',
-                },
-                responseType: 'arraybuffer',
-              }
+          );
+          if (networkError) {
+            setNetworkError(false);
+          }
+          if (response.headers['content-type'] === 'image/jpeg') {
+            const base64Face = `data:image/jpeg;base64,${Buffer.from(
+              response.data,
+              'binary'
+            ).toString('base64')}`;
+            const { faceClass /* yaw, pitch, roll */ } = JSON.parse(
+              response.headers.payload
             );
-            if (networkError) {
-              setNetworkError(false);
-            }
-            if (response.headers['content-type'] === 'image/png') {
-              const base64Face = `data:image/png;base64,${Buffer.from(
-                response.data,
-                'binary'
-              ).toString('base64')}`;
-              const { faceClass /* yaw, pitch, roll */ } = JSON.parse(
-                response.headers.payload
+            if (faces[faceClass].length < 5) {
+              setFaces(currentFaces =>
+                generateNewFaces(currentFaces, faceClass, base64Face)
               );
-              if (faces[faceClass].length < 5) {
-                setFaces(currentFaces =>
-                  generateNewFaces(currentFaces, faceClass, base64Face)
-                );
-              }
             }
           }
         } catch (e) {
           if (e.message === 'Network Error') {
             setNetworkError(true);
           }
-          // console.log(e);
         }
         detectingRef.current = false;
-      });
+      };
       const intervalId = setInterval(() => {
         if (!detectingRef.current) {
           detectFace();
         }
-      }, 100);
+      }, 1000 / 30);
       return () => {
         message.destroy();
         clearInterval(intervalId);
@@ -239,7 +215,7 @@ export const UsersCreateCustomerStep2View = ({
       >
         <WebcamWrapper
           detecting={detecting}
-          loading={!streamLoaded || !captureTested}
+          loading={!streamLoaded}
           onUserMedia={() => setStreamLoaded(true)}
           onUserMediaError={() => setError(true)}
           ref={webcamRef}
@@ -335,14 +311,14 @@ export const UsersCreateCustomerStep2View = ({
         <Button
           className="ml-2"
           icon={detecting ? <PauseOutlined /> : <ThunderboltOutlined />}
-          loading={!streamLoaded || !captureTested}
+          loading={!streamLoaded}
           onClick={handleDetectionToggle}
         >
           {detecting ? 'Pause Detecting' : 'Start Detecting'}
         </Button>
         <Button
           className="ml-2"
-          loading={!streamLoaded || !captureTested}
+          loading={!streamLoaded && !error}
           onClick={handlePrevClick}
         >
           Previous
@@ -386,45 +362,23 @@ const FACE_FOUND_MESSAGE_KEY = 'face-found';
 const NETWORK_ERROR_MESSAGE_KEY = 'network-error';
 const INIT_FACES = Array(9).fill([]);
 
-const hasFace = async base64 => {
-  try {
-    const inputImg = new Image();
-    inputImg.src = base64;
-
-    // const { detection } =
-
-    return !!(await faceapi.detectSingleFace(
-      inputImg,
-      new faceapi.MtcnnOptions({
-        minFaceSize: 150,
-      })
-    ));
-  } catch (e) {
-    return false;
-  }
-};
-
 const generateNewFaces = (currentFaces, faceClass, newFace) => {
   if (currentFaces[faceClass].length < 4) {
-    if (faceClass === 1 || faceClass === 4 || faceClass === 7) {
-      return currentFaces.map((sameAngleFaces, i) => {
-        if (i === faceClass - 1 && sameAngleFaces.length === 0) {
-          return [newFace];
-        }
-
-        if (i === faceClass) {
-          return [...sameAngleFaces, newFace];
-        }
-
-        if (i === faceClass + 1 && sameAngleFaces.length === 0) {
-          return [newFace];
-        }
-
-        return sameAngleFaces;
-      });
-    }
+    const sameYawIndex = Math.floor(faceClass / 3) * 3;
 
     return currentFaces.map((sameAngleFaces, i) => {
+      if (i === sameYawIndex && sameAngleFaces.length === 0) {
+        return [newFace];
+      }
+
+      if (i === sameYawIndex + 1 && sameAngleFaces.length === 0) {
+        return [newFace];
+      }
+
+      if (i === sameYawIndex + 2 && sameAngleFaces.length === 0) {
+        return [newFace];
+      }
+
       if (i === faceClass) {
         return [...sameAngleFaces, newFace];
       }
@@ -466,12 +420,12 @@ const FaceView = ({ faceClass, sameAngleFaces, setFaces }) => {
                           currentFaces.map((_sameAngleFaces, _faceClass) =>
                             _faceClass === faceClass && i > 0
                               ? _sameAngleFaces.map((_face, j) =>
-                                j === 1
-                                  ? face
-                                  : j === i + 1
+                                  j === 1
+                                    ? face
+                                    : j === i + 1
                                     ? _sameAngleFaces[1]
                                     : _face
-                              )
+                                )
                               : _sameAngleFaces
                           )
                         );
@@ -493,8 +447,8 @@ const FaceView = ({ faceClass, sameAngleFaces, setFaces }) => {
                               currentFaces.map((_sameAngleFaces, _faceClass) =>
                                 _faceClass === faceClass
                                   ? _sameAngleFaces.filter(
-                                    (_, j) => j !== i + 1
-                                  )
+                                      (_, j) => j !== i + 1
+                                    )
                                   : _sameAngleFaces
                               )
                             );
@@ -528,8 +482,8 @@ const FaceView = ({ faceClass, sameAngleFaces, setFaces }) => {
                 currentFaces.map((_sameAngleFaces, _faceClass) =>
                   _faceClass === faceClass
                     ? _sameAngleFaces.filter(
-                      (_, j) => j < _sameAngleFaces.length - 1
-                    )
+                        (_, j) => j < _sameAngleFaces.length - 1
+                      )
                     : _sameAngleFaces
                 )
               );
@@ -553,4 +507,3 @@ const FaceView = ({ faceClass, sameAngleFaces, setFaces }) => {
 
 const countFaceClassDone = faces =>
   faces.filter(sameAngleFaces => sameAngleFaces.length > 0).length;
-

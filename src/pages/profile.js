@@ -3,9 +3,9 @@ import { Button, Form, Input, message } from 'antd';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { formItemLayout, tailFormItemLayout } from '../common/antd';
+import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { ProfileAvatar } from '../components/profile-avatar';
 import { UpdatePasswordButton } from '../components/profile-update-password-button';
@@ -56,7 +56,7 @@ export const Profile = () => {
 
   return (
     <LayoutDashboard>
-      <div className="bg-white shadow p-6 rounded-sm">
+      <CommonMainContainer>
         <Form
           initialValues={{
             _id: me._id,
@@ -106,7 +106,7 @@ export const Profile = () => {
             <UpdatePasswordButton className="ml-2" />
           </Form.Item>
         </Form>
-      </div>
+      </CommonMainContainer>
     </LayoutDashboard>
   );
 };

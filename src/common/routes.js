@@ -4,6 +4,7 @@ import { Route } from 'react-router-dom';
 import { AppAuthRoute } from '../components/app-auth-route';
 import { _403 } from '../pages/_403';
 import { _404 } from '../pages/_404';
+import { Attendance } from '../pages/attendance';
 import { Cameras } from '../pages/cameras';
 import { Customers } from '../pages/customers';
 import { Feedbacks } from '../pages/feedbacks';
@@ -54,6 +55,12 @@ const managerOwnerAdminRoutes = [
     exact: true,
     key: 'customers',
     path: '/customers',
+  },
+  {
+    component: Attendance,
+    exact: true,
+    key: 'attendance',
+    path: '/attendance',
   },
   {
     component: Cameras,

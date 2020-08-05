@@ -173,3 +173,5 @@ export const fileToBase64 = async file =>
     reader.addEventListener('load', () => resolve(reader.result));
     reader.readAsDataURL(file);
   });
+
+export const validateObjectId = id => id.match(/^[0-9a-fA-F]{24}$/);

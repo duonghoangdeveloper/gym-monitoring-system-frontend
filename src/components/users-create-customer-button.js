@@ -4,6 +4,7 @@ import { Button, message, Modal, Steps } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
+import { base64ToFile } from '../common/services';
 import { UsersCreateCustomerStep1View } from './users-create-customer-step-1-view';
 import { UsersCreateCustomerStep2View } from './users-create-customer-step-2-view';
 import { UsersCreateCustomerStep3View } from './users-create-customer-step-3-view';
@@ -37,11 +38,11 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
       const { displayName, email, gender, phone } = customerData.step1;
       const { password, username } = customerData.step3;
 
-      const submittedFaces = (customerData.step2 || [])
+      const base64Faces = (customerData.step2 || [])
         .filter(sameAngleFaces => sameAngleFaces.length > 0)
         .map(sameAngleFaces => sameAngleFaces[sameAngleFaces.length - 1]);
 
-      if (submittedFaces.length === 9) {
+      if (base64Faces.length === 9) {
         await client.mutate({
           mutation: gql`
             mutation CreateUser($data: CreateUserInput!) {
@@ -59,6 +60,7 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
             data: {
               displayName,
               email,
+              faces: base64Faces.map(base64 => base64ToFile(base64)),
               gender,
               password,
               phone,
@@ -134,9 +136,7 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
         return (
           <UsersCreateCustomerStep4View
             customerData={customerData}
-            onDone={() => {
-              createCustomer();
-            }}
+            onDone={createCustomer}
             onPrev={() => {
               setCurrentStep(2);
             }}
@@ -153,7 +153,6 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
         Create Customer
       </Button>
       <Modal
-        className="select-none"
         footer={null}
         maskClosable={false}
         onCancel={() => setVisible(false)}

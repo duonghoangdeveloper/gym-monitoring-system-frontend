@@ -2,8 +2,10 @@ import {
   DownOutlined,
   FileSearchOutlined,
   FolderAddOutlined,
+  FundViewOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  TeamOutlined,
   UserOutlined,
   VideoCameraOutlined,
 } from '@ant-design/icons';
@@ -115,10 +117,23 @@ export const LayoutDashboard = ({ children }) => {
       title: 'Packages',
     },
     {
-      icon: <VideoCameraOutlined />,
-      key: 'cameras',
-      onClick: () => history.push('/cameras'),
-      title: 'Cameras',
+      children: [
+        {
+          icon: <TeamOutlined />,
+          key: 'attendance',
+          onClick: () => history.push('/attendance'),
+          title: 'Attendance',
+        },
+        {
+          icon: <VideoCameraOutlined />,
+          key: 'cameras',
+          onClick: () => history.push('/cameras'),
+          title: 'Cameras',
+        },
+      ],
+      icon: <FundViewOutlined />,
+      key: 'monitoring',
+      title: 'Monitoring',
     },
   ];
 
@@ -259,4 +274,6 @@ const getSelectedKey = pathname =>
     ? 'packages'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
+    : /^\/attendance/.test(pathname)
+    ? 'attendance'
     : null;

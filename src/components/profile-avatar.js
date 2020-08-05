@@ -37,7 +37,7 @@ export const ProfileAvatar = () => {
           `,
           variables: {
             data: {
-              file: base64ToFile(base64Avatar),
+              avatar: base64ToFile(base64Avatar),
             },
           },
         });
