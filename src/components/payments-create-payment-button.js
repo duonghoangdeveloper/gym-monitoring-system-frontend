@@ -5,8 +5,8 @@ import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
-import { PaymentsSelectCustomerSelect } from './payments-select-customer-select';
-import { PaymentsSelectPackageSelect } from './payments-select-package-select';
+import { PaymentsSelectCustomerSelection } from './payments-select-customer-selection';
+import { PaymentsSelectPackageSelection } from './payments-select-package-selection';
 
 export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
   const client = useApolloClient();
@@ -103,7 +103,7 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
               },
             ]}
           >
-            <PaymentsSelectCustomerSelect
+            <PaymentsSelectCustomerSelection
               onDataChange={handleDataChangedCustomer}
               style={{ width: '100%' }}
             />
@@ -118,7 +118,7 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
               },
             ]}
           >
-            <PaymentsSelectPackageSelect
+            <PaymentsSelectPackageSelection
               onDataChange={handleDataChanged}
               style={{ width: '100%' }}
             />

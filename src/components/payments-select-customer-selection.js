@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react';
 const { Option } = Select;
 
 const { TabPane } = Tabs;
-export const PaymentsSelectCustomerSelect = ({
+export const PaymentsSelectCustomerSelection = ({
   defaultOptions,
   onDataChange,
   style,

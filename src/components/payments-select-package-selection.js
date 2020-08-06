@@ -5,7 +5,7 @@ import React, { useEffect, useState } from 'react';
 
 const { Option } = Select;
 
-export const PaymentsSelectPackageSelect = ({
+export const PaymentsSelectPackageSelection = ({
   defaultOptions,
   onDataChange,
   style,

@@ -14,8 +14,8 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
 import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
-import { PaymentsSelectCustomerSelect } from './payments-select-customer-select';
-import { PaymentsSelectPackageSelect } from './payments-select-package-select';
+import { PaymentsSelectCustomerSelection } from './payments-select-customer-selection';
+import { PaymentsSelectPackageSelection } from './payments-select-package-selection';
 
 const { Option } = Select;
 export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
@@ -122,14 +122,14 @@ export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
           // onValuesChange={onValuesChange}
         >
           <Form.Item label="Package" name="packageId">
-            <PaymentsSelectPackageSelect
+            <PaymentsSelectPackageSelection
               defaultOptions={payment.package.name}
               onDataChange={handleDataChanged}
               style={{ width: '100%' }}
             />
           </Form.Item>
           <Form.Item name="customerId">
-            <PaymentsSelectCustomerSelect
+            <PaymentsSelectCustomerSelection
               defaultOptions={payment.customer.username}
               onDataChange={handleDataChangedCustomer}
               style={{ width: '100%' }}
