@@ -77,13 +77,13 @@ export const Payments = () => {
     fetchPaymentsData();
   }, [skip, sort]);
   // ,search
-  const generateOnSearch = dataIndex => value => {
-    setSearch({
-      // ...search,
-      [dataIndex]: value,
-    });
-    setSearchAll('');
-  };
+  // const generateOnSearch = dataIndex => value => {
+  //   setSearch({
+  //     // ...search,
+  //     [dataIndex]: value,
+  //   });
+  //   setSearchAll('');
+  // };
 
   // payments.forEach(p => {
   //   console.log(p.customer.username);

@@ -98,7 +98,7 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
             name="customerId"
             rules={[
               {
-                message: 'Please input username of customer!',
+                message: 'Please input customer!',
                 required: true,
               },
             ]}
