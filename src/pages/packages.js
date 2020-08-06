@@ -18,9 +18,7 @@ export const Packages = () => {
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [sort, setSort] = useState('');
-  const [search, setSearch] = useState({
-    name: '',
-  });
+  const [search, setSearch] = useState({ name: '' });
   const [searchAll, setSearchAll] = useState('');
 
   const fetchPackagesData = async () => {
@@ -160,6 +158,7 @@ export const Packages = () => {
             style={{ width: '14rem' }}
             value={searchAll}
           />
+
           <PackagesCreatePackageButton
             className="ml-4"
             onSuccess={fetchPackagesData}
