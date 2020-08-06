@@ -14,7 +14,6 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
   const client = useApolloClient();
   const [visible, setVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-
   const [customerData, setCustomerData] = useState(INITIAL_CUSTOMER_DATA);
 
   useEffect(() => {

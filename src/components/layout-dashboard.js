@@ -1,6 +1,4 @@
 import {
-  BarChartOutlined,
-  DollarCircleOutlined,
   DownOutlined,
   FileSearchOutlined,
   FolderAddOutlined,
@@ -18,7 +16,7 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
-import { TOKEN_KEY } from '../common/constants';
+import { AUTH_ROLES, TOKEN_KEY } from '../common/constants';
 import { generateRolesToView } from '../common/services';
 import { SET_OPEN_KEYS, TOGGLE_COLLAPSED } from '../redux/common/common.types';
 import { SIGN_OUT } from '../redux/user/user.types';
@@ -62,12 +60,6 @@ export const LayoutDashboard = ({ children }) => {
   };
 
   const SIDER_MENU = [
-    {
-      icon: <BarChartOutlined />,
-      key: 'dashboard',
-      onClick: () => history.push('/dashboard'),
-      title: 'Dashboard',
-    },
     {
       children: [
         {
@@ -123,12 +115,6 @@ export const LayoutDashboard = ({ children }) => {
       key: 'packages',
       onClick: () => history.push('/packages'),
       title: 'Packages',
-    },
-    {
-      icon: <DollarCircleOutlined />,
-      key: 'payments',
-      onClick: () => history.push('/payments'),
-      title: 'Payments',
     },
     {
       children: [
@@ -272,9 +258,7 @@ export const LayoutDashboard = ({ children }) => {
 };
 
 const getSelectedKey = pathname =>
-  pathname === '/' || /^\/dashboard/.test(pathname)
-    ? 'dashboard'
-    : /^\/customers/.test(pathname)
+  pathname === '/' || /^\/customers/.test(pathname)
     ? 'customers'
     : /^\/trainers/.test(pathname)
     ? 'trainers'
@@ -288,8 +272,6 @@ const getSelectedKey = pathname =>
     ? 'feedbacks'
     : /^\/packages/.test(pathname)
     ? 'packages'
-    : /^\/payments/.test(pathname)
-    ? 'payments'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
     : /^\/attendance/.test(pathname)
