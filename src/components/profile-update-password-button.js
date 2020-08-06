@@ -50,7 +50,7 @@ export const UpdatePasswordButton = props => {
             oldPassword,
           },
         });
-        message.success('Update password succeed!');
+        message.success('Update password succeeded!');
         setVisible(false);
       } catch (e) {
         message.error(`${e.message.split(': ')[1]}!`);

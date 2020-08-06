@@ -34,7 +34,7 @@ export const Feedbacks = () => {
             feedbacks(query: $query) {
               data {
                 _id
-                title
+
                 content
                 createdAt
               }
@@ -98,17 +98,17 @@ export const Feedbacks = () => {
       key: 'no',
       title: 'No',
     },
-    {
-      dataIndex: 'title',
-      key: 'title',
+    // {
+    //   dataIndex: 'title',
+    //   key: 'title',
 
-      sorter: true,
-      title: 'Title',
-      ...getColumnSearchProps('title', generateOnSearch('title'), search.title),
-      render: (text, feedback) => (
-        <UsersViewFeedbacksButton feedback={feedback} />
-      ),
-    },
+    //   sorter: true,
+    //   title: 'Title',
+    //   ...getColumnSearchProps('title', generateOnSearch('title'), search.title),
+    //   render: (text, feedback) => (
+    //     <UsersViewFeedbacksButton feedback={feedback} />
+    //   ),
+    // },
     {
       dataIndex: 'content',
       fixed: true,
@@ -119,9 +119,10 @@ export const Feedbacks = () => {
           whiteSpace: 'nowrap',
         },
       }),
-      render: text => (
-        <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      render: (text, feedback) => (
+        <div>
           {text}
+          <UsersViewFeedbacksButton feedback={feedback} />
         </div>
       ),
       sorter: true,
@@ -184,6 +185,9 @@ export const Feedbacks = () => {
           dataSource={feedbacks}
           loading={loading}
           onChange={handleTableChange}
+          onRow={rowIndex => ({
+            onClick: () => <UsersDeleteFeedbacksButton feedback={feedbacks} />, // click row
+          })}
           pagination={{
             current: Math.floor(skip / PAGE_SIZE) + 1,
             pageSize: PAGE_SIZE,
@@ -195,4 +199,4 @@ export const Feedbacks = () => {
   );
 };
 
-const INITIAL_SEARCH = { content: '', title: '' };
+const INITIAL_SEARCH = { content: '' };

@@ -46,7 +46,7 @@ export const PackagesUpdatePackageButton = ({ _package, onSuccess }) => {
           },
         },
       });
-      message.success('Update package succeed!');
+      message.success('Update package succeeded!');
       setVisible(false);
       onSuccess(result?.data?.updatePackage);
     } catch (e) {

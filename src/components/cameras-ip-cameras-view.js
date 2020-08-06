@@ -1,6 +1,8 @@
 import { Spin } from 'antd';
 import raf from 'raf';
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { fromEvent } from 'rxjs';
+import { throttleTime } from 'rxjs/operators';
 import { TextDecoder } from 'text-encoding';
 import { throttle } from 'throttle-debounce';
 
@@ -38,6 +40,14 @@ export const CamerasIpCamerasView = () => {
 
       receivedScreens.current = _receivedScreens;
     });
+    const observable = fromEvent(socket, 'server-send-screens').pipe(
+      throttleTime(DELAY)
+    );
+    const subscriber = observable.subscribe({
+      next(_receivedScreens) {
+        receiveScreensHandler(_receivedScreens);
+      },
+    });
 
     const updateScreensHandler = throttle(DELAY, true, () => {
       receivedScreens.current.forEach(({ key, snapshot }) => {
@@ -53,13 +63,12 @@ export const CamerasIpCamerasView = () => {
 
     const interval = setInterval(updateScreensHandler, DELAY);
 
-    socket.on('server-send-screens', receiveScreensHandler);
-
     return () => {
       // raf.cancel(rafId);
       clearInterval(interval);
       socket.emit('client-stop-view-screens');
       socket.off('server-send-screens');
+      subscriber.unsubscribe();
     };
   }, [initLoading, screenKeys]);
 

@@ -40,7 +40,6 @@ import { LadderChart } from '../components/dashboard-ladder-chart';
 import { LineChart } from '../components/dashboard-line-chart';
 import { PartPieChart } from '../components/dashboard-part-pie-chart';
 import { LayoutDashboard } from '../components/layout-dashboard';
-import { UPDATE_PROFILE } from '../redux/types/user.types';
 
 export const Dashboard = () => {
   const client = useApolloClient();

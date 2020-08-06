@@ -1,13 +1,11 @@
-import { CloseOutlined, PlusOutlined } from '@ant-design/icons';
+import { CloseOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Divider, Input, Radio, Space, Switch, Table } from 'antd';
+import { Input, Switch, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { getColumnSearchProps } from '../common/antd';
-import { CommonTableSearchDropdown } from '../components/common-table-search-dropdown';
+import { PAGE_SIZE } from '../common/constants';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { PackagesCreatePackageButton } from '../components/packages-create-package-button';
 import { PackagesUpdatePackageButton } from '../components/packages-update-package-button';
@@ -40,7 +38,7 @@ export const Packages = () => {
           }
         `,
         variables: {
-          query: { limit: 10, search, skip, sort },
+          query: { limit: PAGE_SIZE, search, skip, sort },
         },
       });
 
@@ -74,7 +72,7 @@ export const Packages = () => {
 
   const handleTableChange = (pagination, filters, sorter) => {
     // Pagination
-    setSkip((pagination.current - 1) * 10);
+    setSkip((pagination.current - 1) * PAGE_SIZE);
 
     // Sorter
     const { columnKey, order } = sorter;
@@ -174,8 +172,8 @@ export const Packages = () => {
           loading={loading}
           onChange={handleTableChange}
           pagination={{
-            current: Math.floor(skip / 10) + 1,
-            pageSize: 10,
+            current: Math.floor(skip / PAGE_SIZE) + 1,
+            pageSize: PAGE_SIZE,
             total,
           }}
         />

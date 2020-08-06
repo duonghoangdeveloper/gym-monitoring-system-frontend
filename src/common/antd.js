@@ -1,6 +1,5 @@
 import { SearchOutlined } from '@ant-design/icons';
-import { Button, Input, Space } from 'antd';
-import React, { useState } from 'react';
+import React from 'react';
 import Highlighter from 'react-highlight-words';
 
 import { CommonTableSearchDropdown } from '../components/common-table-search-dropdown';
@@ -30,12 +29,7 @@ export const tailFormItemLayout = {
 };
 
 export const getColumnSearchProps = (dataIndex, onSearch, searchValue) => ({
-  filterDropdown: ({
-    clearFilters,
-    confirm,
-    selectedKeys,
-    setSelectedKeys,
-  }) => (
+  filterDropdown: ({ confirm }) => (
     <CommonTableSearchDropdown
       dataIndex={dataIndex}
       onSearch={value => {
@@ -64,7 +58,7 @@ export const getColumnSearchProps = (dataIndex, onSearch, searchValue) => ({
           textOverflow: 'ellipsis',
         }}
         searchWords={[searchValue]}
-        textToHighlight={text.toString()}
+        textToHighlight={text ? text.toString() : ''}
       />
     </div>
   ),

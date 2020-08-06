@@ -3,6 +3,11 @@ export const URI =
     ? 'http://localhost:7777'
     : 'https://gym-monitoring-system.herokuapp.com';
 
+export const URI_PYTHON =
+  process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
+    ? 'http://localhost:8000'
+    : 'https://gym-monitoring-system.herokuapp.com';
+
 export const TOKEN_KEY = 'gym-monitoring-system-token';
 
 export const CONNECTION_STATUSES = {
@@ -35,8 +40,8 @@ export const DATE_FORMAT = 'DD/MM/YYYY';
 
 export const DATE_TIME_FORMAT = 'DD/MM/YYYY, HH:mm';
 
-export const TIME_FORMAT = ' HH:mm';
+export const TIME_FORMAT = 'HH:mm';
 
-export const DELAY = 100;
+export const DELAY = 200;
 
 export const PAGE_SIZE = 10;
