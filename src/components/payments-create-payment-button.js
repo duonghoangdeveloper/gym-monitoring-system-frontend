@@ -1,0 +1,102 @@
+import { PlusOutlined } from '@ant-design/icons';
+import { useApolloClient } from '@apollo/react-hooks';
+import { Button, Form, Input, InputNumber, message, Modal } from 'antd';
+import gql from 'graphql-tag';
+import React, { useState } from 'react';
+
+export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
+  const client = useApolloClient();
+  const [form] = Form.useForm();
+  const [visible, setVisible] = useState(false);
+  const [disabled] = useState(false);
+  const handleClick = () => {
+    setVisible(true);
+  };
+
+  const onFinish = async values => {
+    try {
+      const { name, period, price } = values;
+      await client.mutate({
+        mutation: gql`
+          mutation CreatePayment($data: CreatePaymentInput!) {
+            createPayment(data: $data) {
+              name
+              price
+              period
+            }
+          }
+        `,
+        variables: {
+          data: { name, period, price },
+        },
+      });
+      message.success('Create payment succeed!');
+      setVisible(false);
+      onSuccess();
+    } catch (e) {
+      console.log(e.message);
+      message.error(`${e.message.split(': ')[1]}!`);
+    }
+  };
+
+  return (
+    <>
+      <Button icon={<PlusOutlined />} onClick={handleClick} {...props}>
+        Create Payment
+      </Button>
+      <Modal
+        className="select-none"
+        maskClosable={false}
+        okButtonProps={{
+          disabled,
+        }}
+        onCancel={() => {
+          setTimeout(() => form.resetFields(), 500);
+          setVisible(false);
+        }}
+        onOk={() => form.submit()}
+        title="Create Payment"
+        visible={visible}
+      >
+        <Form form={form} layout="vertical" onFinish={onFinish}>
+          <Form.Item
+            label="Name"
+            name="name"
+            rules={[
+              {
+                message: 'Please input name of payment!',
+                required: true,
+              },
+            ]}
+          >
+            <Input placeholder="Enter name" />
+          </Form.Item>
+          <Form.Item
+            label="Price"
+            name="price"
+            rules={[
+              {
+                message: 'Please input price!',
+                required: true,
+              },
+            ]}
+          >
+            <InputNumber placeholder="Enter price" style={{ width: '100%' }} />
+          </Form.Item>
+          <Form.Item
+            label="Period"
+            name="period"
+            rules={[
+              {
+                message: 'Please input period!',
+                required: true,
+              },
+            ]}
+          >
+            <InputNumber placeholder="Enter period" style={{ width: '100%' }} />
+          </Form.Item>
+        </Form>
+      </Modal>
+    </>
+  );
+};
