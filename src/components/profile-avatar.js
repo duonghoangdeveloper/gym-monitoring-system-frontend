@@ -5,7 +5,7 @@ import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { base64ToFile } from '../common/services';
+import { base64ToFile, validateFile } from '../common/services';
 import { UPDATE_AVATAR } from '../redux/user/user.types';
 
 export const ProfileAvatar = () => {
@@ -95,7 +95,7 @@ export const ProfileAvatar = () => {
       >
         <div className="flex">
           <Upload
-            beforeUpload={beforeUpload}
+            beforeUpload={validateFile}
             customRequest={({ onSuccess }) => {
               setTimeout(() => {
                 onSuccess();
@@ -133,16 +133,4 @@ export const ProfileAvatar = () => {
       </Modal>
     </>
   );
-};
-
-const beforeUpload = file => {
-  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-  if (!isJpgOrPng) {
-    message.error('You can only upload JPG/PNG file!');
-  }
-  const isLt2M = file.size / 1024 / 1024 < 2;
-  if (!isLt2M) {
-    message.error('Image must smaller than 2MB!');
-  }
-  return isJpgOrPng && isLt2M;
 };

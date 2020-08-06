@@ -9,6 +9,7 @@ import { Cameras } from '../pages/cameras';
 import { Customers } from '../pages/customers';
 import { Feedbacks } from '../pages/feedbacks';
 import { Home } from '../pages/home';
+import { LineLabelling } from '../pages/line-labelling';
 import { Packages } from '../pages/packages';
 import { Profile } from '../pages/profile';
 import { SignIn } from '../pages/sign-in';
@@ -103,6 +104,12 @@ export const adminRoutes = [
     exact: true,
     key: 'admins',
     path: '/admins',
+  },
+  {
+    component: LineLabelling,
+    exact: true,
+    key: 'line-labelling',
+    path: '/line-labelling',
   },
 ];
 
