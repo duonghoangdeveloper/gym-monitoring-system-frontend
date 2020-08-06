@@ -151,3 +151,27 @@ export const base64toBlob = dataURI => {
 
   return new Blob([ia], { type: mimeString });
 };
+
+export const base64ToFile = (dataurl, name = 'avatar') => {
+  const arr = dataurl.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+
+  while (n >= 0) {
+    u8arr[n] = bstr.charCodeAt(n);
+    n -= 1;
+  }
+
+  return new File([u8arr], name, { type: mime });
+};
+
+export const fileToBase64 = async file =>
+  new Promise(resolve => {
+    const reader = new FileReader();
+    reader.addEventListener('load', () => resolve(reader.result));
+    reader.readAsDataURL(file);
+  });
+
+export const validateObjectId = id => id.match(/^[0-9a-fA-F]{24}$/);

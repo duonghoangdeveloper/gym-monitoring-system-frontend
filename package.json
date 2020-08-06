@@ -24,6 +24,7 @@
     "face-api.js": "^0.22.2",
     "graphql": "^15.1.0",
     "graphql-tag": "^2.10.3",
+    "lodash": "^4.17.19",
     "moment": "^2.27.0",
     "numeral": "^2.0.6",
     "postcss-cli": "^7.1.1",

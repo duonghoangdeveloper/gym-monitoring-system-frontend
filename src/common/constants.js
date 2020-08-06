@@ -3,10 +3,10 @@ export const URI =
     ? 'http://localhost:7777'
     : 'https://gym-monitoring-system.herokuapp.com';
 
-export const URI_PYTHON =
+export const PYTHON_SERVER_URI =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
     ? 'http://localhost:8000'
-    : 'https://gym-monitoring-system.herokuapp.com';
+    : '';
 
 export const TOKEN_KEY = 'gym-monitoring-system-token';
 
@@ -16,6 +16,8 @@ export const CONNECTION_STATUSES = {
   DISCONNECTED: 'DISCONNECTED',
   RECONNECTING: 'RECONNECTING',
 };
+
+export const STAFF_ROLES = ['TRAINER', 'MANAGER', 'GYM_OWNER'];
 
 export const AUTH_ROLES = [
   'CUSTOMER',

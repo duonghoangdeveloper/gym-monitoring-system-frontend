@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 
 import { getColumnSearchProps } from '../common/antd';
 import { PAGE_SIZE } from '../common/constants';
+import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { PackagesCreatePackageButton } from '../components/packages-create-package-button';
 import { PackagesUpdatePackageButton } from '../components/packages-update-package-button';
@@ -142,10 +143,9 @@ export const Packages = () => {
 
   return (
     <LayoutDashboard>
-      <div className="bg-white shadow p-6 rounded-sm">
+      <CommonMainContainer>
         <div className="flex items-center">
-          <h1 className="text-3xl flex-1">Package Management</h1>
-
+          <h1 className="text-3xl flex-1 mr-4">Package Management</h1>
           <Input.Search
             allowClear
             onChange={e => setSearchAll(e.target.value)}
@@ -177,7 +177,7 @@ export const Packages = () => {
             total,
           }}
         />
-      </div>
+      </CommonMainContainer>
     </LayoutDashboard>
   );
 };

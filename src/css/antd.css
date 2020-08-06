@@ -5,11 +5,7 @@
 }
 
 .ant-message .anticon {
-  transform: translateY(-3px);
-}
-
-.ant-avatar .anticon {
-  transform: translateY(-3px);
+  transform: translateY(-4px);
 }
 
 .ant-spin .anticon {
@@ -34,4 +30,23 @@
 
 .ant-steps-item-icon .anticon {
   transform: translateY(-3px);
+}
+
+.ant-input-group-addon .anticon {
+  transform: translateY(-3px);
+}
+
+.ant-modal-close .anticon {
+  transform: translateY(-3px);
+}
+
+.ant-upload {
+  margin: 0 !important;
+  width: 100% !important;
+}
+
+.ant-avatar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

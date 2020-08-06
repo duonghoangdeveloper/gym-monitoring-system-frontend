@@ -8,6 +8,7 @@ import { useLocation } from 'react-router-dom';
 
 import { getColumnSearchProps } from '../common/antd';
 import { PAGE_SIZE } from '../common/constants';
+import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { TrainerOnlineStatusSwitch } from '../components/trainer-online-status-switch';
 import { UsersCreateStaffButton } from '../components/users-create-staff-button';
@@ -175,9 +176,11 @@ export const Staffs = () => {
 
   return (
     <LayoutDashboard>
-      <div className="bg-white shadow p-6 rounded-sm">
+      <CommonMainContainer>
         <div className="flex items-center">
-          <h1 className="text-3xl flex-1">{generatePageTitle(pathname)}</h1>
+          <h1 className="text-3xl flex-1 mr-4">
+            {generatePageTitle(pathname)}
+          </h1>
           <Input.Search
             allowClear
             onChange={e => setSearchAll(e.target.value)}
@@ -213,7 +216,7 @@ export const Staffs = () => {
             total,
           }}
         />
-      </div>
+      </CommonMainContainer>
     </LayoutDashboard>
   );
 };

@@ -30,6 +30,9 @@ export const SignIn = () => {
                 username
                 displayName
                 role
+                avatar {
+                  url
+                }
               }
             }
           }

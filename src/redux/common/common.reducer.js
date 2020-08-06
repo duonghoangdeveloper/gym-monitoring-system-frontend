@@ -9,7 +9,7 @@ import {
 const INITIAL_STATE = {
   sider: {
     collapsed: false,
-    openKeys: ['user-management'],
+    openKeys: ['user-management', 'monitoring'],
   },
   userWebcam: {
     autoDetect: true,

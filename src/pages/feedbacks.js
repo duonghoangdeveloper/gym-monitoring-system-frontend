@@ -1,14 +1,13 @@
-import { CloseOutlined, DeleteOutlined, PlusOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Button, Divider, Input, Radio, Space, Switch, Table } from 'antd';
 import gql from 'graphql-tag';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { getColumnSearchProps } from '../common/antd';
 import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
+import { CommonMainContainer } from '../components/common-main-container';
 import { CommonTableSearchDropdown } from '../components/common-table-search-dropdown';
 import { UsersDeleteFeedbacksButton } from '../components/feedbacks-delete-feedbacks-button';
 import { UsersViewFeedbacksButton } from '../components/feedbacks-view-feedbacks-button';
@@ -160,7 +159,7 @@ export const Feedbacks = () => {
 
   return (
     <LayoutDashboard>
-      <div className="bg-white shadow p-6 rounded-sm">
+      <CommonMainContainer>
         <div className="flex justify-between">
           <h1 className="text-3xl">Feedbacks</h1>
 
@@ -194,7 +193,7 @@ export const Feedbacks = () => {
             total,
           }}
         />
-      </div>
+      </CommonMainContainer>
     </LayoutDashboard>
   );
 };
