@@ -6,6 +6,11 @@ import storage from 'redux-persist/lib/storage';
 import { commonReducer } from './common/common.reducer';
 import { userReducer } from './user/user.reducer';
 
+const commonPersistConfig = {
+  key: 'common',
+  storage,
+};
+
 const userPersistConfig = {
   key: 'user',
   storage,
@@ -13,7 +18,7 @@ const userPersistConfig = {
 };
 
 export const rootReducer = combineReducers({
-  common: commonReducer,
+  common: persistReducer(commonPersistConfig, commonReducer),
   user: persistReducer(userPersistConfig, userReducer),
 });
 

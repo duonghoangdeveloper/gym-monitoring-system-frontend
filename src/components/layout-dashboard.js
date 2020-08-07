@@ -1,13 +1,13 @@
 import {
-  BarChartOutlined,
-  DollarCircleOutlined,
+  CommentOutlined,
   DownOutlined,
-  FileSearchOutlined,
-  FolderAddOutlined,
   FundViewOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  SnippetsOutlined,
+  TagsOutlined,
   TeamOutlined,
+  ToolOutlined,
   UserOutlined,
   VideoCameraOutlined,
 } from '@ant-design/icons';
@@ -20,7 +20,10 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 import { TOKEN_KEY } from '../common/constants';
 import { generateRolesToView } from '../common/services';
-import { SET_OPEN_KEYS, TOGGLE_COLLAPSED } from '../redux/common/common.types';
+import {
+  SIDER_SET_OPEN_KEYS,
+  SIDER_TOGGLE_COLLAPSED,
+} from '../redux/common/common.types';
 import { SIGN_OUT } from '../redux/user/user.types';
 
 export const LayoutDashboard = ({ children }) => {
@@ -63,10 +66,23 @@ export const LayoutDashboard = ({ children }) => {
 
   const SIDER_MENU = [
     {
-      icon: <BarChartOutlined />,
-      key: 'dashboard',
-      onClick: () => history.push('/dashboard'),
-      title: 'Dashboard',
+      children: [
+        {
+          icon: <TeamOutlined />,
+          key: 'attendance',
+          onClick: () => history.push('/attendance'),
+          title: 'Attendance',
+        },
+        {
+          icon: <VideoCameraOutlined />,
+          key: 'cameras',
+          onClick: () => history.push('/cameras'),
+          title: 'Cameras',
+        },
+      ],
+      icon: <FundViewOutlined />,
+      key: 'monitoring',
+      title: 'Monitoring',
     },
     {
       children: [
@@ -112,42 +128,31 @@ export const LayoutDashboard = ({ children }) => {
     },
     {
       hidden: role !== 'GYM_OWNER' && role !== 'SYSTEM_ADMIN',
-      icon: <FileSearchOutlined />,
+      icon: <CommentOutlined />,
       key: 'feedbacks',
       onClick: () => history.push('/feedbacks'),
       title: 'Feedbacks',
     },
     {
       hidden: role !== 'GYM_OWNER' && role !== 'SYSTEM_ADMIN',
-      icon: <FolderAddOutlined />,
-      key: 'packages',
-      onClick: () => history.push('/packages'),
-      title: 'Packages',
-    },
-    {
-      icon: <DollarCircleOutlined />,
-      key: 'payments',
-      onClick: () => history.push('/payments'),
-      title: 'Payments',
+      icon: <SnippetsOutlined />,
+      key: 'payment-plans',
+      onClick: () => history.push('/payment-plans'),
+      title: 'Payment Plans',
     },
     {
       children: [
         {
-          icon: <TeamOutlined />,
-          key: 'attendance',
-          onClick: () => history.push('/attendance'),
-          title: 'Attendance',
-        },
-        {
-          icon: <VideoCameraOutlined />,
-          key: 'cameras',
-          onClick: () => history.push('/cameras'),
-          title: 'Cameras',
+          hidden: role !== 'SYSTEM_ADMIN',
+          icon: <TagsOutlined />,
+          key: 'line-labelling',
+          onClick: () => history.push('/line-labelling'),
+          title: 'Line Labelling',
         },
       ],
-      icon: <FundViewOutlined />,
-      key: 'monitoring',
-      title: 'Monitoring',
+      icon: <ToolOutlined />,
+      key: 'tools',
+      title: 'Tools',
     },
   ];
 
@@ -180,7 +185,7 @@ export const LayoutDashboard = ({ children }) => {
               payload: {
                 openKeys: keys,
               },
-              type: SET_OPEN_KEYS,
+              type: SIDER_SET_OPEN_KEYS,
             })
           }
           openKeys={openKeys}
@@ -188,36 +193,36 @@ export const LayoutDashboard = ({ children }) => {
           theme="dark"
         >
           {SIDER_MENU.map(submenu =>
-            submenu.children ? (
-              <Menu.SubMenu
-                icon={submenu.icon}
-                key={submenu.key}
-                title={submenu.title}
-              >
-                {submenu.children.map(
-                  menu =>
-                    !menu.hidden && (
-                      <Menu.Item
-                        icon={menu.icon}
-                        key={menu.key}
-                        onClick={menu.onClick}
-                      >
-                        {menu.title}
-                      </Menu.Item>
-                    )
-                )}
-              </Menu.SubMenu>
-            ) : (
-              !submenu.hidden && (
-                <Menu.Item
-                  icon={submenu.icon}
-                  key={submenu.key}
-                  onClick={submenu.onClick}
-                >
-                  {submenu.title}
-                </Menu.Item>
-              )
-            )
+            Array.isArray(submenu.children)
+              ? submenu.children.some(({ hidden }) => !hidden) && (
+                  <Menu.SubMenu
+                    icon={submenu.icon}
+                    key={submenu.key}
+                    title={submenu.title}
+                  >
+                    {submenu.children.map(
+                      menu =>
+                        !menu.hidden && (
+                          <Menu.Item
+                            icon={menu.icon}
+                            key={menu.key}
+                            onClick={menu.onClick}
+                          >
+                            {menu.title}
+                          </Menu.Item>
+                        )
+                    )}
+                  </Menu.SubMenu>
+                )
+              : !submenu.hidden && (
+                  <Menu.Item
+                    icon={submenu.icon}
+                    key={submenu.key}
+                    onClick={submenu.onClick}
+                  >
+                    {submenu.title}
+                  </Menu.Item>
+                )
           )}
         </Menu>
       </Layout.Sider>
@@ -227,7 +232,7 @@ export const LayoutDashboard = ({ children }) => {
             className="text-xl flex items-center cursor-pointer"
             onClick={() =>
               dispatch({
-                type: TOGGLE_COLLAPSED,
+                type: SIDER_TOGGLE_COLLAPSED,
               })
             }
           >
@@ -272,9 +277,7 @@ export const LayoutDashboard = ({ children }) => {
 };
 
 const getSelectedKey = pathname =>
-  pathname === '/' || /^\/dashboard/.test(pathname)
-    ? 'dashboard'
-    : /^\/customers/.test(pathname)
+  pathname === '/' || /^\/customers/.test(pathname)
     ? 'customers'
     : /^\/trainers/.test(pathname)
     ? 'trainers'
@@ -286,12 +289,12 @@ const getSelectedKey = pathname =>
     ? 'admins'
     : /^\/feedbacks/.test(pathname)
     ? 'feedbacks'
-    : /^\/packages/.test(pathname)
-    ? 'packages'
-    : /^\/payments/.test(pathname)
-    ? 'payments'
+    : /^\/payment-plans/.test(pathname)
+    ? 'payment-plans'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
     : /^\/attendance/.test(pathname)
     ? 'attendance'
+    : /^\/line-labelling/.test(pathname)
+    ? 'line-labelling'
     : null;

@@ -26,9 +26,9 @@ import Webcam from 'react-webcam';
 import { PYTHON_SERVER_URI } from '../common/constants';
 import { base64toBlob } from '../common/services';
 import {
-  // SET_FACES_LAYOUT,
-  TOGGLE_AUTO_DETECT,
-  TOGGLE_WEBCAM_VISIBLE,
+  // USER_WEBCAM_SET_FACES_LAYOUT,
+  USER_WEBCAM_TOGGLE_AUTO_DETECT,
+  USER_WEBCAM_TOGGLE_WEBCAM_VISIBLE,
 } from '../redux/common/common.types';
 
 const { CancelToken } = axios;
@@ -69,6 +69,14 @@ export const UsersCreateCustomerStep2View = ({
       cancelTokenRef.current.cancel();
     };
   }, []);
+
+  useEffect(() => {
+    if (device && streamLoaded && webcamRef.current) {
+      if (autoDetect) {
+        setDetecting(true);
+      }
+    }
+  }, [device, streamLoaded, webcamRef.current]);
 
   useEffect(() => {
     if (detecting) {
@@ -168,7 +176,7 @@ export const UsersCreateCustomerStep2View = ({
         <Button
           onClick={() =>
             dispatch({
-              type: TOGGLE_WEBCAM_VISIBLE,
+              type: USER_WEBCAM_TOGGLE_WEBCAM_VISIBLE,
             })
           }
         >
@@ -276,7 +284,7 @@ export const UsersCreateCustomerStep2View = ({
                   checked={autoDetect}
                   onChange={() =>
                     dispatch({
-                      type: TOGGLE_AUTO_DETECT,
+                      type: USER_WEBCAM_TOGGLE_AUTO_DETECT,
                     })
                   }
                 />
@@ -286,7 +294,7 @@ export const UsersCreateCustomerStep2View = ({
                   checked={webcamVisible}
                   onChange={() => {
                     dispatch({
-                      type: TOGGLE_WEBCAM_VISIBLE,
+                      type: USER_WEBCAM_TOGGLE_WEBCAM_VISIBLE,
                     });
                     setSettingsVisible(false);
                   }}

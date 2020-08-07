@@ -8,26 +8,28 @@ import { getColumnSearchProps } from '../common/antd';
 import { PAGE_SIZE } from '../common/constants';
 import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
-import { PackagesCreatePackageButton } from '../components/packages-create-package-button';
-import { PackagesUpdatePackageButton } from '../components/packages-update-package-button';
+import { PaymentPlansCreatePaymentPlanButton } from '../components/payment-plans-create-payment-plan-button';
+import { PaymentPlansUpdatePaymentPlanButton } from '../components/payment-plans-update-payment-plan-button';
 
-export const Packages = () => {
+export const PaymentPlans = () => {
   const client = useApolloClient();
   const [loading, setLoading] = useState(true);
-  const [packages, setPackages] = useState([]);
+  const [paymentPlans, setPaymentPlans] = useState([]);
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [sort, setSort] = useState('');
-  const [search, setSearch] = useState({ name: '' });
+  const [search, setSearch] = useState({
+    name: '',
+  });
   const [searchAll, setSearchAll] = useState('');
 
-  const fetchPackagesData = async () => {
+  const fetchPaymentPlansData = async () => {
     setLoading(true);
     try {
       const result = await client.query({
         query: gql`
-          query SignIn($query: PackagesQueryInput) {
-            packages(query: $query) {
+          query SignIn($query: PaymentPlansQueryInput) {
+            paymentPlans(query: $query) {
               data {
                 _id
                 name
@@ -43,16 +45,16 @@ export const Packages = () => {
         },
       });
 
-      const fetchedPackagesData = result?.data?.packages?.data ?? [];
-      const fetchedPackagesTotal = result?.data?.packages?.total ?? 0;
-      setPackages(
-        fetchedPackagesData.map((_package, index) => ({
-          key: _package._id,
+      const fetchedPaymentPlansData = result?.data?.paymentPlans?.data ?? [];
+      const fetchedPaymentPlansTotal = result?.data?.paymentPlans?.total ?? 0;
+      setPaymentPlans(
+        fetchedPaymentPlansData.map((paymentPlan, index) => ({
+          key: paymentPlan._id,
           no: skip + index + 1,
-          ..._package,
+          ...paymentPlan,
         }))
       );
-      setTotal(fetchedPackagesTotal);
+      setTotal(fetchedPaymentPlansTotal);
     } catch (e) {
       // Do something
     }
@@ -60,7 +62,7 @@ export const Packages = () => {
   };
 
   useEffect(() => {
-    fetchPackagesData();
+    fetchPaymentPlansData();
   }, [skip, sort, search]);
 
   const generateOnSearch = dataIndex => value => {
@@ -113,29 +115,32 @@ export const Packages = () => {
     },
     {
       key: 'update',
-      render: (text, _package) => (
-        <PackagesUpdatePackageButton
-          _package={_package}
-          onSuccess={updatedPackage =>
-            setPackages(
-              packages.map(currentPackage =>
-                currentPackage._id === updatedPackage._id
+      render: (text, paymentPlan) => (
+        <PaymentPlansUpdatePaymentPlanButton
+          onSuccess={updatedPaymentPlan =>
+            setPaymentPlans(
+              paymentPlans.map(currentPaymentPlan =>
+                currentPaymentPlan._id === updatedPaymentPlan._id
                   ? {
-                      ...currentPackage,
-                      ...updatedPackage,
+                      ...currentPaymentPlan,
+                      ...updatedPaymentPlan,
                     }
-                  : currentPackage
+                  : currentPaymentPlan
               )
             )
           }
+          paymentPlan={paymentPlan}
         />
       ),
       title: 'Update',
     },
     {
       key: 'active',
-      render: _package => (
-        <Switch _package={_package} unCheckedChildren={<CloseOutlined />} />
+      render: paymentPlan => (
+        <Switch
+          paymentPlan={paymentPlan}
+          unCheckedChildren={<CloseOutlined />}
+        />
       ),
       title: 'Active',
     },
@@ -145,7 +150,7 @@ export const Packages = () => {
     <LayoutDashboard>
       <CommonMainContainer>
         <div className="flex items-center">
-          <h1 className="text-3xl flex-1 mr-4">Package Management</h1>
+          <h1 className="text-3xl flex-1 mr-4">Payment Plan Management</h1>
           <Input.Search
             allowClear
             onChange={e => setSearchAll(e.target.value)}
@@ -154,21 +159,20 @@ export const Packages = () => {
                 name: value,
               })
             }
-            placeholder="Search package"
+            placeholder="Search payment plan"
             style={{ width: '14rem' }}
             value={searchAll}
           />
-
-          <PackagesCreatePackageButton
+          <PaymentPlansCreatePaymentPlanButton
             className="ml-4"
-            onSuccess={fetchPackagesData}
+            onSuccess={fetchPaymentPlansData}
           />
         </div>
 
         <Table
           className="overflow-x-auto"
           columns={columns}
-          dataSource={packages}
+          dataSource={paymentPlans}
           loading={loading}
           onChange={handleTableChange}
           pagination={{

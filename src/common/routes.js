@@ -7,11 +7,10 @@ import { _404 } from '../pages/_404';
 import { Attendance } from '../pages/attendance';
 import { Cameras } from '../pages/cameras';
 import { Customers } from '../pages/customers';
-import { Dashboard } from '../pages/dashboard';
 import { Feedbacks } from '../pages/feedbacks';
 import { Home } from '../pages/home';
-import { Packages } from '../pages/packages';
-import { Payments } from '../pages/payments';
+import { LineLabelling } from '../pages/line-labelling';
+import { PaymentPlans } from '../pages/payment-plans';
 import { Profile } from '../pages/profile';
 import { SignIn } from '../pages/sign-in';
 import { Staffs } from '../pages/staffs';
@@ -29,13 +28,7 @@ const publicRoutes = [
 // Manager, owner, admin can access
 const managerOwnerAdminRoutes = [
   {
-    component: Dashboard,
-    exact: true,
-    key: 'dashboard',
-    path: '/dashboard',
-  },
-  {
-    component: Dashboard,
+    component: Customers,
     exact: true,
     key: 'home',
     path: '/',
@@ -76,12 +69,6 @@ const managerOwnerAdminRoutes = [
     key: 'cameras',
     path: '/cameras',
   },
-  {
-    component: Payments,
-    exact: true,
-    key: 'payments',
-    path: '/payments',
-  },
 ];
 
 export const ownerAdminRoutes = [
@@ -92,10 +79,10 @@ export const ownerAdminRoutes = [
     path: '/feedbacks',
   },
   {
-    component: Packages,
+    component: PaymentPlans,
     exact: true,
-    key: 'packages',
-    path: '/packages',
+    key: 'payment-plans',
+    path: '/payment-plans',
   },
   {
     component: Staffs,
@@ -117,6 +104,12 @@ export const adminRoutes = [
     exact: true,
     key: 'admins',
     path: '/admins',
+  },
+  {
+    component: LineLabelling,
+    exact: true,
+    key: 'line-labelling',
+    path: '/line-labelling',
   },
 ];
 
