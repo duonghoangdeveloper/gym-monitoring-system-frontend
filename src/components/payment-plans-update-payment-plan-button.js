@@ -1,10 +1,13 @@
 import { EditOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Form, Input, InputNumber, message, Modal, Select } from 'antd';
+import { Form, Input, InputNumber, message, Modal } from 'antd';
 import gql from 'graphql-tag';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-export const PackagesUpdatePackageButton = ({ _package, onSuccess }) => {
+export const PaymentPlansUpdatePaymentPlanButton = ({
+  onSuccess,
+  paymentPlan,
+}) => {
   const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
@@ -12,9 +15,9 @@ export const PackagesUpdatePackageButton = ({ _package, onSuccess }) => {
 
   const onValuesChange = (_, allValues) => {
     setDisabled(
-      allValues.name === _package.name &&
-        allValues.price === _package.price &&
-        allValues.period === _package.period
+      allValues.name === paymentPlan.name &&
+        allValues.price === paymentPlan.price &&
+        allValues.period === paymentPlan.period
     );
   };
 
@@ -24,12 +27,12 @@ export const PackagesUpdatePackageButton = ({ _package, onSuccess }) => {
 
   const onFinish = async values => {
     const { name, period, price } = values;
-    const { _id } = _package;
+    const { _id } = paymentPlan;
     try {
       const result = await client.mutate({
         mutation: gql`
-          mutation UpdatePackage($_id: ID!, $data: UpdatePackageInput) {
-            updatePackage(_id: $_id, data: $data) {
+          mutation UpdatePaymentPlan($_id: ID!, $data: UpdatePaymentPlanInput) {
+            updatePaymentPlan(_id: $_id, data: $data) {
               _id
               name
               price
@@ -46,9 +49,9 @@ export const PackagesUpdatePackageButton = ({ _package, onSuccess }) => {
           },
         },
       });
-      message.success('Update package succeeded!');
+      message.success('Update paymentPlan succeeded!');
       setVisible(false);
-      onSuccess(result?.data?.updatePackage);
+      onSuccess(result?.data?.updatePaymentPlan);
     } catch (e) {
       message.error(`${e.message.split(': ')[1]}!`);
     }
@@ -71,15 +74,15 @@ export const PackagesUpdatePackageButton = ({ _package, onSuccess }) => {
           setVisible(false);
         }}
         onOk={() => form.submit()}
-        title="Update package"
+        title="Update paymentPlan"
         visible={visible}
       >
         <Form
           form={form}
           initialValues={{
-            name: _package.name,
-            period: _package.period,
-            price: _package.price,
+            name: paymentPlan.name,
+            period: paymentPlan.period,
+            price: paymentPlan.price,
           }}
           layout="vertical"
           onFinish={onFinish}
@@ -90,7 +93,7 @@ export const PackagesUpdatePackageButton = ({ _package, onSuccess }) => {
             name="name"
             rules={[
               {
-                message: 'Please input name of package!',
+                message: 'Please input name of paymentPlan!',
                 required: true,
               },
             ]}

@@ -1,10 +1,10 @@
 import {
   CommentOutlined,
   DownOutlined,
-  FolderAddOutlined,
   FundViewOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  SnippetsOutlined,
   TagsOutlined,
   TeamOutlined,
   ToolOutlined,
@@ -135,10 +135,10 @@ export const LayoutDashboard = ({ children }) => {
     },
     {
       hidden: role !== 'GYM_OWNER' && role !== 'SYSTEM_ADMIN',
-      icon: <FolderAddOutlined />,
-      key: 'packages',
-      onClick: () => history.push('/packages'),
-      title: 'Packages',
+      icon: <SnippetsOutlined />,
+      key: 'payment-plans',
+      onClick: () => history.push('/payment-plans'),
+      title: 'Payment Plans',
     },
     {
       children: [
@@ -289,8 +289,8 @@ const getSelectedKey = pathname =>
     ? 'admins'
     : /^\/feedbacks/.test(pathname)
     ? 'feedbacks'
-    : /^\/packages/.test(pathname)
-    ? 'packages'
+    : /^\/payment-plans/.test(pathname)
+    ? 'payment-plans'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
     : /^\/attendance/.test(pathname)

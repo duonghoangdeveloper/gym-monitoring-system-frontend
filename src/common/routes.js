@@ -10,7 +10,7 @@ import { Customers } from '../pages/customers';
 import { Feedbacks } from '../pages/feedbacks';
 import { Home } from '../pages/home';
 import { LineLabelling } from '../pages/line-labelling';
-import { Packages } from '../pages/packages';
+import { PaymentPlans } from '../pages/payment-plans';
 import { Profile } from '../pages/profile';
 import { SignIn } from '../pages/sign-in';
 import { Staffs } from '../pages/staffs';
@@ -79,10 +79,10 @@ export const ownerAdminRoutes = [
     path: '/feedbacks',
   },
   {
-    component: Packages,
+    component: PaymentPlans,
     exact: true,
-    key: 'packages',
-    path: '/packages',
+    key: 'payment-plans',
+    path: '/payment-plans',
   },
   {
     component: Staffs,
