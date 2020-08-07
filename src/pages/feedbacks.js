@@ -25,7 +25,7 @@ export const Feedbacks = () => {
               feedbacks(query: { skip: 0, sort: "title" }) {
                 data {
                   _id
-                  title
+                  # title
                   content
                   createdAt
                 }
@@ -74,12 +74,12 @@ const columns = [
     key: 'no',
     title: 'No',
   },
-  {
-    dataIndex: 'title',
-    key: 'title',
-    // render: text => <a>{text}</a>,
-    title: 'Title',
-  },
+  // {
+  //   dataIndex: 'title',
+  //   key: 'title',
+  //   // render: text => <a>{text}</a>,
+  //   title: 'Title',
+  // },
   {
     dataIndex: 'content',
     fixed: true,

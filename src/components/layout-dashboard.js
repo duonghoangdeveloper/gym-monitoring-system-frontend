@@ -95,6 +95,13 @@ export const LayoutDashboard = ({ children }) => {
           onClick: () => history.push('/admins'),
           title: 'Admins',
         },
+        {
+          hidden: role !== 'SYSTEM_ADMIN',
+          icon: <DeleteOutlined />,
+          key: 'bin',
+          onClick: () => history.push('/bin'),
+          title: 'User bin',
+        },
       ],
       icon: <UserOutlined />,
       key: 'user-management',
@@ -119,13 +126,6 @@ export const LayoutDashboard = ({ children }) => {
       key: 'cameras',
       onClick: () => history.push('/cameras'),
       title: 'Cameras',
-    },
-    {
-      hidden: role !== 'SYSTEM_ADMIN',
-      icon: <DeleteOutlined />,
-      key: 'bin',
-      onClick: () => history.push('/bin'),
-      title: 'Bin',
     },
   ];
 
