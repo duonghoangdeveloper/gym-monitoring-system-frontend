@@ -3,18 +3,17 @@ import { Button, Form, Input, message } from 'antd';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useHistory } from 'react-router-dom';
 
 import { formItemLayout, tailFormItemLayout } from '../common/antd';
+import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
+import { ProfileAvatar } from '../components/profile-avatar';
 import { UpdatePasswordButton } from '../components/profile-update-password-button';
-import { UPDATE_PROFILE } from '../redux/types/user.types';
+import { UPDATE_PROFILE } from '../redux/user/user.types';
 
 export const Profile = () => {
   const client = useApolloClient();
   const dispatch = useDispatch();
-  const history = useHistory();
-
   const [loading, setLoading] = useState(false);
 
   const onFinish = async values => {
@@ -45,7 +44,7 @@ export const Profile = () => {
         type: UPDATE_PROFILE,
       });
 
-      message.success('Update profile succeed!');
+      message.success('Update profile succeeded!');
     } catch (e) {
       message.error(`${e.message.split(': ')[1]}!`);
     }
@@ -57,7 +56,7 @@ export const Profile = () => {
 
   return (
     <LayoutDashboard>
-      <div className="bg-white shadow p-6 rounded-sm">
+      <CommonMainContainer>
         <Form
           initialValues={{
             _id: me._id,
@@ -97,14 +96,17 @@ export const Profile = () => {
           >
             <Input />
           </Form.Item>
+          <Form.Item label="Avatar">
+            <ProfileAvatar />
+          </Form.Item>
           <Form.Item {...tailFormItemLayout}>
             <Button htmlType="submit" loading={loading} type="primary">
               Update profile
             </Button>
-            <UpdatePasswordButton className="ml-4" />
+            <UpdatePasswordButton className="ml-2" />
           </Form.Item>
         </Form>
-      </div>
+      </CommonMainContainer>
     </LayoutDashboard>
   );
 };

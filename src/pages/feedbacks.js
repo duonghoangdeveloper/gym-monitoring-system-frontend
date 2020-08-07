@@ -6,6 +6,7 @@ import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
 import { DATE_FORMAT, TIME_FORMAT } from '../common/constants';
+import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
 
 export const Feedbacks = () => {
@@ -51,7 +52,7 @@ export const Feedbacks = () => {
 
   return (
     <LayoutDashboard>
-      <div className="bg-white shadow p-6 rounded-sm">
+      <CommonMainContainer>
         <div className="flex justify-between">
           <h1 className="text-3xl">Feedbacks</h1>
         </div>
@@ -61,7 +62,7 @@ export const Feedbacks = () => {
           dataSource={feedbacks}
           loading={loading}
         />
-      </div>
+      </CommonMainContainer>
     </LayoutDashboard>
   );
 };
@@ -75,7 +76,6 @@ const columns = [
   {
     dataIndex: 'title',
     key: 'title',
-    // render: text => <a>{text}</a>,
     title: 'Title',
   },
   {
@@ -103,14 +103,9 @@ const columns = [
     key: 'time',
     title: 'Time',
   },
-  // {
-  //   dataIndex: 'trainer',
-  //   key: 'trainer',
-  //   title: 'Trainer',
-  // },
   {
     key: 'delete',
-    render: (text, user) => (
+    render: () => (
       <a>
         <DeleteOutlined />
         &nbsp;&nbsp;Delete

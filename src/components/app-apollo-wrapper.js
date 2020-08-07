@@ -25,7 +25,7 @@ export const AppApolloWrapper = ({ children }) => {
     const connected = await connect(client);
     if (connected) {
       message.success({
-        content: 'Connect to the server succeed!',
+        content: 'Connect to the server succeeded!',
         duration: 1.5,
         key,
       });

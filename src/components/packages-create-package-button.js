@@ -30,7 +30,7 @@ export const PackagesCreatePackageButton = ({ onSuccess, ...props }) => {
           data: { name, period, price },
         },
       });
-      message.success('Create package succeed!');
+      message.success('Create package succeeded!');
       setVisible(false);
       onSuccess();
     } catch (e) {

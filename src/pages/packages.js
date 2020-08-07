@@ -1,10 +1,11 @@
-import { CloseOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Input, Switch, Table } from 'antd';
+import { Input, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
 import { getColumnSearchProps } from '../common/antd';
+import { PAGE_SIZE } from '../common/constants';
+import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { PackagesCreatePackageButton } from '../components/packages-create-package-button';
 import { PackagesDeletePackageButton } from '../components/packages-delete-package-button';
@@ -19,7 +20,6 @@ export const Packages = () => {
   const [sort, setSort] = useState('');
   const [search, setSearch] = useState({ name: '' });
   const [searchAll, setSearchAll] = useState('');
-  const [_delete, setDelete] = useState(false);
 
   const fetchPackagesData = async () => {
     setLoading(true);
@@ -39,7 +39,7 @@ export const Packages = () => {
           }
         `,
         variables: {
-          query: { limit: 52, search, skip, sort },
+          query: { limit: PAGE_SIZE, search, skip, sort },
         },
       });
 
@@ -61,7 +61,7 @@ export const Packages = () => {
 
   useEffect(() => {
     fetchPackagesData();
-  }, [skip, sort, search, _delete]);
+  }, [skip, sort, search]);
 
   const generateOnSearch = dataIndex => value => {
     setSearch({
@@ -73,7 +73,7 @@ export const Packages = () => {
 
   const handleTableChange = (pagination, filters, sorter) => {
     // Pagination
-    setSkip((pagination.current - 1) * 10);
+    setSkip((pagination.current - 1) * PAGE_SIZE);
 
     // Sorter
     const { columnKey, order } = sorter;
@@ -152,9 +152,9 @@ export const Packages = () => {
 
   return (
     <LayoutDashboard>
-      <div className="bg-white shadow p-6 rounded-sm">
+      <CommonMainContainer>
         <div className="flex items-center">
-          <h1 className="text-3xl flex-1">Package Management</h1>
+          <h1 className="text-3xl flex-1 mr-4">Package Management</h1>
           <Input.Search
             allowClear
             onChange={e => setSearchAll(e.target.value)}
@@ -180,12 +180,12 @@ export const Packages = () => {
           loading={loading}
           onChange={handleTableChange}
           pagination={{
-            current: Math.floor(skip / 10) + 1,
-            pageSize: 10,
+            current: Math.floor(skip / PAGE_SIZE) + 1,
+            pageSize: PAGE_SIZE,
             total,
           }}
         />
-      </div>
+      </CommonMainContainer>
     </LayoutDashboard>
   );
 };

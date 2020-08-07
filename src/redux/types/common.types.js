@@ -1,2 +1,0 @@
-export const TOGGLE_COLLAPSED = 'TOGGLE_COLLAPSED';
-export const SET_OPEN_KEYS = 'SET_OPEN_KEYS';
