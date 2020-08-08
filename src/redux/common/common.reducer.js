@@ -1,18 +1,24 @@
 import {
-  SET_FACES_LAYOUT,
-  SET_OPEN_KEYS,
-  TOGGLE_AUTO_DETECT,
-  TOGGLE_COLLAPSED,
-  TOGGLE_WEBCAM_VISIBLE,
+  LINE_LABELLING_SET_DOWNLOAD_IMAGE_SIZE,
+  LINE_LABELLING_SET_PREVIEW_IMAGE_SIZE,
+  SIDER_SET_OPEN_KEYS,
+  SIDER_TOGGLE_COLLAPSED,
+  USER_WEBCAM_SET_FACES_LAYOUT,
+  USER_WEBCAM_TOGGLE_AUTO_DETECT,
+  USER_WEBCAM_TOGGLE_WEBCAM_VISIBLE,
 } from './common.types';
 
 const INITIAL_STATE = {
+  lineLabelling: {
+    downloadImageSize: 128,
+    previewImageSize: 384,
+  },
   sider: {
     collapsed: false,
-    openKeys: ['user-management', 'monitoring'],
+    openKeys: [],
   },
   userWebcam: {
-    autoDetect: true,
+    autoDetect: false,
     facesLayout: 'FLEX',
     webcamVisible: true,
   },
@@ -20,12 +26,23 @@ const INITIAL_STATE = {
 
 export const commonReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
-    case TOGGLE_COLLAPSED:
+    case LINE_LABELLING_SET_DOWNLOAD_IMAGE_SIZE:
       return {
         ...state,
-        sider: { ...state.sider, collapsed: !state.sider.collapsed },
+        lineLabelling: {
+          ...state.lineLabelling,
+          downloadImageSize: action.payload.downloadImageSize,
+        },
       };
-    case SET_OPEN_KEYS:
+    case LINE_LABELLING_SET_PREVIEW_IMAGE_SIZE:
+      return {
+        ...state,
+        lineLabelling: {
+          ...state.lineLabelling,
+          previewImageSize: action.payload.previewImageSize,
+        },
+      };
+    case SIDER_SET_OPEN_KEYS:
       return {
         ...state,
         sider: {
@@ -33,8 +50,20 @@ export const commonReducer = (state = INITIAL_STATE, action) => {
           openKeys: action.payload.openKeys,
         },
       };
-
-    case TOGGLE_AUTO_DETECT:
+    case SIDER_TOGGLE_COLLAPSED:
+      return {
+        ...state,
+        sider: { ...state.sider, collapsed: !state.sider.collapsed },
+      };
+    case USER_WEBCAM_SET_FACES_LAYOUT:
+      return {
+        ...state,
+        userWebcam: {
+          ...state.userWebcam,
+          facesLayout: action.payload.facesLayout,
+        },
+      };
+    case USER_WEBCAM_TOGGLE_AUTO_DETECT:
       return {
         ...state,
         userWebcam: {
@@ -42,20 +71,12 @@ export const commonReducer = (state = INITIAL_STATE, action) => {
           autoDetect: !state.userWebcam.autoDetect,
         },
       };
-    case TOGGLE_WEBCAM_VISIBLE:
+    case USER_WEBCAM_TOGGLE_WEBCAM_VISIBLE:
       return {
         ...state,
         userWebcam: {
           ...state.userWebcam,
           webcamVisible: !state.userWebcam.webcamVisible,
-        },
-      };
-    case SET_FACES_LAYOUT:
-      return {
-        ...state,
-        userWebcam: {
-          ...state.userWebcam,
-          facesLayout: action.payload.facesLayout,
         },
       };
     default:
