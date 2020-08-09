@@ -1,12 +1,13 @@
+import { CloseOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Input, Table } from 'antd';
+import { Input, Switch, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
 import { getColumnSearchProps } from '../common/antd';
 import { LayoutDashboard } from '../components/layout-dashboard';
+import { PackagesDeletePackageButton } from '../components/packages-delete-package-button';
 import { PaymentsCreatePaymentButton } from '../components/payments-create-payment-button';
-import { PaymentsDeletePaymentButton } from '../components/payments-delete-payment-button';
 import { PaymentsUpdatePaymentButton } from '../components/payments-update-payment-button';
 
 export const Payments = () => {
@@ -132,17 +133,18 @@ export const Payments = () => {
     },
     {
       key: 'delete',
-      render: (text, _payment) => (
-        <PaymentsDeletePaymentButton
-          _payment={_payment}
-          onSuccess={deletedPayment =>
-            setPayments(payments =>
-              payments.filter(
-                currentPayment => currentPayment.key !== deletedPayment._id
-              )
-            )
-          }
+      render: (text, _package) => (
+        <PackagesDeletePackageButton
+          _package={_package}
+          onSuccess={fetchPaymentsData}
         />
+      ),
+      title: 'Delete',
+    },
+    {
+      key: 'active',
+      render: _package => (
+        <Switch _package={_package} unCheckedChildren={<CloseOutlined />} />
       ),
       title: 'Delete',
     },
