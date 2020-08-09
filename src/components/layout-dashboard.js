@@ -1,4 +1,5 @@
 import {
+  CheckCircleOutlined,
   CommentOutlined,
   DownOutlined,
   FundViewOutlined,
@@ -67,6 +68,12 @@ export const LayoutDashboard = ({ children }) => {
   const SIDER_MENU = [
     {
       children: [
+        {
+          icon: <CheckCircleOutlined />,
+          key: 'check-in',
+          onClick: () => history.push('/check-in'),
+          title: 'Check In',
+        },
         {
           icon: <TeamOutlined />,
           key: 'attendance',
@@ -295,6 +302,8 @@ const getSelectedKey = pathname =>
     ? 'cameras'
     : /^\/attendance/.test(pathname)
     ? 'attendance'
+    : /^\/check-in/.test(pathname)
+    ? 'check-in'
     : /^\/line-labelling/.test(pathname)
     ? 'line-labelling'
     : null;
