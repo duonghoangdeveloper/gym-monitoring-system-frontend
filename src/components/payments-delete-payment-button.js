@@ -75,7 +75,7 @@ export const PaymentsDeletePaymentButton = ({ onSuccess, payment }) => {
           {payment.creator.username}
         </Form.Item>
         <Form.Item label="Package" name="Title">
-          {payment.package.name}
+          {payment.paymentPlan.name}
         </Form.Item>
         <Form.Item label="Date" name="Title">
           {payment.date}

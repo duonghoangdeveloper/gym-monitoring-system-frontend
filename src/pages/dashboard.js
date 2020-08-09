@@ -105,56 +105,7 @@ export const Dashboard = () => {
     },
   ];
   // data ladder chart
-  const dataLadderChart = [
-    {
-      month: 'Jan',
-      value: 51,
-    },
-    {
-      month: 'Feb',
-      value: 91,
-    },
-    {
-      month: 'Mar',
-      value: 34,
-    },
-    {
-      month: 'Apr',
-      value: 47,
-    },
-    {
-      month: 'May',
-      value: 63,
-    },
-    {
-      month: 'June',
-      value: 58,
-    },
-    {
-      month: 'July',
-      value: 56,
-    },
-    {
-      month: 'Aug',
-      value: 77,
-    },
-    {
-      month: 'Sep',
-      value: 99,
-    },
-    {
-      month: 'Oct',
-      value: 106,
-    },
-    {
-      month: 'Nov',
-      value: 88,
-    },
-    {
-      month: 'Dec',
-      value: 56,
-    },
-  ];
+
   // data line chart
   const dataLineChart = [
     {
@@ -482,7 +433,6 @@ export const Dashboard = () => {
             >
               <Tabs.TabPane key="1" tab="Customer feedback">
                 <LadderChart
-                  data={dataLadderChart}
                   subTitle="Customer feedback"
                   text="Customer feedback"
                 />

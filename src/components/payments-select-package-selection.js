@@ -5,21 +5,21 @@ import React, { useEffect, useState } from 'react';
 
 const { Option } = Select;
 
-export const PaymentsSelectPackageSelection = ({
+export const PaymentsSelectpaymentPlanSelection = ({
   defaultOptions,
   onDataChange,
   style,
 }) => {
   const client = useApolloClient();
 
-  const [packages, setPackages] = useState([]);
+  const [paymentPlans, setPaymentPlans] = useState([]);
   const [total, setTotal] = useState(0);
-  const fetchPackagesData = async () => {
+  const fetchpaymentPlansData = async () => {
     try {
       const result = await client.query({
         query: gql`
-          query Packages($query: PackagesQueryInput) {
-            packages(query: $query) {
+          query paymentPlans($query: PaymentPlansQueryInput) {
+            paymentPlans(query: $query) {
               data {
                 _id
                 name
@@ -33,23 +33,23 @@ export const PaymentsSelectPackageSelection = ({
         variables: {},
       });
 
-      const fetchedPackagesData = result?.data?.packages?.data ?? [];
-      const fetchedPackagesTotal = result?.data?.packages?.total ?? 0;
-      setPackages(
-        fetchedPackagesData.map(_package => ({
+      const fetchedpaymentPlansData = result?.data?.paymentPlans?.data ?? [];
+      const fetchedpaymentPlansTotal = result?.data?.paymentPlans?.total ?? 0;
+      setPaymentPlans(
+        fetchedpaymentPlansData.map(_package => ({
           key: _package._id,
 
           ..._package,
         }))
       );
-      setTotal(fetchedPackagesTotal);
+      setTotal(fetchedpaymentPlansTotal);
     } catch (e) {
       // Do something
     }
   };
 
   useEffect(() => {
-    fetchPackagesData();
+    fetchpaymentPlansData();
   }, []);
 
   return (
@@ -60,11 +60,11 @@ export const PaymentsSelectPackageSelection = ({
       }
       onChange={onDataChange}
       optionFilterProp="children"
-      placeholder="Select a package"
+      placeholder="Select a payment plan"
       showSearch
       style={style}
     >
-      {packages.map(item => (
+      {paymentPlans.map(item => (
         <Option key={item._id} value={item._id}>
           {item.name}
         </Option>

@@ -6,7 +6,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 
 import { PaymentsSelectCustomerSelection } from './payments-select-customer-selection';
-import { PaymentsSelectPackageSelection } from './payments-select-package-selection';
+import { PaymentsSelectpaymentPlanSelection } from './payments-select-package-selection';
 
 export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
   const client = useApolloClient();
@@ -18,7 +18,7 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
     setVisible(true);
   };
   const handleDataChanged = value => {
-    form.setFieldsValue({ packageId: value });
+    form.setFieldsValue({ paymentPlanId: value });
   };
   const handleDataChangedCustomer = value => {
     form.setFieldsValue({ customerId: value });
@@ -26,7 +26,7 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
   const onFinish = async values => {
     setConfirmLoading(true);
     try {
-      const { customerId, packageId } = values;
+      const { customerId, paymentPlanId } = values;
       await client.mutate({
         mutation: gql`
           mutation createPayment($data: CreatePaymentInput!) {
@@ -36,7 +36,7 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
               customer {
                 username
               }
-              package {
+              paymentPlan {
                 name
                 period
               }
@@ -44,7 +44,7 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
           }
         `,
         variables: {
-          data: { customerId, packageId },
+          data: { customerId, paymentPlanId },
         },
       });
       message.success('Create package succeeded!');
@@ -95,6 +95,7 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
           </Form.Item> */}
 
           <Form.Item
+            label="Customer"
             name="customerId"
             rules={[
               {
@@ -105,12 +106,12 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
           >
             <PaymentsSelectCustomerSelection
               onDataChange={handleDataChangedCustomer}
-              style={{ width: '100%' }}
+              style={{ width: '372px' }}
             />
           </Form.Item>
           <Form.Item
             label="Package"
-            name="packageId"
+            name="paymentPlanId"
             rules={[
               {
                 message: 'Please choose package!',
@@ -118,7 +119,7 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
               },
             ]}
           >
-            <PaymentsSelectPackageSelection
+            <PaymentsSelectpaymentPlanSelection
               onDataChange={handleDataChanged}
               style={{ width: '100%' }}
             />

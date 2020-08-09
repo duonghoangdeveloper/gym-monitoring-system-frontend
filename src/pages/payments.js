@@ -38,7 +38,7 @@ export const Payments = () => {
                 customer {
                   username
                 }
-                package {
+                paymentPlan {
                   _id
                   name
                   price
@@ -118,11 +118,11 @@ export const Payments = () => {
       // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
     },
     {
-      dataIndex: 'package',
-      key: 'package',
-      render: _package => `${_package.name}`,
+      dataIndex: 'paymentPlan',
+      key: 'paymentPlan',
+      render: _paymentPlan => `${_paymentPlan.name}`,
       sorter: true,
-      title: 'Package',
+      title: 'Payment Plan',
       // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
     },
     {

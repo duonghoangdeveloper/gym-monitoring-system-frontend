@@ -1,5 +1,7 @@
 import {
+  BarChartOutlined,
   CommentOutlined,
+  DollarCircleOutlined,
   DownOutlined,
   FundViewOutlined,
   MenuFoldOutlined,
@@ -65,6 +67,12 @@ export const LayoutDashboard = ({ children }) => {
   };
 
   const SIDER_MENU = [
+    {
+      icon: <BarChartOutlined />,
+      key: 'dashboard',
+      onClick: () => history.push('/dashboard'),
+      title: 'Dashboard',
+    },
     {
       children: [
         {
@@ -139,6 +147,12 @@ export const LayoutDashboard = ({ children }) => {
       key: 'payment-plans',
       onClick: () => history.push('/payment-plans'),
       title: 'Payment Plans',
+    },
+    {
+      icon: <DollarCircleOutlined />,
+      key: 'payments',
+      onClick: () => history.push('/payments'),
+      title: 'Payments',
     },
     {
       children: [
@@ -277,7 +291,9 @@ export const LayoutDashboard = ({ children }) => {
 };
 
 const getSelectedKey = pathname =>
-  pathname === '/' || /^\/customers/.test(pathname)
+  pathname === '/' || /^\/dashboard/.test(pathname)
+    ? 'dashboard'
+    : /^\/customers/.test(pathname)
     ? 'customers'
     : /^\/trainers/.test(pathname)
     ? 'trainers'
@@ -291,6 +307,8 @@ const getSelectedKey = pathname =>
     ? 'feedbacks'
     : /^\/payment-plans/.test(pathname)
     ? 'payment-plans'
+    : /^\/payments/.test(pathname)
+    ? 'payments'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
     : /^\/attendance/.test(pathname)

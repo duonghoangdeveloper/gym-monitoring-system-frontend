@@ -15,7 +15,7 @@ import React, { useEffect, useState } from 'react';
 
 import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
 import { PaymentsSelectCustomerSelection } from './payments-select-customer-selection';
-import { PaymentsSelectPackageSelection } from './payments-select-package-selection';
+import { PaymentsSelectpaymentPlanSelection } from './payments-select-package-selection';
 
 const { Option } = Select;
 export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
@@ -38,7 +38,7 @@ export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
   };
 
   const onFinish = async values => {
-    const { customerId, packageId } = values;
+    const { customerId, paymentPlanId } = values;
     setConfirmLoading(true);
     const { _id } = payment;
     try {
@@ -55,7 +55,7 @@ export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
                 username
                 _id
               }
-              package {
+              paymentPlan {
                 _id
                 name
                 price
@@ -66,7 +66,7 @@ export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
         `,
         variables: {
           _id,
-          data: { customerId, packageId },
+          data: { customerId, paymentPlanId },
         },
       });
       message.success('Update payment succeeded!');
@@ -107,31 +107,50 @@ export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
           setVisible(false);
         }}
         onOk={() => form.submit()}
-        title="Update package"
+        title="Update Payment Plan"
         visible={visible}
       >
         <Form
           form={form}
           initialValues={{
             customerId: payment.customer._id,
-            package: payment.package.name,
-            packageId: payment.package._id,
+            paymentPlan: payment.paymentPlan.name,
+            paymentPlanId: payment.paymentPlan._id,
           }}
           layout="vertical"
           onFinish={onFinish}
           // onValuesChange={onValuesChange}
         >
-          <Form.Item label="Package" name="packageId">
-            <PaymentsSelectPackageSelection
-              defaultOptions={payment.package.name}
-              onDataChange={handleDataChanged}
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-          <Form.Item name="customerId">
+          {' '}
+          <Form.Item
+            label="Customer"
+            name="customerId"
+            // rules={[
+            //   {
+            //     message: 'Please input customer!',
+            //     required: true,
+            //   },
+            // ]}
+          >
             <PaymentsSelectCustomerSelection
               defaultOptions={payment.customer.username}
               onDataChange={handleDataChangedCustomer}
+              style={{ width: '372px' }}
+            />
+          </Form.Item>
+          <Form.Item
+            label="Package"
+            name="packageId"
+            // rules={[
+            //   {
+            //     message: 'Please choose package!',
+            //     required: true,
+            //   },
+            // ]}
+          >
+            <PaymentsSelectpaymentPlanSelection
+              defaultOptions={payment.paymentPlan.name}
+              onDataChange={handleDataChanged}
               style={{ width: '100%' }}
             />
           </Form.Item>
