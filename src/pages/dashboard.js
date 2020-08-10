@@ -2,62 +2,34 @@ import 'ant-design-pro/dist/ant-design-pro.css';
 
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import {
-  ChartCard,
-  Charts,
-  Field,
-  MiniArea,
-  MiniBar,
-  MiniProgress,
-} from 'ant-design-pro/lib/Charts';
-import NumberInfo from 'ant-design-pro/lib/NumberInfo';
+import { ChartCard, MiniProgress } from 'ant-design-pro/lib/Charts';
 import Trend from 'ant-design-pro/lib/Trend';
-import {
-  Button,
-  Card,
-  Col,
-  Divider,
-  Form,
-  Icon,
-  Input,
-  message,
-  Row,
-  TabPane,
-  Tabs,
-  Tooltip,
-} from 'antd';
-import { Axis, Chart, Geom, Interval } from 'bizcharts';
-import gql from 'graphql-tag';
-import moment from 'moment';
-import numeral from 'numeral';
+import { Button, Card, Col, Divider, Row, Tabs, Tooltip } from 'antd';
+import { DatePicker, Space } from 'antd';
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 
-import { formItemLayout, tailFormItemLayout } from '../common/antd';
 import { ColumnChart } from '../components/dashboard-column-chart';
+import { CustomerChartCard } from '../components/dashboard-customer-chart-card';
 import { LadderChart } from '../components/dashboard-ladder-chart';
 import { LineChart } from '../components/dashboard-line-chart';
-import { PartPieChart } from '../components/dashboard-part-pie-chart';
+import { PieCharts } from '../components/dashboard-pie-chart';
+import { RevenueChartCard } from '../components/dashboard-revenue-chart-card';
+import { WarningChartCard } from '../components/dashboard-warning-chart-card';
+import { WarningColumnChart } from '../components/dashboard-warning-column-chart';
 import { LayoutDashboard } from '../components/layout-dashboard';
+
+const { RangePicker } = DatePicker;
 
 export const Dashboard = () => {
   const client = useApolloClient();
-
+  const [dateRange, setDateRange] = useState('');
   const dispatch = useDispatch();
   const history = useHistory();
-  const operations = <Button>All Week</Button>;
+  // const operations = <Button>All Week</Button>;
   const beginDay = new Date().getTime();
   // data
-  const visitData = [];
-  for (let i = 0; i < 20; i += 1) {
-    visitData.push({
-      x: moment(new Date(beginDay + 1000 * 60 * 60 * 24 * i)).format(
-        'YYYY-MM-DD'
-      ),
-      y: Math.floor(Math.random() * 100) + 10,
-    });
-  }
 
   // const visitData = [
   //   {
@@ -78,157 +50,7 @@ export const Dashboard = () => {
   //   },
   // ];
   // data part pie chart
-  const dataPartPieChart = [
-    {
-      x: 'Muscle',
-      y: 4544,
-    },
-    {
-      x: 'arm',
-      y: 3321,
-    },
-    {
-      x: 'Leg',
-      y: 3113,
-    },
-    {
-      x: 'hand',
-      y: 2341,
-    },
-    {
-      x: 'shoulder',
-      y: 1231,
-    },
-    {
-      x: 'ankle',
-      y: 1231,
-    },
-  ];
-  // data ladder chart
 
-  // data line chart
-  const dataLineChart = [
-    {
-      city: 'Customer at risk',
-      month: 'Jan',
-      temperature: 7,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'Jan',
-      temperature: 3.9,
-    },
-    {
-      city: 'Customer at risk',
-      month: 'Feb',
-      temperature: 6.9,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'Feb',
-      temperature: 4.2,
-    },
-    {
-      city: 'Customer at risk',
-      month: 'Mar',
-      temperature: 9.5,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'Mar',
-      temperature: 5.7,
-    },
-    {
-      city: 'Customer at risk',
-      month: 'Apr',
-      temperature: 14.5,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'Apr',
-      temperature: 8.5,
-    },
-    {
-      city: 'Customer at risk',
-      month: 'May',
-      temperature: 18.4,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'May',
-      temperature: 11.9,
-    },
-    {
-      city: 'Customer at risk',
-      month: 'Jun',
-      temperature: 21.5,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'Jun',
-      temperature: 15.2,
-    },
-    {
-      city: 'Customer at risk',
-      month: 'Jul',
-      temperature: 25.2,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'Jul',
-      temperature: 17,
-    },
-    {
-      city: 'Customer at risk',
-      month: 'Aug',
-      temperature: 26.5,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'Aug',
-      temperature: 16.6,
-    },
-    {
-      city: 'Customer at risk',
-      month: 'Sep',
-      temperature: 23.3,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'Sep',
-      temperature: 14.2,
-    },
-    {
-      city: 'Customer at risk',
-      month: 'Oct',
-      temperature: 18.3,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'Oct',
-      temperature: 10.3,
-    },
-    {
-      city: 'Customer at risk',
-      month: 'Nov',
-      temperature: 13.9,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'Nov',
-      temperature: 6.6,
-    },
-    {
-      city: 'Customer at risk',
-      month: 'Dec',
-      temperature: 9.6,
-    },
-    {
-      city: 'Trainer Help',
-      month: 'Dec',
-      temperature: 4.8,
-    },
-  ];
   // data column chart
   const dataChart = [
     { month: 'January', sales: 38 },
@@ -246,92 +68,19 @@ export const Dashboard = () => {
   ];
 
   // data pie chart
-  const totalSales = 192131;
-  const [loading, setLoading] = useState(false);
-  const style = { padding: '8px 0' };
+  console.log(dateRange);
   return (
     <LayoutDashboard>
       <div className="mb-6">
         <Row gutter={{ lg: 32, md: 24, sm: 16, xs: 8 }}>
           <Col className="gutter-row " span={6}>
-            <ChartCard
-              action={
-                <Tooltip title="Total sales">
-                  <InfoCircleOutlined />
-                </Tooltip>
-              }
-              contentHeight={46}
-              footer={
-                <Field label="Revenue" value={numeral(12423).format('0,0')} />
-              }
-              title="Revenue"
-              total={() => (
-                <span
-                  dangerouslySetInnerHTML={{
-                    __html: `${numeral(totalSales).format('0,0')} VND`,
-                  }}
-                />
-              )}
-            >
-              <span>
-                Increase
-                <Trend
-                  flag="up"
-                  style={{ color: 'rgba(0,0,0,.85)', marginLeft: 8 }}
-                >
-                  12%
-                </Trend>
-              </span>
-              <span style={{ marginLeft: 16 }}>
-                Decrease
-                <Trend
-                  flag="down"
-                  style={{ color: 'rgba(0,0,0,.85)', marginLeft: 8 }}
-                >
-                  11%
-                </Trend>
-              </span>
-            </ChartCard>
+            <RevenueChartCard />
           </Col>
           <Col className="gutter-row " span={6}>
-            <ChartCard
-              action={
-                <Tooltip title="Total Dangerous">
-                  <InfoCircleOutlined />
-                </Tooltip>
-              }
-              contentHeight={46}
-              footer={
-                <Field
-                  label="Daily Dangerous"
-                  value={numeral(1234).format('0,0')}
-                />
-              }
-              title="Total Dangerous"
-              total={numeral(8846).format('0,0')}
-            >
-              <MiniArea data={visitData} height={45} line />
-            </ChartCard>
+            <WarningChartCard />
           </Col>
           <Col className="gutter-row " span={6}>
-            <ChartCard
-              action={
-                <Tooltip title="Show all customer at gym center">
-                  <InfoCircleOutlined />
-                </Tooltip>
-              }
-              contentHeight={46}
-              footer={
-                <Field
-                  label="Daily Customer"
-                  value={numeral(1234).format('0,0')}
-                />
-              }
-              title="Total Customer"
-              total={numeral(8846).format('0,0')}
-            >
-              <MiniBar data={visitData} height={46} />
-            </ChartCard>
+            <CustomerChartCard />>
           </Col>
           <Col className="gutter-row " span={6}>
             <ChartCard
@@ -374,8 +123,12 @@ export const Dashboard = () => {
 
       <div className="bg-white shadow px-5 py-3 rounded-sm">
         <div className="">
-          <Tabs tabBarExtraContent={operations}>
-            <Tabs.TabPane key="1" tab="Revenue">
+          <Tabs>
+            {/* tabBarExtraContent={operations} */}
+            <Tabs.TabPane key="1" tab="Warning">
+              <WarningColumnChart />
+            </Tabs.TabPane>
+            <Tabs.TabPane key="2" tab="Revenue">
               <ColumnChart data={dataChart} text="Revenue" />
             </Tabs.TabPane>
             <Tabs.TabPane key="3" tab="Customer">
@@ -390,30 +143,7 @@ export const Dashboard = () => {
           style={{ width: '50%' }}
         >
           <div className="">
-            <Tabs
-              tabBarExtraContent={
-                <div>
-                  <Button>All Week</Button>
-                  <Button>All Month</Button>
-                  <Button>All Year</Button>
-                </div>
-              }
-            >
-              <Tabs.TabPane key="1" tab="Common Dangerous">
-                <PartPieChart
-                  data={dataPartPieChart}
-                  subTitle="All dangerous happened"
-                  text="Dangerous"
-                />
-              </Tabs.TabPane>
-              <Tabs.TabPane key="2" tab="Package">
-                <PartPieChart
-                  data={dataPartPieChart}
-                  subTitle="All package sold"
-                  text="Package"
-                />
-              </Tabs.TabPane>
-            </Tabs>
+            <PieCharts />
           </div>
         </div>
 
@@ -423,13 +153,13 @@ export const Dashboard = () => {
         >
           <div className="">
             <Tabs
-              tabBarExtraContent={
-                <div>
-                  <Button>All Week</Button>
-                  <Button>All Month</Button>
-                  <Button>All Year</Button>
-                </div>
-              }
+            // tabBarExtraContent={
+            //   <div>
+            //     <Button>All Week</Button>
+            //     <Button>All Month</Button>
+            //     <Button>All Year</Button>
+            //   </div>
+            // }
             >
               <Tabs.TabPane key="1" tab="Customer feedback">
                 <LadderChart
@@ -443,9 +173,10 @@ export const Dashboard = () => {
       </div>
       <div className="bg-white shadow px-5 py-3 mt-6 mr-5 w-full rounded-sm">
         <div className="">
-          <Tabs tabBarExtraContent={operations}>
+          <Tabs>
+            {/* tabBarExtraContent={operations} */}
             <Tabs.TabPane key="1" tab="Risk and Help">
-              <LineChart data={dataLineChart} />
+              <LineChart />
             </Tabs.TabPane>
           </Tabs>
         </div>

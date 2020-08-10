@@ -23,3 +23,12 @@ code {
 * {
   outline: none !important;
 }
+.anticon anticon-calendar{
+  margin-bottom:100px !important;
+}
+.ant-picker-separator{
+  margin-bottom:5px;
+}
+.ant-picker-suffix{
+  margin-bottom:5px;
+}

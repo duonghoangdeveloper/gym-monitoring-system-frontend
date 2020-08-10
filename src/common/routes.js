@@ -6,6 +6,7 @@ import { _403 } from '../pages/_403';
 import { _404 } from '../pages/_404';
 import { Attendance } from '../pages/attendance';
 import { Cameras } from '../pages/cameras';
+import { CheckIn } from '../pages/check-in';
 import { Customers } from '../pages/customers';
 // Everyone can access
 import { Dashboard } from '../pages/dashboard';
@@ -82,6 +83,12 @@ const managerOwnerAdminRoutes = [
     exact: true,
     key: 'payments',
     path: '/payments',
+  },
+  {
+    component: CheckIn,
+    exact: true,
+    key: 'check-in',
+    path: '/check-in',
   },
 ];
 

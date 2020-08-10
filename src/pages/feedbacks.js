@@ -47,8 +47,7 @@ export const Feedbacks = () => {
 
       const fetchedFeedbacksData = result?.data?.feedbacks?.data ?? [];
       const fetchedFeedbacksTotal = result?.data?.feedbacks?.total ?? 0;
-      console.log(fetchedFeedbacksTotal);
-      console.log(fetchedFeedbacksData);
+
       setFeedbacks(
         fetchedFeedbacksData.map((feedback, index) => ({
           key: feedback._id,

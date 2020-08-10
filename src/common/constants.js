@@ -39,6 +39,7 @@ export const ALL_ROLES = [
 export const USER_GENDERS = ['MALE', 'FEMALE', 'OTHER'];
 
 export const DATE_FORMAT = 'DD/MM/YYYY';
+export const DATE_FORMAT_US = 'YYYY-MM-DD';
 
 export const DATE_TIME_FORMAT = 'DD/MM/YYYY, HH:mm';
 

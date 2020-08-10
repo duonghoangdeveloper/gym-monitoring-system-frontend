@@ -75,7 +75,6 @@ export const LadderChart = ({ text }) => {
   }, {});
   const dataLadderChart = Object.values(resultdata).reverse();
 
-  console.log(dataLadderChart);
   return (
     <div>
       <div className="flex justify-between">
@@ -84,7 +83,7 @@ export const LadderChart = ({ text }) => {
       <Chart
         autoFit
         data={dataLadderChart}
-        height={300}
+        height={350}
         padding={[10, 20, 50, 40]}
         scale={{ value: { min: 0 } }}
       >

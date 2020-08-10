@@ -1,5 +1,6 @@
 import {
   BarChartOutlined,
+  CheckCircleOutlined,
   CommentOutlined,
   DollarCircleOutlined,
   DownOutlined,
@@ -75,6 +76,12 @@ export const LayoutDashboard = ({ children }) => {
     },
     {
       children: [
+        {
+          icon: <CheckCircleOutlined />,
+          key: 'check-in',
+          onClick: () => history.push('/check-in'),
+          title: 'Check In',
+        },
         {
           icon: <TeamOutlined />,
           key: 'attendance',
@@ -313,6 +320,8 @@ const getSelectedKey = pathname =>
     ? 'cameras'
     : /^\/attendance/.test(pathname)
     ? 'attendance'
+    : /^\/check-in/.test(pathname)
+    ? 'check-in'
     : /^\/line-labelling/.test(pathname)
     ? 'line-labelling'
     : null;
