@@ -8,15 +8,17 @@ import { Attendance } from '../pages/attendance';
 import { Cameras } from '../pages/cameras';
 import { CheckIn } from '../pages/check-in';
 import { Customers } from '../pages/customers';
+// Everyone can access
+import { Dashboard } from '../pages/dashboard';
 import { Feedbacks } from '../pages/feedbacks';
 import { Home } from '../pages/home';
 import { LineLabelling } from '../pages/line-labelling';
 import { PaymentPlans } from '../pages/payment-plans';
+import { Payments } from '../pages/payments';
 import { Profile } from '../pages/profile';
 import { SignIn } from '../pages/sign-in';
 import { Staffs } from '../pages/staffs';
 
-// Everyone can access
 const publicRoutes = [
   {
     component: SignIn,
@@ -29,7 +31,13 @@ const publicRoutes = [
 // Manager, owner, admin can access
 const managerOwnerAdminRoutes = [
   {
-    component: Customers,
+    component: Dashboard,
+    exact: true,
+    key: 'dashboard',
+    path: '/dashboard',
+  },
+  {
+    component: Dashboard,
     exact: true,
     key: 'home',
     path: '/',
@@ -69,6 +77,12 @@ const managerOwnerAdminRoutes = [
     exact: true,
     key: 'cameras',
     path: '/cameras',
+  },
+  {
+    component: Payments,
+    exact: true,
+    key: 'payments',
+    path: '/payments',
   },
   {
     component: CheckIn,
