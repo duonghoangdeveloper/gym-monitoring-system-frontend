@@ -18,6 +18,7 @@ import { Payments } from '../pages/payments';
 import { Profile } from '../pages/profile';
 import { SignIn } from '../pages/sign-in';
 import { Staffs } from '../pages/staffs';
+import { Warnings } from '../pages/warnings';
 
 const publicRoutes = [
   {
@@ -83,6 +84,12 @@ const managerOwnerAdminRoutes = [
     exact: true,
     key: 'payments',
     path: '/payments',
+  },
+  {
+    component: Warnings,
+    exact: true,
+    key: 'warnings',
+    path: '/warnings',
   },
   {
     component: CheckIn,

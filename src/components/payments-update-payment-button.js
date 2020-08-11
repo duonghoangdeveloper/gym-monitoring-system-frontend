@@ -1,31 +1,21 @@
 import { EditOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import {
-  Form,
-  Input,
-  InputNumber,
-  message,
-  Modal,
-  Select,
-  Typography,
-} from 'antd';
+import { Form, message, Modal, Typography } from 'antd';
 import gql from 'graphql-tag';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
+import { DATE_FORMAT } from '../common/constants';
 import { PaymentsSelectCustomerSelection } from './payments-select-customer-selection';
-import { PaymentsSelectpaymentPlanSelection } from './payments-select-package-selection';
+import { PaymentsSelectpaymentPlanSelection } from './payments-select-paymentPlan-selection';
 
-const { Option } = Select;
 export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
   const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
-  const [disabled, setDisabled] = useState(true);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const handleDataChanged = value => {
-    form.setFieldsValue({ packageId: value });
+    form.setFieldsValue({ paymentPlanId: value });
   };
   const handleDataChangedCustomer = value => {
     form.setFieldsValue({ customerId: value });
@@ -74,8 +64,8 @@ export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
       onSuccess(result?.data?.updatePayment);
       setConfirmLoading(false);
     } catch (e) {
-      // message.error(`${e.message.split(': ')[1]}!`);
-      // message.error('Update payment failed!');
+      message.error(`${e.message.split(': ')[1]}!`);
+      message.error('Update payment failed!');
     }
   };
 
@@ -140,7 +130,7 @@ export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
           </Form.Item>
           <Form.Item
             label="Package"
-            name="packageId"
+            name="paymentPlanId"
             // rules={[
             //   {
             //     message: 'Please choose package!',
@@ -154,9 +144,6 @@ export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
               style={{ width: '100%' }}
             />
           </Form.Item>
-          {/* <Form.Item label="Customer" name="customerId">
-            <Input placeholder="Enter period" style={{ width: '100%' }} />
-          </Form.Item> */}
         </Form>
       </Modal>
     </>

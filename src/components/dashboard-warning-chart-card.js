@@ -1,21 +1,18 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { ChartCard, Charts, Field, MiniArea } from 'ant-design-pro/lib/Charts';
-import Trend from 'ant-design-pro/lib/Trend';
+import { ChartCard, Field, MiniArea } from 'ant-design-pro/lib/Charts';
 import { Tooltip } from 'antd';
 import gql from 'graphql-tag';
 import moment from 'moment';
 import numeral from 'numeral';
 import React, { useEffect, useState } from 'react';
 
-import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
-
 export const WarningChartCard = () => {
   const client = useApolloClient();
   const [warnings, setWarnings] = useState([]);
   const [total, setTotal] = useState(0);
-  const [skip, setSkip] = useState(0);
-  const [sort, setSort] = useState('');
+  // const [skip, setSkip] = useState(0);
+  // const [sort, setSort] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const visitData = [];
@@ -36,9 +33,6 @@ export const WarningChartCard = () => {
           query($query: WarningsQueryInput) {
             warnings(query: $query) {
               data {
-                customer {
-                  username
-                }
                 createdAt
                 status
               }
@@ -47,7 +41,7 @@ export const WarningChartCard = () => {
           }
         `,
         variables: {
-          query: { createdBetween: { from, to }, limit: skip, sort },
+          query: { createdBetween: { from, to }, limit: 100000000 },
         },
       });
 
@@ -55,7 +49,7 @@ export const WarningChartCard = () => {
       const fetchedPaymentsTotal = result?.data?.warnings?.total ?? 0;
 
       setWarnings(
-        fetchedWarningsData.map((warning, index) => ({
+        fetchedWarningsData.map(warning => ({
           key: warning._id,
           ...warning,
         }))

@@ -1,11 +1,10 @@
 import { useApolloClient } from '@apollo/react-hooks';
-import { Form, Input, message, Select, Space, Tabs } from 'antd';
+import { Select, Space, Tabs } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
 const { Option } = Select;
 
-const { TabPane } = Tabs;
 export const PaymentsSelectCustomerSelection = ({
   defaultOptions,
   onDataChange,

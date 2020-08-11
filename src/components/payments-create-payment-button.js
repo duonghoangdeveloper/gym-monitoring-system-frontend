@@ -1,12 +1,11 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Form, Input, InputNumber, message, Modal, Select } from 'antd';
+import { Button, Form, message, Modal } from 'antd';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 
 import { PaymentsSelectCustomerSelection } from './payments-select-customer-selection';
-import { PaymentsSelectpaymentPlanSelection } from './payments-select-package-selection';
+import { PaymentsSelectpaymentPlanSelection } from './payments-select-paymentPlan-selection';
 
 export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
   const client = useApolloClient();

@@ -13,6 +13,7 @@ import {
   ToolOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Avatar, Dropdown, Layout, Menu } from 'antd';
@@ -160,6 +161,12 @@ export const LayoutDashboard = ({ children }) => {
       key: 'payments',
       onClick: () => history.push('/payments'),
       title: 'Payments',
+    },
+    {
+      icon: <WarningOutlined />,
+      key: 'warnings',
+      onClick: () => history.push('/warnings'),
+      title: 'Warnings History',
     },
     {
       children: [
@@ -316,6 +323,10 @@ const getSelectedKey = pathname =>
     ? 'payment-plans'
     : /^\/payments/.test(pathname)
     ? 'payments'
+    : /^\/payments/.test(pathname)
+    ? 'payments'
+    : /^\/warnings/.test(pathname)
+    ? 'warnings'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
     : /^\/attendance/.test(pathname)
