@@ -1,27 +1,16 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import {
-  ChartCard,
-  Charts,
-  Field,
-  MiniArea,
-  MiniBar,
-} from 'ant-design-pro/lib/Charts';
-import Trend from 'ant-design-pro/lib/Trend';
+import { ChartCard, Field, MiniBar } from 'ant-design-pro/lib/Charts';
 import { Tooltip } from 'antd';
 import gql from 'graphql-tag';
 import moment from 'moment';
 import numeral from 'numeral';
 import React, { useEffect, useState } from 'react';
 
-import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
-
 export const CustomerChartCard = () => {
   const client = useApolloClient();
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
-  const [skip, setSkip] = useState(0);
-  const [sort, setSort] = useState('');
   const visitData = [];
   const beginDay = new Date().getTime();
 
@@ -41,15 +30,14 @@ export const CustomerChartCard = () => {
             users(query: $query) {
               data {
                 _id
-
-                username
               }
               total
             }
           }
         `,
         variables: {
-          query: { limit: PAGE_SIZE, skip, sort },
+          limit: 100000000,
+          query: { filter: { role: 'CUSTOMER' } },
           //  search,
         },
       });
@@ -57,8 +45,7 @@ export const CustomerChartCard = () => {
       const fetchedUserssData = result?.data?.users?.data ?? [];
       const fetchedPaymentsTotal = result?.data?.users?.total ?? 0;
       setUsers(
-        fetchedUserssData.map((_payment, index) => ({
-          no: skip + index + 1,
+        fetchedUserssData.map(_payment => ({
           ..._payment,
         }))
       );
@@ -74,7 +61,7 @@ export const CustomerChartCard = () => {
   // const totalRevenue = payments.forEach(p => p.paymentPlan.price * p.total);
   // console.log(totalRevenue);
   // console.log(Object.keys(payments).forEach(ps => ps.Payment));
-  // console.log(payments.forEach(p => p._id));
+  // console.log(users.forEach(p => p._id));
 
   return (
     <ChartCard
