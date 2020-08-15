@@ -1,5 +1,5 @@
 /* eslint-disable no-bitwise */
-// import { SIGN_OUT } from '../apollo/mutation';
+import { message } from 'antd';
 import gql from 'graphql-tag';
 
 import { AUTH_ROLES, TOKEN_KEY } from './constants';
@@ -150,4 +150,56 @@ export const base64toBlob = dataURI => {
   }
 
   return new Blob([ia], { type: mimeString });
+};
+
+export const base64ToFile = (dataurl, name = 'avatar') => {
+  const arr = dataurl.split(',');
+  const mime = arr[0].match(/:(.*?);/)[1];
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
+
+  while (n >= 0) {
+    u8arr[n] = bstr.charCodeAt(n);
+    n -= 1;
+  }
+
+  return new File([u8arr], name, { type: mime });
+};
+
+export const validateObjectId = id => id.match(/^[0-9a-fA-F]{24}$/);
+
+export const validateNumber = n =>
+  typeof n === 'number' && !Number.isNaN(n) && Number.isFinite(n);
+
+export const round = (n, decimal = 0) =>
+  Math.round(n * 10 ** decimal) / 10 ** decimal;
+
+export const fileToBase64 = file =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+
+export const getBase64ImageDimensions = base64 =>
+  new Promise(resolve => {
+    const image = new window.Image();
+    image.onload = function() {
+      resolve({ height: image.height, width: image.width });
+    };
+    image.src = base64;
+  });
+
+export const validateFile = file => {
+  const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
+  if (!isJpgOrPng) {
+    message.error('You can only upload JPG/PNG file!');
+  }
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error('Image must smaller than 2MB!');
+  }
+  return isJpgOrPng && isLt2M;
 };

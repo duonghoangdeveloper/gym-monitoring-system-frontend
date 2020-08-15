@@ -1,11 +1,13 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Form, Input, InputNumber, message, Modal, Select } from 'antd';
+import { Button, Form, Input, InputNumber, message, Modal } from 'antd';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 
-export const PackagesCreatePackageButton = ({ onSuccess, ...props }) => {
+export const PaymentPlansCreatePaymentPlanButton = ({
+  onSuccess,
+  ...props
+}) => {
   const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
@@ -19,8 +21,8 @@ export const PackagesCreatePackageButton = ({ onSuccess, ...props }) => {
       const { name, period, price } = values;
       await client.mutate({
         mutation: gql`
-          mutation CreatePackage($data: CreatePackageInput!) {
-            createPackage(data: $data) {
+          mutation CreatePaymentPlan($data: CreatePaymentPlanInput!) {
+            createPaymentPlan(data: $data) {
               name
               price
               period
@@ -31,7 +33,7 @@ export const PackagesCreatePackageButton = ({ onSuccess, ...props }) => {
           data: { name, period, price },
         },
       });
-      message.success('Create package succeeded!');
+      message.success('Create paymentPlan succeeded!');
       setVisible(false);
       onSuccess();
     } catch (e) {
@@ -43,7 +45,7 @@ export const PackagesCreatePackageButton = ({ onSuccess, ...props }) => {
   return (
     <>
       <Button icon={<PlusOutlined />} onClick={handleClick} {...props}>
-        Create Package
+        Create Payment Plan
       </Button>
       <Modal
         className="select-none"
@@ -56,7 +58,7 @@ export const PackagesCreatePackageButton = ({ onSuccess, ...props }) => {
           setVisible(false);
         }}
         onOk={() => form.submit()}
-        title="Create Package"
+        title="Create Payment Plan"
         visible={visible}
       >
         <Form form={form} layout="vertical" onFinish={onFinish}>
@@ -65,7 +67,7 @@ export const PackagesCreatePackageButton = ({ onSuccess, ...props }) => {
             name="name"
             rules={[
               {
-                message: 'Please input name of package!',
+                message: 'Please input name of payment plan!',
                 required: true,
               },
             ]}

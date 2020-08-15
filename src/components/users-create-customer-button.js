@@ -1,62 +1,84 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Form, message, Modal, Steps } from 'antd';
+import { Button, message, Modal, Steps } from 'antd';
 import gql from 'graphql-tag';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { base64ToFile } from '../common/services';
 import { UsersCreateCustomerStep1View } from './users-create-customer-step-1-view';
 import { UsersCreateCustomerStep2View } from './users-create-customer-step-2-view';
 import { UsersCreateCustomerStep3View } from './users-create-customer-step-3-view';
 import { UsersCreateCustomerStep4View } from './users-create-customer-step-4-view';
+import { UsersCreateCustomerStep5View } from './users-create-customer-step-5-view';
 
 export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
   const client = useApolloClient();
-  const [form] = Form.useForm();
-  const [visible, setVisible] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
+  const [visible, setVisible] = useState(true);
+  const [currentStep, setCurrentStep] = useState(4);
+  const [customerData, setCustomerData] = useState(INITIAL_CUSTOMER_DATA);
+  const [loading, setLoading] = useState(true);
+  const [paymentPlans, setPaymentPlans] = useState([]);
+  const [payment, setPayment] = useState();
 
-  const [customerData, setCustomerData] = useState({
-    step1: {},
-    step2: {},
-    step3: {},
-  });
+  useEffect(() => {
+    if (!visible) {
+      const timeoutId = setTimeout(() => {
+        setCustomerData(INITIAL_CUSTOMER_DATA);
+        if (currentStep !== 1) {
+          setCurrentStep(0);
+        }
+      }, 500);
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [visible]);
 
   const handleClick = () => {
     setVisible(true);
   };
+
   const createCustomer = async () => {
     try {
       const { displayName, email, gender, phone } = customerData.step1;
       const { password, username } = customerData.step3;
 
-      await client.mutate({
-        mutation: gql`
-          mutation CreateUser($data: CreateUserInput!) {
-            createUser(data: $data) {
-              displayName
-              email
-              gender
-              phone
-              role
-              username
+      const base64Faces = (customerData.step2 || [])
+        .filter(sameAngleFaces => sameAngleFaces.length > 0)
+        .map(sameAngleFaces => sameAngleFaces[sameAngleFaces.length - 1]);
+
+      if (base64Faces.length === 9) {
+        await client.mutate({
+          mutation: gql`
+            mutation CreateUser($data: CreateUserInput!) {
+              createUser(data: $data) {
+                displayName
+                email
+                gender
+                phone
+                role
+                username
+              }
             }
-          }
-        `,
-        variables: {
-          data: {
-            displayName,
-            email,
-            gender,
-            password,
-            phone,
-            role: 'CUSTOMER',
-            username,
+          `,
+          variables: {
+            data: {
+              displayName,
+              email,
+              faces: base64Faces.map(base64 => base64ToFile(base64)),
+              gender,
+              password,
+              phone,
+              role: 'CUSTOMER',
+              username,
+            },
           },
-        },
-      });
-      message.success('Create customer succeeded!');
-      setVisible(false);
-      onSuccess();
+        });
+        message.success('Create customer succeeded!');
+        setVisible(false);
+        onSuccess();
+      } else {
+        message.error('Not enough 9 registered face images!');
+      }
     } catch (e) {
       const msg = e.message.split(': ')[1] ?? e.message;
       message.error(`${msg}!`);
@@ -82,10 +104,18 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
         return (
           <UsersCreateCustomerStep2View
             customerData={customerData}
-            onNext={() => {
+            onNext={faces => {
+              setCustomerData({
+                ...customerData,
+                step2: faces,
+              });
               setCurrentStep(2);
             }}
-            onPrev={() => {
+            onPrev={faces => {
+              setCustomerData({
+                ...customerData,
+                step2: faces,
+              });
               setCurrentStep(0);
             }}
           />
@@ -110,9 +140,7 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
         return (
           <UsersCreateCustomerStep4View
             customerData={customerData}
-            onDone={() => {
-              createCustomer();
-            }}
+            onDone={createCustomer()}
             onPrev={() => {
               setCurrentStep(2);
             }}
@@ -129,20 +157,20 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
         Create Customer
       </Button>
       <Modal
-        className="select-none"
         footer={null}
         maskClosable={false}
         onCancel={() => setVisible(false)}
-        onOk={() => form.submit()}
         title="Create Customer"
         visible={visible}
         width={640}
       >
         <div>
           <Steps current={currentStep}>
-            {steps.map(item => (
-              <Steps.Step key={item.title} title={item.title} />
-            ))}
+            <Steps.Step title="Info" />
+            <Steps.Step title="Face ID" />
+            <Steps.Step title="Auth" />
+            <Steps.Step title="Review" />
+            <Steps.Step title="Payment" />
           </Steps>
           <div className="mt-6">{generateStepView(currentStep)}</div>
         </div>
@@ -151,17 +179,8 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
   );
 };
 
-const steps = [
-  {
-    title: 'Step 1',
-  },
-  {
-    title: 'Step 2',
-  },
-  {
-    title: 'Step 3',
-  },
-  {
-    title: 'Step 4',
-  },
-];
+const INITIAL_CUSTOMER_DATA = {
+  step1: {},
+  step2: null,
+  step3: {},
+};

@@ -5,6 +5,7 @@ import React, { useEffect, useState } from 'react';
 
 import { getColumnSearchProps } from '../common/antd';
 import { PAGE_SIZE } from '../common/constants';
+import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { UsersCreateCustomerButton } from '../components/users-create-customer-button';
 import { UsersRemoveUserButton } from '../components/users-remove-user-button';
@@ -147,9 +148,9 @@ export const Customers = () => {
 
   return (
     <LayoutDashboard>
-      <div className="bg-white shadow p-6 rounded-sm">
+      <CommonMainContainer>
         <div className="flex items-center">
-          <h1 className="text-3xl flex-1">Customer Management</h1>
+          <h1 className="text-3xl flex-1 mr-4">Customer Management</h1>
           <Input.Search
             allowClear
             onChange={e => setSearchAll(e.target.value)}
@@ -181,7 +182,7 @@ export const Customers = () => {
             total,
           }}
         />
-      </div>
+      </CommonMainContainer>
     </LayoutDashboard>
   );
 };

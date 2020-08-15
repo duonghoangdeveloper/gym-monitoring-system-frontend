@@ -4,12 +4,14 @@ import { Route } from 'react-router-dom';
 import { AppAuthRoute } from '../components/app-auth-route';
 import { _403 } from '../pages/_403';
 import { _404 } from '../pages/_404';
+import { Attendance } from '../pages/attendance';
 import { Bin } from '../pages/bin';
 import { Cameras } from '../pages/cameras';
 import { Customers } from '../pages/customers';
 import { Feedbacks } from '../pages/feedbacks';
 import { Home } from '../pages/home';
-import { Packages } from '../pages/packages';
+import { LineLabelling } from '../pages/line-labelling';
+import { PaymentPlans } from '../pages/payment-plans';
 import { Profile } from '../pages/profile';
 import { SignIn } from '../pages/sign-in';
 import { Staffs } from '../pages/staffs';
@@ -57,6 +59,12 @@ const managerOwnerAdminRoutes = [
     path: '/customers',
   },
   {
+    component: Attendance,
+    exact: true,
+    key: 'attendance',
+    path: '/attendance',
+  },
+  {
     component: Cameras,
     exact: true,
     key: 'cameras',
@@ -72,10 +80,10 @@ export const ownerAdminRoutes = [
     path: '/feedbacks',
   },
   {
-    component: Packages,
+    component: PaymentPlans,
     exact: true,
-    key: 'packages',
-    path: '/packages',
+    key: 'payment-plans',
+    path: '/payment-plans',
   },
   {
     component: Staffs,
@@ -103,6 +111,12 @@ export const adminRoutes = [
     exact: true,
     key: 'bin',
     path: '/bin',
+  },
+  {
+    component: LineLabelling,
+    exact: true,
+    key: 'line-labelling',
+    path: '/line-labelling',
   },
 ];
 
