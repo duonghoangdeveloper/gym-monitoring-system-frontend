@@ -19,6 +19,7 @@ import { Circle, Layer, Line, Rect, Stage } from 'react-konva';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
+  calculate2LineTails,
   fileToBase64,
   getBase64ImageDimensions,
   round,
@@ -92,11 +93,11 @@ export const LineLabelling = () => {
     const newFilesData = filesData.map(fileData =>
       fileData.key === key
         ? {
-          ...fileData,
-          originPoint: newOriginPoint,
-          theta0: newTheta0,
-          theta1: newTheta1,
-        }
+            ...fileData,
+            originPoint: newOriginPoint,
+            theta0: newTheta0,
+            theta1: newTheta1,
+          }
         : fileData
     );
     setFilesData(newFilesData);
@@ -246,7 +247,10 @@ export const LineLabelling = () => {
             const lineTails = calculate2LineTails(
               fileData.theta0,
               fileData.theta1,
-              previewImageSize
+              {
+                height: previewImageSize,
+                width: previewImageSize,
+              }
             );
             const validToSave =
               validateNumber(fileData.theta0) &&
@@ -326,9 +330,9 @@ export const LineLabelling = () => {
                       <Descriptions.Item label="Filename">
                         {validToSave
                           ? `${round(
-                            fileData.theta0 / previewImageSize,
-                            6
-                          )}_${round(fileData.theta1, 6)}.jpeg`
+                              fileData.theta0 / previewImageSize,
+                              6
+                            )}_${round(fileData.theta1, 6)}.jpeg`
                           : 'N/A'}
                       </Descriptions.Item>
                       {/* <Descriptions.Item label="Mime Type">
@@ -413,73 +417,12 @@ const lineFromPoints = (point1, point2) => {
   };
 };
 
-const calculate2LineTails = (theta0, theta1, canvasSize) => {
-  if (
-    theta0 !== null &&
-    theta1 !== null &&
-    !Number.isNaN(theta0) &&
-    !Number.isNaN(theta1)
-  ) {
-    // Line: y = theta0 + theta1 * x
-
-    // y = 0 => x = - theta0 / theta1
-    const topCrossPointX = -theta0 / theta1;
-    const topCrossPoint =
-      topCrossPointX >= 0 && topCrossPointX <= canvasSize
-        ? {
-          x: topCrossPointX,
-          y: 0,
-        }
-        : null;
-
-    // x = 0 => y = theta0
-    const leftCrossPointY = theta0;
-    const leftCrossPoint =
-      leftCrossPointY >= 0 && leftCrossPointY <= canvasSize
-        ? {
-          x: 0,
-          y: leftCrossPointY,
-        }
-        : null;
-
-    // y = canvasSize => x = (canvasSize - theta0) / theta1
-    const bottomCrossPointX = (canvasSize - theta0) / theta1;
-    const bottomCrossPoint =
-      bottomCrossPointX >= 0 && bottomCrossPointX <= canvasSize
-        ? {
-          x: bottomCrossPointX,
-          y: canvasSize,
-        }
-        : null;
-
-    // x = canvasSize => y = theta0 + theta1 * canvasSize
-    const rightCrossPointY = theta0 + theta1 * canvasSize;
-    const rightCrossPoint =
-      rightCrossPointY >= 0 && rightCrossPointY <= canvasSize
-        ? {
-          x: canvasSize,
-          y: rightCrossPointY,
-        }
-        : null;
-
-    return [
-      topCrossPoint,
-      leftCrossPoint,
-      bottomCrossPoint,
-      rightCrossPoint,
-    ].filter(_ => _);
-  }
-
-  return [];
-};
-
 const saveFile = (fileData, previewImageSize, downloadImageSize) =>
   new Promise((resolve, reject) => {
-    const lineTails = calculate2LineTails(
-      fileData.theta0,
-      fileData.theta1,
-      previewImageSize
-    );
+    const lineTails = calculate2LineTails(fileData.theta0, fileData.theta1, {
+      height: previewImageSize,
+      width: previewImageSize,
+    });
     const validToSave =
       validateNumber(fileData.theta0) &&
       validateNumber(fileData.theta1) &&
@@ -491,7 +434,7 @@ const saveFile = (fileData, previewImageSize, downloadImageSize) =>
         6
       )}.jpeg`;
       const image = new window.Image();
-      image.onload = function () {
+      image.onload = function() {
         const canvas = document.createElement('canvas');
         canvas.width = downloadImageSize;
         canvas.height = downloadImageSize;

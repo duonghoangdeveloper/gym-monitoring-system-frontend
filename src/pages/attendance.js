@@ -17,7 +17,7 @@ export const Attendance = () => {
   const [updatedAt, setUpdatedAt] = useState(null);
 
   useEffect(() => {
-    socket.emit('client-start-view-users-attendance');
+    socket.emit('client-start-get-users-attendance');
 
     const receiveScreensHandler = receivedUsersAttendance => {
       setAttendedUsers(getPresentUsers(receivedUsersAttendance));
@@ -32,7 +32,7 @@ export const Attendance = () => {
     });
 
     return () => {
-      socket.emit('client-stop-view-users-attendance');
+      socket.emit('client-stop-get-users-attendance');
       socket.off('server-send-users-attendance');
       subscriber.unsubscribe();
     };
@@ -95,7 +95,7 @@ const getPresentUsers = (usersAttendance, roles = AUTH_ROLES) =>
     .filter(
       _id =>
         validateObjectId(_id) &&
-        usersAttendance[_id]?.status === 'PRESENT' &&
-        roles.includes(usersAttendance[_id]?.document?.role)
+          usersAttendance[_id] ?.status === 'PRESENT' &&
+          roles.includes(usersAttendance[_id] ?.document ?.role)
     )
     .map(_id => usersAttendance[_id].document);

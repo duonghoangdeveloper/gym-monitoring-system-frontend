@@ -1,29 +1,30 @@
-import { EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Form, message, Modal } from 'antd';
+import { Form, message, Modal, Typography } from 'antd';
 import gql from 'graphql-tag';
+import moment from 'moment';
 import React, { useState } from 'react';
+
+import { DATE_FORMAT } from '../common/constants';
 
 export const PaymentsDeletePaymentButton = ({ onSuccess, payment }) => {
   const client = useApolloClient();
-  const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
-
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const handleClick = () => {
     setVisible(true);
   };
 
   const onFinish = async () => {
+    setConfirmLoading(true);
+
     const { _id } = payment;
     try {
-      const result = await client.mutate({
+      await client.mutate({
         mutation: gql`
-          mutation DeletePayment($_id: ID!) {
+          mutation deletePayment($_id: ID!) {
             deletePayment(_id: $_id) {
-              _id
-              name
-              price
-              period
+              createdAt
             }
           }
         `,
@@ -31,34 +32,47 @@ export const PaymentsDeletePaymentButton = ({ onSuccess, payment }) => {
           _id,
         },
       });
-
-      message.success('Delete payment succeed!');
+      message.success('Delete payment successfully!');
       setVisible(false);
-      onSuccess(result?.data?.deletePayment);
+      onSuccess();
+      setConfirmLoading(false);
     } catch (e) {
       message.error(`${e.message.split(': ')[1]}!`);
     }
   };
 
   return (
-    <>
-      <a className="whitespace-no-wrap" onClick={handleClick}>
-        <EditOutlined />
-        &nbsp;&nbsp;Delete
-      </a>
+    <div>
+      {payment.date === moment(new Date()).format(DATE_FORMAT) ? (
+        <a className="whitespace-no-wrap" onClick={handleClick}>
+          <DeleteOutlined />
+          <Typography.Text style={{ color: '#1890ff' }}>
+            &nbsp;&nbsp;Delete
+          </Typography.Text>
+        </a>
+      ) : (
+        <a className="whitespace-no-wrap" disabled onClick={handleClick}>
+          <DeleteOutlined />
+          <Typography.Text disabled>&nbsp;&nbsp;Delete</Typography.Text>
+        </a>
+      )}
       <Modal
-        className="select-none"
+        confirmLoading={confirmLoading}
+        maskClosable={false}
+        okText="Delete"
         onCancel={() => {
-          setTimeout(() => form.resetFields(), 500);
           setVisible(false);
         }}
         onOk={onFinish}
-        title="Delete payment"
+        title="Do you want delete this payment?"
         visible={visible}
       >
-        <p>Are you sure you want to delete this payment? </p>
-        <p>{payment.name}</p>
+        <Form layout="vertical" />
+        <Form.Item label="Customer">{payment.customer.username}</Form.Item>
+        <Form.Item label="Creator">{payment.creator.username}</Form.Item>
+        <Form.Item label="Package">{payment.paymentPlan.name}</Form.Item>
+        <Form.Item label="Date">{payment.date}</Form.Item>
       </Modal>
-    </>
+    </div>
   );
 };

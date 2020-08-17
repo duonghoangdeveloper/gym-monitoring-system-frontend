@@ -1,6 +1,9 @@
 import {
+  BarChartOutlined,
   CheckCircleOutlined,
   CommentOutlined,
+  DeleteOutlined,
+  DollarCircleOutlined,
   DownOutlined,
   FundViewOutlined,
   MenuFoldOutlined,
@@ -11,16 +14,19 @@ import {
   ToolOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Avatar, Dropdown, Layout, Menu } from 'antd';
 import gql from 'graphql-tag';
 import React from 'react';
+import { RiWebcamLine } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
 import { TOKEN_KEY } from '../common/constants';
 import { generateRolesToView } from '../common/services';
+import eGMS from '../images/eGMSnoTextWhite.png';
 import {
   SIDER_SET_OPEN_KEYS,
   SIDER_TOGGLE_COLLAPSED,
@@ -67,6 +73,12 @@ export const LayoutDashboard = ({ children }) => {
 
   const SIDER_MENU = [
     {
+      icon: <BarChartOutlined />,
+      key: 'dashboard',
+      onClick: () => history.push('/dashboard'),
+      title: 'Dashboard',
+    },
+    {
       children: [
         {
           icon: <CheckCircleOutlined />,
@@ -85,6 +97,16 @@ export const LayoutDashboard = ({ children }) => {
           key: 'cameras',
           onClick: () => history.push('/cameras'),
           title: 'Cameras',
+        },
+        {
+          icon: (
+            <span aria-label="video-camera" className="anticon" role="img">
+              <RiWebcamLine />
+            </span>
+          ),
+          key: 'webcam',
+          onClick: () => history.push('/webcam'),
+          title: 'Webcam',
         },
       ],
       icon: <FundViewOutlined />,
@@ -128,6 +150,13 @@ export const LayoutDashboard = ({ children }) => {
           onClick: () => history.push('/admins'),
           title: 'Admins',
         },
+        {
+          hidden: role !== 'SYSTEM_ADMIN',
+          icon: <DeleteOutlined />,
+          key: 'bin',
+          onClick: () => history.push('/bin'),
+          title: 'User bin',
+        },
       ],
       icon: <UserOutlined />,
       key: 'user-management',
@@ -148,6 +177,18 @@ export const LayoutDashboard = ({ children }) => {
       title: 'Payment Plans',
     },
     {
+      icon: <DollarCircleOutlined />,
+      key: 'payments',
+      onClick: () => history.push('/payments'),
+      title: 'Payments',
+    },
+    {
+      icon: <WarningOutlined />,
+      key: 'warnings',
+      onClick: () => history.push('/warnings'),
+      title: 'Warnings History',
+    },
+    {
       children: [
         {
           hidden: role !== 'SYSTEM_ADMIN',
@@ -155,6 +196,13 @@ export const LayoutDashboard = ({ children }) => {
           key: 'line-labelling',
           onClick: () => history.push('/line-labelling'),
           title: 'Line Labelling',
+        },
+        {
+          hidden: role !== 'SYSTEM_ADMIN',
+          icon: <VideoCameraOutlined />,
+          key: 'cameras-detection',
+          onClick: () => history.push('/cameras-detection'),
+          title: 'Cameras Detection',
         },
       ],
       icon: <ToolOutlined />,
@@ -180,8 +228,14 @@ export const LayoutDashboard = ({ children }) => {
             className="cursor-pointer text-white flex items-center"
             onClick={() => history.push('/')}
           >
-            <div className="bg-blue-500 w-8 h-8" />
-            {!collapsed && <div className="ml-4">eGMS</div>}
+            <div className=" w-8 h-8" />
+            <img
+              alt="logo"
+              className="text-xs"
+              src={eGMS}
+              style={{ width: 60 }}
+            />
+            {!collapsed && <div>eGMS</div>}
           </a>
         </div>
         <Menu
@@ -284,7 +338,9 @@ export const LayoutDashboard = ({ children }) => {
 };
 
 const getSelectedKey = pathname =>
-  pathname === '/' || /^\/customers/.test(pathname)
+  pathname === '/' || /^\/dashboard/.test(pathname)
+    ? 'dashboard'
+    : /^\/customers/.test(pathname)
     ? 'customers'
     : /^\/trainers/.test(pathname)
     ? 'trainers'
@@ -298,12 +354,24 @@ const getSelectedKey = pathname =>
     ? 'feedbacks'
     : /^\/payment-plans/.test(pathname)
     ? 'payment-plans'
+    : /^\/payments/.test(pathname)
+    ? 'payments'
+    : /^\/cameras-detection/.test(pathname)
+    ? 'cameras-detection'
+    : /^\/payments/.test(pathname)
+    ? 'payments'
+    : /^\/warnings/.test(pathname)
+    ? 'warnings'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
+    : /^\/webcam/.test(pathname)
+    ? 'webcam'
     : /^\/attendance/.test(pathname)
     ? 'attendance'
     : /^\/check-in/.test(pathname)
     ? 'check-in'
     : /^\/line-labelling/.test(pathname)
     ? 'line-labelling'
+    : /^\/bin/.test(pathname)
+    ? 'bin'
     : null;

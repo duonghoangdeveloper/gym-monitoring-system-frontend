@@ -1,21 +1,35 @@
 import { EditOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Form, Input, InputNumber, message, Modal } from 'antd';
+import { Form, message, Modal, Typography } from 'antd';
 import gql from 'graphql-tag';
+import moment from 'moment';
 import React, { useState } from 'react';
+
+import { DATE_FORMAT } from '../common/constants';
+import { PaymentsSelectCustomerSelection } from './payments-select-customer-selection';
+import { PaymentsSelectpaymentPlanSelection } from './payments-select-paymentPlan-selection';
 
 export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
   const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
-  const [disabled, setDisabled] = useState(true);
-
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const handleDataChanged = value => {
+    form.setFieldsValue({ paymentPlanId: value });
+  };
+  const handleDataChangedCustomer = value => {
+    form.setFieldsValue({ customerId: value });
+  };
+  // const onValuesChange = (_, allValues) => {
+  //   setDisabled(allValues.package.name === payment.package.name);
+  // };
   const handleClick = () => {
     setVisible(true);
   };
 
   const onFinish = async values => {
-    const { name, period, price } = values;
+    const { customerId, paymentPlanId } = values;
+    setConfirmLoading(true);
     const { _id } = payment;
     try {
       const result = await client.mutate({
@@ -23,85 +37,112 @@ export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
           mutation UpdatePayment($_id: ID!, $data: UpdatePaymentInput) {
             updatePayment(_id: $_id, data: $data) {
               _id
-              name
-              price
-              period
+              creator {
+                username
+              }
+              createdAt
+              customer {
+                username
+                _id
+              }
+              paymentPlan {
+                _id
+                name
+                price
+                period
+              }
             }
           }
         `,
         variables: {
           _id,
-          data: {
-            name,
-            period,
-            price,
-          },
+          data: { customerId, paymentPlanId },
         },
       });
-      message.success('Update payment succeed!');
+      message.success('Update payment succeeded!');
       setVisible(false);
       onSuccess(result?.data?.updatePayment);
+      setConfirmLoading(false);
     } catch (e) {
       message.error(`${e.message.split(': ')[1]}!`);
+      message.error('Update payment failed!');
     }
-  };
-
-  const onValuesChange = (_, allValues) => {
-    setDisabled(
-      allValues.name === payment.name &&
-        allValues.price === payment.price &&
-        allValues.period === payment.period
-    );
   };
 
   return (
     <>
-      <a className="whitespace-no-wrap" onClick={handleClick}>
-        <EditOutlined />
-        &nbsp;&nbsp;Update
-      </a>
+      {payment.date === moment(new Date()).format(DATE_FORMAT) ? (
+        <a className="whitespace-no-wrap" onClick={handleClick}>
+          <EditOutlined />
+          <Typography.Text style={{ color: '#1890ff' }}>
+            &nbsp;&nbsp;Update
+          </Typography.Text>
+        </a>
+      ) : (
+        <a className="whitespace-no-wrap" disabled onClick={handleClick}>
+          <EditOutlined />
+          <Typography.Text disabled>&nbsp;&nbsp;Update</Typography.Text>
+        </a>
+      )}
+
       <Modal
         className="select-none"
+        confirmLoading={confirmLoading}
+        // okButtonProps={{
+        //   disabled,
+        // }}
         maskClosable={false}
-        okButtonProps={{
-          disabled,
-        }}
         onCancel={() => {
           setTimeout(() => form.resetFields(), 500);
           setVisible(false);
         }}
         onOk={() => form.submit()}
-        title="Update payment"
+        title="Update Payment Plan"
         visible={visible}
       >
         <Form
           form={form}
           initialValues={{
-            name: payment.name,
-            period: payment.period,
-            price: payment.price,
+            customerId: payment.customer._id,
+            paymentPlan: payment.paymentPlan.name,
+            paymentPlanId: payment.paymentPlan._id,
           }}
           layout="vertical"
           onFinish={onFinish}
-          onValuesChange={onValuesChange}
+          // onValuesChange={onValuesChange}
         >
+          {' '}
           <Form.Item
-            label="Name"
-            name="name"
-            rules={[
-              {
-                message: 'Please input name of payment!',
-                required: true,
-              },
-            ]}
+            label="Customer"
+            name="customerId"
+            // rules={[
+            //   {
+            //     message: 'Please input customer!',
+            //     required: true,
+            //   },
+            // ]}
           >
-            <Input placeholder="Enter name" />
+            <PaymentsSelectCustomerSelection
+              defaultOptions={payment.customer.username}
+              onDataChange={handleDataChangedCustomer}
+              style={{ width: '372px' }}
+            />
           </Form.Item>
-          <Form.Item label="Price" name="price">
-            <InputNumber placeholder="Enter price" style={{ width: '100%' }} />
-          </Form.Item>
-          <Form.Item label="Period" name="period">
-            <InputNumber placeholder="Enter period" style={{ width: '100%' }} />
+          <Form.Item
+            label="Package"
+            name="paymentPlanId"
+            // rules={[
+            //   {
+            //     message: 'Please choose package!',
+            //     required: true,
+            //   },
+            // ]}
+          >
+            <PaymentsSelectpaymentPlanSelection
+              defaultOptions={payment.paymentPlan.name}
+              onDataChange={handleDataChanged}
+              style={{ width: '100%' }}
+            />
           </Form.Item>
         </Form>
       </Modal>

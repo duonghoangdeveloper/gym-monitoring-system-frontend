@@ -1,13 +1,13 @@
-import { CloseOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Input, Switch, Table } from 'antd';
+import { Table } from 'antd';
 import gql from 'graphql-tag';
+import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
-import { getColumnSearchProps } from '../common/antd';
+import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
 import { LayoutDashboard } from '../components/layout-dashboard';
-import { PackagesDeletePackageButton } from '../components/packages-delete-package-button';
 import { PaymentsCreatePaymentButton } from '../components/payments-create-payment-button';
+import { PaymentsDeletePaymentButton } from '../components/payments-delete-payment-button';
 import { PaymentsUpdatePaymentButton } from '../components/payments-update-payment-button';
 
 export const Payments = () => {
@@ -17,28 +17,37 @@ export const Payments = () => {
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [sort, setSort] = useState('');
-  const [search, setSearch] = useState({ name: '' });
-  const [searchAll, setSearchAll] = useState('');
 
   const fetchPaymentsData = async () => {
     setLoading(true);
     try {
       const result = await client.query({
         query: gql`
-          query SignIn($query: PaymentsQueryInput) {
+          query Payments($query: PaymentsQueryInput) {
             payments(query: $query) {
               data {
                 _id
-                name
-                price
-                period
+                creator {
+                  username
+                }
+                createdAt
+                customer {
+                  username
+                }
+                paymentPlan {
+                  _id
+                  name
+                  price
+                  period
+                }
               }
               total
             }
           }
         `,
         variables: {
-          query: { search, skip, sort },
+          query: { limit: PAGE_SIZE, skip, sort },
+          //  search,
         },
       });
 
@@ -49,6 +58,8 @@ export const Payments = () => {
           key: _payment._id,
           no: skip + index + 1,
           ..._payment,
+          date: moment(_payment.createdAt).format(DATE_FORMAT),
+          time: moment(_payment.createdAt).format(TIME_FORMAT),
         }))
       );
       setTotal(fetchedPaymentsTotal);
@@ -60,19 +71,22 @@ export const Payments = () => {
 
   useEffect(() => {
     fetchPaymentsData();
-  }, [skip, sort, search]);
+  }, [skip, sort]);
+  // ,search
+  // const generateOnSearch = dataIndex => value => {
+  //   setSearch({
+  //     // ...search,
+  //     [dataIndex]: value,
+  //   });
+  //   setSearchAll('');
+  // };
 
-  const generateOnSearch = dataIndex => value => {
-    setSearch({
-      ...search,
-      [dataIndex]: value,
-    });
-    setSearchAll('');
-  };
-
+  // payments.forEach(p => {
+  //   console.log(p.customer.username);
+  // });
   const handleTableChange = (pagination, filters, sorter) => {
     // Pagination
-    setSkip((pagination.current - 1) * 10);
+    setSkip((pagination.current - 1) * PAGE_SIZE);
 
     // Sorter
     const { columnKey, order } = sorter;
@@ -92,60 +106,67 @@ export const Payments = () => {
       title: 'No',
     },
     {
-      dataIndex: 'name',
-      key: 'name',
+      dataIndex: 'customer',
+      key: 'customer',
+      render: customer => `${customer.username}`,
       sorter: true,
-      title: 'Name',
-      ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
+      title: 'Customer',
+      // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
     },
     {
-      dataIndex: 'price',
-      key: 'price',
+      dataIndex: 'paymentPlan',
+      key: 'paymentPlan',
+      render: _paymentPlan => `${_paymentPlan.name}`,
       sorter: true,
-      title: 'Price',
+      title: 'Payment Plan',
+      // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
     },
     {
-      dataIndex: 'period',
-      key: 'period',
+      dataIndex: 'creator',
+      key: 'creator',
+      render: creator => `${creator.username}`,
       sorter: true,
-      title: 'Period',
+      title: 'Creator',
+      // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
     },
+    {
+      dataIndex: 'date',
+      key: 'date',
+      sorter: true,
+      title: 'Date',
+    },
+    {
+      dataIndex: 'time',
+      key: 'time',
+      sorter: true,
+      title: 'Time',
+    },
+    // {
+    //   dataIndex: 'period',
+    //   key: 'period',
+    //   sorter: true,
+    //   title: 'Period',
+    // },
     {
       key: 'update',
-      render: (text, _payment) => (
+      render: (text, payment) => (
         <PaymentsUpdatePaymentButton
-          _payment={_payment}
-          onSuccess={updatedPayment =>
-            setPayments(
-              payments.map(currentPayment =>
-                currentPayment._id === updatedPayment._id
-                  ? {
-                      ...currentPayment,
-                      ...updatedPayment,
-                    }
-                  : currentPayment
-              )
-            )
-          }
+          onSuccess={fetchPaymentsData}
+          payment={payment}
         />
       ),
       title: 'Update',
     },
+
     {
       key: 'delete',
-      render: (text, _package) => (
-        <PackagesDeletePackageButton
-          _package={_package}
+      render: (text, payment) => (
+        <PaymentsDeletePaymentButton
           onSuccess={fetchPaymentsData}
+          payment={payment}
         />
       ),
-      title: 'Delete',
-    },
-    {
-      key: 'active',
-      render: _package => (
-        <Switch _package={_package} unCheckedChildren={<CloseOutlined />} />
-      ),
+
       title: 'Delete',
     },
   ];
@@ -154,8 +175,9 @@ export const Payments = () => {
     <LayoutDashboard>
       <div className="bg-white shadow p-6 rounded-sm">
         <div className="flex items-center">
-          <h1 className="text-3xl flex-1">Payment Management</h1>
-          <Input.Search
+          <h1 className="text-3xl flex-1">Payments Management</h1>
+
+          {/* <Input.Search
             allowClear
             onChange={e => setSearchAll(e.target.value)}
             onSearch={value =>
@@ -166,7 +188,8 @@ export const Payments = () => {
             placeholder="Search payment"
             style={{ width: '14rem' }}
             value={searchAll}
-          />
+          /> */}
+
           <PaymentsCreatePaymentButton
             className="ml-4"
             onSuccess={fetchPaymentsData}
@@ -180,10 +203,11 @@ export const Payments = () => {
           loading={loading}
           onChange={handleTableChange}
           pagination={{
-            current: Math.floor(skip / 10) + 1,
-            pageSize: 10,
+            current: Math.floor(skip / PAGE_SIZE) + 1,
+            pageSize: PAGE_SIZE,
             total,
           }}
+          // rowKey={e => e._id}
         />
       </div>
     </LayoutDashboard>

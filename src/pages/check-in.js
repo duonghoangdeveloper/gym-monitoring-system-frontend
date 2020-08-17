@@ -1,11 +1,12 @@
 import { useApolloClient } from '@apollo/react-hooks';
-import { Avatar, List, message, Spin } from 'antd';
+import { Descriptions, List, message, Space, Tag } from 'antd';
 import gql from 'graphql-tag';
 import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { fromEvent } from 'rxjs';
 
+import { DATE_FORMAT } from '../common/constants';
 import { SocketContext } from '../common/contexts';
 import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
@@ -18,9 +19,15 @@ export const CheckIn = () => {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
+  const IconText = ({ description, text, title }) => (
+    <Space>
+      {title}
+      {text}
+      {description}
+    </Space>
+  );
 
   const fetchLatestCheckIns = async () => {
-    console.log(1);
     setLoading(true);
     const fetchedCheckIns = await fetchCheckIns(client, { limit: 10, skip: 0 });
     const newCheckIns = [
@@ -38,7 +45,6 @@ export const CheckIn = () => {
   };
 
   const fetchMoreCheckIns = async () => {
-    console.log(2);
     setLoading(true);
     const fetchedCheckIns = await fetchCheckIns(client, {
       limit: 10,
@@ -63,27 +69,27 @@ export const CheckIn = () => {
   }, []);
 
   useEffect(() => {
-    socket.emit('client-start-view-check-in');
+    socket.emit('client-start-get-check-in');
 
-    const receiveScreensHandler = receivedCheckIn => {
+    const handleCheckInGet = ({ checkIn: _checkIn }) => {
       if (
-        receivedCheckIn?.lastCheckIn?._id &&
-        receivedCheckIn?.lastCheckIn?._id !== checkIns[0]?._id
+        _checkIn?.lastCheckIn?._id &&
+        _checkIn?.lastCheckIn?._id !== checkIns[0]?._id
       ) {
         fetchLatestCheckIns();
       }
-      setCheckIn(receivedCheckIn);
+      setCheckIn(_checkIn);
       socket.emit('client-receive-check-in');
     };
     const observable = fromEvent(socket, 'server-send-check-in');
     const subscriber = observable.subscribe({
-      next(receivedCheckIn) {
-        receiveScreensHandler(receivedCheckIn);
+      next(data) {
+        handleCheckInGet(data);
       },
     });
 
     return () => {
-      socket.emit('client-stop-view-check-in');
+      socket.emit('client-stop-get-check-in');
       socket.off('server-send-check-in');
       subscriber.unsubscribe();
     };
@@ -106,8 +112,15 @@ export const CheckIn = () => {
           <div className="font-semibold mb-2">
             Last update:{' '}
             {checkIn?.updatedAt && moment(checkIn.updatedAt).format('HH:mm:ss')}
+            <Tag
+              color="processing"
+              style={{
+                fontSize: 15,
+                marginLeft: 20,
+              }}
+            >{`Total check-in: ${total}`}</Tag>
           </div>
-          {total}
+          ,
           <InfiniteScroll
             hasMore={!loading && hasMore}
             loadMore={handleInfiniteOnLoad}
@@ -117,16 +130,109 @@ export const CheckIn = () => {
               dataSource={checkIns}
               itemLayout="vertical"
               loading={loading}
-              renderItem={item => (
-                <List.Item
-                  extra={
-                    <img alt="check-in" src={item.image.url} width={256} />
-                  }
-                  key={item._id}
-                >
-                  {JSON.stringify(item, null, 2)}
-                </List.Item>
-              )}
+              renderItem={item => {
+                const expiredDateTemp = moment(item.user.expiryDate);
+                const toDays = moment(new Date());
+                // const diffDuration = expiredDateTemp.diff(toDays);
+                const diffDays = Math.round(
+                  (expiredDateTemp - toDays) / (24 * 60 * 60 * 1000)
+                );
+                // console.log(diffDays);
+                // console.log(expiredDateTemp);
+                if (diffDays >= 1) {
+                  return (
+                    <List.Item
+                      actions={[
+                        <IconText
+                          text={moment(item.user.expiryDate).format(
+                            DATE_FORMAT
+                          )}
+                          title="Expiration date: "
+                        />,
+                        <IconText
+                          key="list-vertical-message"
+                          text={item.user.feedbacks.total}
+                          title="Feedback: "
+                        />,
+                        <IconText
+                          key="list-vertical-message"
+                          text={diffDays}
+                          title="Days left: "
+                        />,
+
+                        <Tag color="success">Member</Tag>,
+                      ]}
+                      extra={
+                        <img alt="logo" src={item.image.url} width={256} />
+                      }
+                      key={item.username}
+                    >
+                      <List.Item.Meta
+                        // avatar={<Avatar src={item.avatar} />}
+                        title={`Username: ${item.user.username}`}
+                      />
+                      <Descriptions column={1} size="small">
+                        <Descriptions.Item label="Name">
+                          {item.user.displayName}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Role">
+                          <a>{item.user.role}</a>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Check in at">
+                          {moment(item.createdAt).format(DATE_FORMAT)}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="This user created account at">
+                          {moment(item.user.createdAt).format(DATE_FORMAT)}
+                        </Descriptions.Item>
+                      </Descriptions>
+                    </List.Item>
+                  );
+                }
+
+                return (
+                  <List.Item
+                    actions={[
+                      <IconText
+                        text={moment(item.user.expiryDate).format(DATE_FORMAT)}
+                        title="Expiration date: "
+                      />,
+                      <IconText
+                        text={item.user.feedbacks.total}
+                        title="Feedback: "
+                      />,
+                      <IconText
+                        key="list-vertical-message"
+                        text="0"
+                        title="Days left: "
+                      />,
+
+                      <Tag color="error">Expired</Tag>,
+                    ]}
+                    extra={<img alt="logo" src={item.image.url} width={256} />}
+                    key={item.username}
+                  >
+                    <List.Item.Meta
+                      // avatar={<Avatar src={item.avatar} />}
+
+                      title={`Username: ${item.user.username}`}
+                    />
+                    <Descriptions column={1} size="small">
+                      <Descriptions.Item label="Name">
+                        {item.user.displayName}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Role">
+                        <a>{item.user.role}</a>
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Check in at">
+                        {moment(item.createdAt).format(DATE_FORMAT)}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="This user created account at">
+                        {moment(item.user.createdAt).format(DATE_FORMAT)}
+                      </Descriptions.Item>
+                    </Descriptions>
+                  </List.Item>
+                );
+              }}
               size="large"
             />
           </InfiniteScroll>
@@ -148,10 +254,17 @@ const fetchCheckIns = async (client, { limit = 10, skip = 0 }) => {
                 url
               }
               user {
+                createdAt
                 _id
+                role
                 username
                 displayName
+                expiryDate
+                feedbacks {
+                  total
+                }
               }
+
               createdAt
             }
             total

@@ -48,11 +48,18 @@ export const getColumnSearchProps = (dataIndex, onSearch, searchValue) => ({
     />
   ),
   render: text => (
-    <Highlighter
-      autoEscape
-      highlightStyle={{ backgroundColor: '#ffc069', padding: 0 }}
-      searchWords={[searchValue]}
-      textToHighlight={text ? text.toString() : ''}
-    />
+    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+      <Highlighter
+        autoEscape
+        highlightStyle={{
+          backgroundColor: '#ffc069',
+          overflow: 'hidden',
+          padding: 0,
+          textOverflow: 'ellipsis',
+        }}
+        searchWords={[searchValue]}
+        textToHighlight={text ? text.toString() : ''}
+      />
+    </div>
   ),
 });

@@ -47,6 +47,7 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
           mutation: gql`
             mutation CreateUser($data: CreateUserInput!) {
               createUser(data: $data) {
+                _id
                 displayName
                 email
                 gender
@@ -63,6 +64,7 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
               faces: base64Faces.map(base64 => base64ToFile(base64)),
               gender,
               password,
+              paymentPlanId: customerData.step3.paymentPlan,
               phone,
               role: 'CUSTOMER',
               username,
@@ -76,6 +78,7 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
         message.error('Not enough 9 registered face images!');
       }
     } catch (e) {
+      console.log(e);
       const msg = e.message.split(': ')[1] ?? e.message;
       message.error(`${msg}!`);
     }

@@ -1,38 +1,56 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Form, Input, InputNumber, message, Modal } from 'antd';
+import { Button, Form, message, Modal } from 'antd';
 import gql from 'graphql-tag';
 import React, { useState } from 'react';
+
+import { PaymentsSelectCustomerSelection } from './payments-select-customer-selection';
+import { PaymentsSelectpaymentPlanSelection } from './payments-select-paymentPlan-selection';
 
 export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
   const client = useApolloClient();
   const [form] = Form.useForm();
   const [visible, setVisible] = useState(false);
   const [disabled] = useState(false);
+  const [confirmLoading, setConfirmLoading] = useState(false);
   const handleClick = () => {
     setVisible(true);
   };
-
+  const handleDataChanged = value => {
+    form.setFieldsValue({ paymentPlanId: value });
+  };
+  const handleDataChangedCustomer = value => {
+    form.setFieldsValue({ customerId: value });
+  };
   const onFinish = async values => {
+    setConfirmLoading(true);
     try {
-      const { name, period, price } = values;
+      const { customerId, paymentPlanId } = values;
       await client.mutate({
         mutation: gql`
-          mutation CreatePayment($data: CreatePaymentInput!) {
+          mutation createPayment($data: CreatePaymentInput!) {
             createPayment(data: $data) {
-              name
-              price
-              period
+              createdAt
+              _id
+              customer {
+                username
+              }
+              paymentPlan {
+                name
+                period
+              }
             }
           }
         `,
         variables: {
-          data: { name, period, price },
+          data: { customerId, paymentPlanId },
         },
       });
-      message.success('Create payment succeed!');
+      message.success('Create package succeeded!');
       setVisible(false);
       onSuccess();
+      setConfirmLoading(false);
+      setTimeout(() => form.resetFields(), 3000);
     } catch (e) {
       console.log(e.message);
       message.error(`${e.message.split(': ')[1]}!`);
@@ -46,6 +64,7 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
       </Button>
       <Modal
         className="select-none"
+        confirmLoading={confirmLoading}
         maskClosable={false}
         okButtonProps={{
           disabled,
@@ -54,46 +73,55 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
           setTimeout(() => form.resetFields(), 500);
           setVisible(false);
         }}
-        onOk={() => form.submit()}
+        onOk={() => {
+          form.submit();
+        }}
         title="Create Payment"
         visible={visible}
       >
         <Form form={form} layout="vertical" onFinish={onFinish}>
-          <Form.Item
+          {/* <Form.Item
             label="Name"
             name="name"
             rules={[
               {
-                message: 'Please input name of payment!',
+                message: 'Please input name of package!',
                 required: true,
               },
             ]}
           >
             <Input placeholder="Enter name" />
-          </Form.Item>
+          </Form.Item> */}
+
           <Form.Item
-            label="Price"
-            name="price"
+            label="Customer"
+            name="customerId"
             rules={[
               {
-                message: 'Please input price!',
+                message: 'Please input customer!',
                 required: true,
               },
             ]}
           >
-            <InputNumber placeholder="Enter price" style={{ width: '100%' }} />
+            <PaymentsSelectCustomerSelection
+              onDataChange={handleDataChangedCustomer}
+              style={{ width: '372px' }}
+            />
           </Form.Item>
           <Form.Item
-            label="Period"
-            name="period"
+            label="Package"
+            name="paymentPlanId"
             rules={[
               {
-                message: 'Please input period!',
+                message: 'Please choose package!',
                 required: true,
               },
             ]}
           >
-            <InputNumber placeholder="Enter period" style={{ width: '100%' }} />
+            <PaymentsSelectpaymentPlanSelection
+              onDataChange={handleDataChanged}
+              style={{ width: '100%' }}
+            />
           </Form.Item>
         </Form>
       </Modal>
