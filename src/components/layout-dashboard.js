@@ -2,6 +2,7 @@ import {
   BarChartOutlined,
   CheckCircleOutlined,
   CommentOutlined,
+  DeleteOutlined,
   DollarCircleOutlined,
   DownOutlined,
   FundViewOutlined,
@@ -13,6 +14,7 @@ import {
   ToolOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Avatar, Dropdown, Layout, Menu } from 'antd';
@@ -24,6 +26,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 import { TOKEN_KEY } from '../common/constants';
 import { generateRolesToView } from '../common/services';
+import eGMS from '../images/eGMSnoTextWhite.png';
 import {
   SIDER_SET_OPEN_KEYS,
   SIDER_TOGGLE_COLLAPSED,
@@ -147,6 +150,13 @@ export const LayoutDashboard = ({ children }) => {
           onClick: () => history.push('/admins'),
           title: 'Admins',
         },
+        {
+          hidden: role !== 'SYSTEM_ADMIN',
+          icon: <DeleteOutlined />,
+          key: 'bin',
+          onClick: () => history.push('/bin'),
+          title: 'User bin',
+        },
       ],
       icon: <UserOutlined />,
       key: 'user-management',
@@ -171,6 +181,12 @@ export const LayoutDashboard = ({ children }) => {
       key: 'payments',
       onClick: () => history.push('/payments'),
       title: 'Payments',
+    },
+    {
+      icon: <WarningOutlined />,
+      key: 'warnings',
+      onClick: () => history.push('/warnings'),
+      title: 'Warnings History',
     },
     {
       children: [
@@ -212,8 +228,14 @@ export const LayoutDashboard = ({ children }) => {
             className="cursor-pointer text-white flex items-center"
             onClick={() => history.push('/')}
           >
-            <div className="bg-blue-500 w-8 h-8" />
-            {!collapsed && <div className="ml-4">eGMS</div>}
+            <div className=" w-8 h-8" />
+            <img
+              alt="logo"
+              className="text-xs"
+              src={eGMS}
+              style={{ width: 60 }}
+            />
+            {!collapsed && <div>eGMS</div>}
           </a>
         </div>
         <Menu
@@ -336,6 +358,10 @@ const getSelectedKey = pathname =>
     ? 'payments'
     : /^\/cameras-detection/.test(pathname)
     ? 'cameras-detection'
+    : /^\/payments/.test(pathname)
+    ? 'payments'
+    : /^\/warnings/.test(pathname)
+    ? 'warnings'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
     : /^\/webcam/.test(pathname)
@@ -346,4 +372,6 @@ const getSelectedKey = pathname =>
     ? 'check-in'
     : /^\/line-labelling/.test(pathname)
     ? 'line-labelling'
+    : /^\/bin/.test(pathname)
+    ? 'bin'
     : null;

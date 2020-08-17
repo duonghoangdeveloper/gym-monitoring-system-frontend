@@ -5,6 +5,7 @@ import { AppAuthRoute } from '../components/app-auth-route';
 import { _403 } from '../pages/_403';
 import { _404 } from '../pages/_404';
 import { Attendance } from '../pages/attendance';
+import { Bin } from '../pages/bin';
 import { Cameras } from '../pages/cameras';
 import { CamerasDetection } from '../pages/cameras-detection';
 import { CheckIn } from '../pages/check-in';
@@ -18,6 +19,7 @@ import { Payments } from '../pages/payments';
 import { Profile } from '../pages/profile';
 import { SignIn } from '../pages/sign-in';
 import { Staffs } from '../pages/staffs';
+import { Warnings } from '../pages/warnings';
 import { Webcam } from '../pages/webcam';
 
 const publicRoutes = [
@@ -98,6 +100,12 @@ const managerOwnerAdminRoutes = [
     path: '/payments',
   },
   {
+    component: Warnings,
+    exact: true,
+    key: 'warnings',
+    path: '/warnings',
+  },
+  {
     component: CheckIn,
     exact: true,
     key: 'check-in',
@@ -138,6 +146,12 @@ export const adminRoutes = [
     exact: true,
     key: 'admins',
     path: '/admins',
+  },
+  {
+    component: Bin,
+    exact: true,
+    key: 'bin',
+    path: '/bin',
   },
   {
     component: LineLabelling,

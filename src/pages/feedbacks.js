@@ -1,6 +1,5 @@
-import { DeleteOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Divider, Input, Radio, Space, Switch, Table } from 'antd';
+import { Input, Table } from 'antd';
 import gql from 'graphql-tag';
 import moment from 'moment';
 import React, { useEffect, useState } from 'react';
@@ -8,7 +7,6 @@ import React, { useEffect, useState } from 'react';
 import { getColumnSearchProps } from '../common/antd';
 import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
 import { CommonMainContainer } from '../components/common-main-container';
-import { CommonTableSearchDropdown } from '../components/common-table-search-dropdown';
 import { UsersDeleteFeedbacksButton } from '../components/feedbacks-delete-feedbacks-button';
 import { UsersViewFeedbacksButton } from '../components/feedbacks-view-feedbacks-button';
 import { LayoutDashboard } from '../components/layout-dashboard';
@@ -151,7 +149,10 @@ export const Feedbacks = () => {
     {
       key: 'delete',
       render: (text, feedback) => (
-        <UsersDeleteFeedbacksButton feedback={feedback} />
+        <UsersDeleteFeedbacksButton
+          feedback={feedback}
+          onSuccess={fetchFeedbacksData}
+        />
       ),
       title: 'Delete',
     },

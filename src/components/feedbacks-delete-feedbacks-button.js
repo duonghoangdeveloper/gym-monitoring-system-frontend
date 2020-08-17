@@ -32,7 +32,7 @@ export const UsersDeleteFeedbacksButton = ({ feedback, onSuccess }) => {
       });
       message.success('Delete feedback successfully!');
       setVisible(false);
-      // onSuccess(result?.data?.deleteFeedbackByAdmin);
+      onSuccess(result?.data?.deleteFeedbackByAdmin);
     } catch (e) {
       message.error(`${e.message.split(': ')[1]}!`);
     }
@@ -56,9 +56,7 @@ export const UsersDeleteFeedbacksButton = ({ feedback, onSuccess }) => {
         visible={visible}
       >
         <Form layout="vertical" />
-        <Form.Item label="Title" name="Title">
-          {feedback.title}
-        </Form.Item>
+        <Form.Item label="Title">{feedback.content}</Form.Item>
       </Modal>
     </div>
   );

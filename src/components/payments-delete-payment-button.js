@@ -1,11 +1,11 @@
-import { DeleteOutlined, EditOutlined } from '@ant-design/icons';
+import { DeleteOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Form, Input, message, Modal, Typography } from 'antd';
+import { Form, message, Modal, Typography } from 'antd';
 import gql from 'graphql-tag';
 import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
-import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
+import { DATE_FORMAT } from '../common/constants';
 
 export const PaymentsDeletePaymentButton = ({ onSuccess, payment }) => {
   const client = useApolloClient();
@@ -68,18 +68,10 @@ export const PaymentsDeletePaymentButton = ({ onSuccess, payment }) => {
         visible={visible}
       >
         <Form layout="vertical" />
-        <Form.Item label="Customer" name="Title">
-          {payment.customer.username}
-        </Form.Item>
-        <Form.Item label="Creator" name="Title">
-          {payment.creator.username}
-        </Form.Item>
-        <Form.Item label="Package" name="Title">
-          {payment.paymentPlan.name}
-        </Form.Item>
-        <Form.Item label="Date" name="Title">
-          {payment.date}
-        </Form.Item>
+        <Form.Item label="Customer">{payment.customer.username}</Form.Item>
+        <Form.Item label="Creator">{payment.creator.username}</Form.Item>
+        <Form.Item label="Package">{payment.paymentPlan.name}</Form.Item>
+        <Form.Item label="Date">{payment.date}</Form.Item>
       </Modal>
     </div>
   );

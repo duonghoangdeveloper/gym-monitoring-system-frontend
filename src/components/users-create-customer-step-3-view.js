@@ -1,9 +1,10 @@
 import { SyncOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input, message, Select } from 'antd';
 import gql from 'graphql-tag';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
+import { PAGE_SIZE } from '../common/constants';
 import { hasError } from '../common/services';
 
 export const UsersCreateCustomerStep3View = ({
@@ -12,7 +13,9 @@ export const UsersCreateCustomerStep3View = ({
   onPrev,
 }) => {
   const [form] = Form.useForm();
+  const [paymentPlans, setPaymentPlans] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [selectLoading, setSelectLoading] = useState(false);
   const client = useApolloClient();
   const onFinish = async values => {
     const { password, username } = values;
@@ -58,6 +61,44 @@ export const UsersCreateCustomerStep3View = ({
     });
   };
 
+  const fetchPaymentPlansData = async () => {
+    setSelectLoading(true);
+    try {
+      const result = await client.query({
+        query: gql`
+          query paymentPlans($query: PaymentPlansQueryInput) {
+            paymentPlans(query: $query) {
+              data {
+                _id
+                name
+                price
+                period
+              }
+              total
+            }
+          }
+        `,
+        variables: {
+          query: {},
+          //  search,
+        },
+      });
+      const fetchedPaymentPlansData = result?.data?.paymentPlans?.data ?? [];
+      setPaymentPlans(
+        fetchedPaymentPlansData.map((paymentPlan, index) => ({
+          key: paymentPlan._id,
+          no: index + 1,
+          ...paymentPlan,
+        }))
+      );
+    } catch (e) {
+      message.error('Something went wrong :(');
+    }
+    setSelectLoading(false);
+  };
+  useEffect(() => {
+    fetchPaymentPlansData();
+  }, []);
   const handleOnNextClick = () => {
     form.submit();
   };
@@ -122,8 +163,17 @@ export const UsersCreateCustomerStep3View = ({
             placeholder="Enter password"
           />
         </Form.Item>
+        <Form.Item label="Choose a payment plan" name="paymentPlan">
+          <Select loading={selectLoading} placeholder="Choose a payment plan">
+            {paymentPlans.map(({ _id, name }) => (
+              <Select.Option key={_id} value={_id}>
+                {name}
+              </Select.Option>
+            ))}
+            ]}
+          </Select>
+        </Form.Item>
       </Form>
-
       <div className="flex justify-end">
         <Button className="ml-2" onClick={onPrev}>
           Previous

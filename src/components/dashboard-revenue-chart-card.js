@@ -1,21 +1,16 @@
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { ChartCard, Charts, Field } from 'ant-design-pro/lib/Charts';
+import { ChartCard, Field } from 'ant-design-pro/lib/Charts';
 import Trend from 'ant-design-pro/lib/Trend';
 import { Tooltip } from 'antd';
 import gql from 'graphql-tag';
-import moment from 'moment';
 import numeral from 'numeral';
 import React, { useEffect, useState } from 'react';
-
-import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
 
 export const RevenueChartCard = () => {
   const client = useApolloClient();
   const [payments, setPayments] = useState([]);
   const [total, setTotal] = useState(0);
-  const [skip, setSkip] = useState(0);
-  const [sort, setSort] = useState('');
   const totalSales = 123213;
   const fetchPaymentsData = async () => {
     try {
@@ -25,9 +20,6 @@ export const RevenueChartCard = () => {
             payments(query: $query) {
               data {
                 _id
-                customer {
-                  username
-                }
 
                 paymentPlan {
                   price
@@ -39,7 +31,7 @@ export const RevenueChartCard = () => {
           }
         `,
         variables: {
-          query: { limit: PAGE_SIZE, skip, sort },
+          query: { limit: 100000000 },
           //  search,
         },
       });
@@ -47,8 +39,7 @@ export const RevenueChartCard = () => {
       const fetchedPaymentsData = result?.data?.payments?.data ?? [];
       const fetchedPaymentsTotal = result?.data?.payments?.total ?? 0;
       setPayments(
-        fetchedPaymentsData.map((_payment, index) => ({
-          no: skip + index + 1,
+        fetchedPaymentsData.map(_payment => ({
           ..._payment,
         }))
       );
@@ -73,7 +64,9 @@ export const RevenueChartCard = () => {
         </Tooltip>
       }
       contentHeight={46}
-      footer={<Field label="Revenue" value={numeral(12423).format('0,0')} />}
+      footer={
+        <Field label="Daily revenue" value={numeral(12423).format('0,0')} />
+      }
       title="Revenue"
       total={() => (
         <span

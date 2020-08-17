@@ -1,21 +1,13 @@
 import { useApolloClient } from '@apollo/react-hooks';
-import { Chart, Line, Point } from 'bizcharts';
+import { Chart, Line } from 'bizcharts';
 import gql from 'graphql-tag';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
-import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
-
-export const LadderChart = ({ text }) => {
+export const LadderChart = () => {
   const client = useApolloClient();
 
-  const [loading, setLoading] = useState(true);
   const [feedbacks, setFeedbacks] = useState([]);
-  const [groupMonth, setGroupMonth] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [skip, setSkip] = useState(0);
-  const [sort, setSort] = useState('');
-  const [searchAll, setSearchAll] = useState('');
+  // const [skip, setSkip] = useState(0);
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const fetchFeedbacksData = async () => {
@@ -34,28 +26,22 @@ export const LadderChart = ({ text }) => {
           }
         `,
         variables: {
-          query: { createdBetween: { from, to }, limit: skip, sort },
+          limit: 100000000,
+          query: { createdBetween: { from, to } },
         },
       });
 
       const fetchedFeedbacksData = result?.data?.feedbacks?.data ?? [];
-      const fetchedFeedbacksTotal = result?.data?.feedbacks?.total ?? 0;
 
       setFeedbacks(
-        fetchedFeedbacksData.map((feedback, index) => ({
+        fetchedFeedbacksData.map(feedback => ({
           key: feedback._id,
-          no: skip + index + 1,
           ...feedback,
-          date: moment(feedback.createdAt).format(DATE_FORMAT),
-          time: moment(feedback.createdAt).format(TIME_FORMAT),
         }))
       );
-
-      setTotal(fetchedFeedbacksTotal);
     } catch (e) {
       // Do something
     }
-    setLoading(false);
   };
 
   useEffect(() => {
@@ -78,7 +64,7 @@ export const LadderChart = ({ text }) => {
   return (
     <div>
       <div className="flex justify-between">
-        <h6 className="text-2xl">{text}</h6>
+        <h6 className="text-sm">Customer feedbacks report</h6>
       </div>
       <Chart
         autoFit

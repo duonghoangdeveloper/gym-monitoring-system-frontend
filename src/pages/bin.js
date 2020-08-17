@@ -5,13 +5,12 @@ import React, { useEffect, useState } from 'react';
 
 import { getColumnSearchProps } from '../common/antd';
 import { PAGE_SIZE } from '../common/constants';
-import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
+import { UsersBackupButton } from '../components/users-backup-button';
 import { UsersCreateCustomerButton } from '../components/users-create-customer-button';
 import { UsersRemoveUserButton } from '../components/users-remove-user-button';
-import { UsersUpdateStaffButton } from '../components/users-update-staff-button';
 
-export const Customers = () => {
+export const Bin = () => {
   const client = useApolloClient();
 
   const [loading, setLoading] = useState(true);
@@ -35,6 +34,7 @@ export const Customers = () => {
                 email
                 phone
                 gender
+                role
               }
               total
             }
@@ -42,8 +42,7 @@ export const Customers = () => {
         `,
         variables: {
           query: {
-            filter: { role: 'CUSTOMER' },
-            isActive: true,
+            isActive: false,
             limit: PAGE_SIZE,
             search,
             skip,
@@ -131,26 +130,25 @@ export const Customers = () => {
       ...getColumnSearchProps('email', generateOnSearch('email'), search.email),
     },
     {
-      key: 'update',
-      render: (text, user) => (
-        <UsersUpdateStaffButton onSuccess={fetchedCustomers} user={user} />
-      ),
-      title: 'Update',
+      dataIndex: 'role',
+      key: 'role',
+      sorter: true,
+      title: 'Role',
     },
     {
-      key: 'remove',
+      key: 'Backup',
       render: (text, user) => (
-        <UsersRemoveUserButton onSuccess={fetchedCustomers} user={user} />
+        <UsersBackupButton onSuccess={fetchedCustomers} user={user} />
       ),
-      title: 'Remove',
+      title: 'Backup',
     },
   ];
 
   return (
     <LayoutDashboard>
-      <CommonMainContainer>
+      <div className="bg-white shadow p-6 rounded-sm">
         <div className="flex items-center">
-          <h1 className="text-3xl flex-1 mr-4">Customer Management</h1>
+          <h1 className="text-3xl flex-1">Bin Management</h1>
           <Input.Search
             allowClear
             onChange={e => setSearchAll(e.target.value)}
@@ -161,13 +159,9 @@ export const Customers = () => {
                 username: value,
               })
             }
-            placeholder="Search customer"
+            placeholder="Search user"
             style={{ width: '14rem' }}
             value={searchAll}
-          />
-          <UsersCreateCustomerButton
-            className="ml-4"
-            onSuccess={fetchedCustomers}
           />
         </div>
         <Table
@@ -182,7 +176,7 @@ export const Customers = () => {
             total,
           }}
         />
-      </CommonMainContainer>
+      </div>
     </LayoutDashboard>
   );
 };

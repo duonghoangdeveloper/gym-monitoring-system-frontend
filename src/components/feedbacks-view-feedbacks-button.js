@@ -1,11 +1,10 @@
-import { EditOutlined } from '@ant-design/icons';
-import { useApolloClient } from '@apollo/react-hooks';
-import { Button, Form, Input, message, Modal } from 'antd';
-import gql from 'graphql-tag';
-import React, { useEffect, useState } from 'react';
+// import { useApolloClient } from '@apollo/react-hooks';
+import { Form, Modal } from 'antd';
+// import gql from 'graphql-tag';
+import React, { useState } from 'react';
 
 export const UsersViewFeedbacksButton = ({ feedback }) => {
-  const client = useApolloClient();
+  // const client = useApolloClient();
   const [visible, setVisible] = useState(false);
   // const [confirmLoading, setConfirmLoading] = useState(false);
   const handleClick = () => {

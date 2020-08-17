@@ -1,21 +1,14 @@
 import { useApolloClient } from '@apollo/react-hooks';
-import { Axis, Chart, Geom, Interval, Tooltip } from 'bizcharts';
+import { Chart, Interval, Tooltip } from 'bizcharts';
 import gql from 'graphql-tag';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
-
-import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
 
 export const WarningColumnChart = ({ data, text }) => {
   const client = useApolloClient();
 
-  const [loading, setLoading] = useState(true);
   const [warnings, setWarnings] = useState([]);
 
-  const [groupMonth, setGroupMonth] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [skip, setSkip] = useState(0);
-  const [sort, setSort] = useState('');
+  // const [total, setTotal] = useState(0);
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
 
@@ -26,9 +19,6 @@ export const WarningColumnChart = ({ data, text }) => {
           query($query: WarningsQueryInput) {
             warnings(query: $query) {
               data {
-                customer {
-                  username
-                }
                 createdAt
                 status
               }
@@ -36,14 +26,14 @@ export const WarningColumnChart = ({ data, text }) => {
           }
         `,
         variables: {
-          query: { createdBetween: { from, to }, limit: skip, sort },
+          query: { createdBetween: { from, to }, limit: 100000000 },
         },
       });
 
       const fetchedWarningsData = result?.data?.warnings?.data ?? [];
 
       setWarnings(
-        fetchedWarningsData.map((warning, index) => ({
+        fetchedWarningsData.map(warning => ({
           key: warning._id,
           ...warning,
         }))
@@ -72,7 +62,7 @@ export const WarningColumnChart = ({ data, text }) => {
   return (
     <div>
       <div className="flex justify-between">
-        <h6 className="text-2xl">Warning report</h6>
+        <h6 className="text-sm">Warning report</h6>
       </div>
 
       <Chart

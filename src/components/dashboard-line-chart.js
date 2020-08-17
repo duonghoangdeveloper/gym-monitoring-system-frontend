@@ -1,22 +1,16 @@
 import { useApolloClient } from '@apollo/react-hooks';
 import { Chart, Line, Point } from 'bizcharts';
 import gql from 'graphql-tag';
-import moment from 'moment';
 import React, { useEffect, useState } from 'react';
 
-import { DATE_FORMAT, PAGE_SIZE, TIME_FORMAT } from '../common/constants';
-
-export const LineChart = ({ data }) => {
+export const LineChart = () => {
   const client = useApolloClient();
 
-  const [loading, setLoading] = useState(true);
   const [warnings, setWarnings] = useState([]);
   const [warningsSucceeded, setWarningsSucceeded] = useState([]);
 
-  const [groupMonth, setGroupMonth] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [skip, setSkip] = useState(0);
-  const [sort, setSort] = useState('');
+  // const [total, setTotal] = useState(0);
+  // const [sort, setSort] = useState('');
   const [from, setFrom] = useState('');
 
   const [to, setTo] = useState('');
@@ -28,9 +22,6 @@ export const LineChart = ({ data }) => {
           query($query: WarningsQueryInput) {
             warnings(query: $query) {
               data {
-                customer {
-                  username
-                }
                 createdAt
                 status
               }
@@ -38,14 +29,14 @@ export const LineChart = ({ data }) => {
           }
         `,
         variables: {
-          query: { createdBetween: { from, to }, limit: skip, sort },
+          query: { createdBetween: { from, to }, limit: 100000000 },
         },
       });
 
       const fetchedWarningsData = result?.data?.warnings?.data ?? [];
 
       setWarnings(
-        fetchedWarningsData.map((warning, index) => ({
+        fetchedWarningsData.map(warning => ({
           key: warning._id,
           ...warning,
         }))
@@ -61,9 +52,6 @@ export const LineChart = ({ data }) => {
           query($query: WarningsQueryInput) {
             warnings(query: $query) {
               data {
-                customer {
-                  username
-                }
                 createdAt
                 status
               }
@@ -82,7 +70,7 @@ export const LineChart = ({ data }) => {
       const fetchedWarningsSucceededData = result?.data?.warnings?.data ?? [];
 
       setWarningsSucceeded(
-        fetchedWarningsSucceededData.map((warning, index) => ({
+        fetchedWarningsSucceededData.map(warning => ({
           key: warning._id,
           ...warning,
         }))
@@ -129,15 +117,20 @@ export const LineChart = ({ data }) => {
   // console.log(warnings.forEach(p => p.createdAt));
   // console.log(warnings);
   return (
-    <Chart
-      autoFit
-      data={dataLineChart}
-      height={320}
-      padding={[10, 20, 50, 40]}
-      scale={{ value: { min: 0 } }}
-    >
-      <Line color="numberOfRisk" position="month*value" shape="smooth" />
-      <Point color="numberOfRisk" position="month*value" />
-    </Chart>
+    <>
+      <div className="flex justify-between">
+        <h6 className="text-sm">Report of customer's risk</h6>
+      </div>
+      <Chart
+        autoFit
+        data={dataLineChart}
+        height={320}
+        padding={[10, 20, 50, 40]}
+        scale={{ value: { min: 0 } }}
+      >
+        <Line color="numberOfRisk" position="month*value" shape="smooth" />
+        <Point color="numberOfRisk" position="month*value" />
+      </Chart>
+    </>
   );
 };
