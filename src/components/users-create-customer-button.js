@@ -43,7 +43,7 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
         .map(sameAngleFaces => sameAngleFaces[sameAngleFaces.length - 1]);
 
       if (base64Faces.length === 9) {
-        const user = await client.mutate({
+        await client.mutate({
           mutation: gql`
             mutation CreateUser($data: CreateUserInput!) {
               createUser(data: $data) {
@@ -64,39 +64,18 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
               faces: base64Faces.map(base64 => base64ToFile(base64)),
               gender,
               password,
+              paymentPlanId: customerData.step3.paymentPlan,
               phone,
               role: 'CUSTOMER',
               username,
             },
           },
         });
-        if (customerData.step3.paymentPlan) {
-          await client.mutate({
-            mutation: gql`
-              mutation CreatePayment($data: CreatePaymentInput!) {
-                createPayment(data: $data) {
-                  _id
-                }
-              }
-            `,
-            variables: {
-              data: {
-                customerId: user.data.createUser._id,
-                paymentPlanId: customerData.step3.paymentPlan,
-              },
-            },
-          });
-          message.success('Create customer succeeded!');
-          setVisible(false);
-          onSuccess();
-        } else {
-          message.success('Create customer succeeded!');
-          setVisible(false);
-          onSuccess();
-        }
       } else {
         message.error('Not enough 9 registered face images!');
       }
+      setVisible(false);
+      message.success('Create customer succeed');
     } catch (e) {
       const msg = e.message.split(': ')[1] ?? e.message;
       message.error(`${msg}!`);
