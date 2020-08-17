@@ -1,6 +1,5 @@
-import { CloseOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
-import { Input, Switch, Table } from 'antd';
+import { Input, Table } from 'antd';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
@@ -9,6 +8,7 @@ import { PAGE_SIZE } from '../common/constants';
 import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { PaymentPlansCreatePaymentPlanButton } from '../components/payment-plans-create-payment-plan-button';
+import { PaymentPlansDeletePaymentPlanButton } from '../components/payment-plans-delete-payment-plan-button';
 import { PaymentPlansUpdatePaymentPlanButton } from '../components/payment-plans-update-payment-plan-button';
 
 export const PaymentPlans = () => {
@@ -18,9 +18,7 @@ export const PaymentPlans = () => {
   const [total, setTotal] = useState(0);
   const [skip, setSkip] = useState(0);
   const [sort, setSort] = useState('');
-  const [search, setSearch] = useState({
-    name: '',
-  });
+  const [search, setSearch] = useState({ name: '' });
   const [searchAll, setSearchAll] = useState('');
 
   const fetchPaymentPlansData = async () => {
@@ -135,14 +133,14 @@ export const PaymentPlans = () => {
       title: 'Update',
     },
     {
-      key: 'active',
-      render: paymentPlan => (
-        <Switch
+      key: 'delete',
+      render: (text, paymentPlan) => (
+        <PaymentPlansDeletePaymentPlanButton
+          onSuccess={fetchPaymentPlansData}
           paymentPlan={paymentPlan}
-          unCheckedChildren={<CloseOutlined />}
         />
       ),
-      title: 'Active',
+      title: 'Delete',
     },
   ];
 
