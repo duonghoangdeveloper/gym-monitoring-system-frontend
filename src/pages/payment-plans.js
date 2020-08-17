@@ -8,6 +8,9 @@ import { getColumnSearchProps } from '../common/antd';
 import { PAGE_SIZE } from '../common/constants';
 import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
+// import { PackagesCreatePackageButton } from '../components/packages-create-package-button';
+import { PackagesDeletePackageButton } from '../components/packages-delete-package-button';
+// import { PackagesUpdatePackageButton } from '../components/packages-update-package-button';
 import { PaymentPlansCreatePaymentPlanButton } from '../components/payment-plans-create-payment-plan-button';
 import { PaymentPlansUpdatePaymentPlanButton } from '../components/payment-plans-update-payment-plan-button';
 
@@ -131,6 +134,16 @@ export const PaymentPlans = () => {
         />
       ),
       title: 'Update',
+    },
+    {
+      key: 'delete',
+      render: (text, _package) => (
+        <PackagesDeletePackageButton
+          _package={_package}
+          // onSuccess={fetchPackagesData}s
+        />
+      ),
+      title: 'Delete',
     },
     {
       key: 'active',
