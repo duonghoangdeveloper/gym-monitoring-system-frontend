@@ -1,9 +1,6 @@
 import 'ant-design-pro/dist/ant-design-pro.css';
 
-import { InfoCircleOutlined } from '@ant-design/icons';
-import { ChartCard, MiniProgress } from 'ant-design-pro/lib/Charts';
-import Trend from 'ant-design-pro/lib/Trend';
-import { Col, Row, Tabs, Tooltip } from 'antd';
+import { Col, Row, Tabs } from 'antd';
 import React from 'react';
 
 import { ColumnChart } from '../components/dashboard-column-chart';
@@ -12,6 +9,7 @@ import { LadderChart } from '../components/dashboard-ladder-chart';
 import { LineChart } from '../components/dashboard-line-chart';
 import { PieCharts } from '../components/dashboard-pie-chart';
 import { RevenueChartCard } from '../components/dashboard-revenue-chart-card';
+import { TrainerChartCard } from '../components/dashboard-trainer-chart-card';
 import { WarningChartCard } from '../components/dashboard-warning-chart-card';
 import { WarningColumnChart } from '../components/dashboard-warning-column-chart';
 import { LayoutDashboard } from '../components/layout-dashboard';
@@ -48,31 +46,7 @@ export const Dashboard = () => {
             <CustomerChartCard />
           </Col>
           <Col className="gutter-row " span={6}>
-            <ChartCard
-              action={
-                <Tooltip title="Show all Trainer is working in gym center">
-                  <InfoCircleOutlined />
-                </Tooltip>
-              }
-              contentHeight={46}
-              footer={
-                <div>
-                  <span>
-                    Trainer
-                    <Trend
-                      flag="up"
-                      style={{ color: 'rgba(0,0,0,.85)', marginLeft: 8 }}
-                    >
-                      12
-                    </Trend>
-                  </span>
-                </div>
-              }
-              title="Tranier working"
-              total="78%"
-            >
-              <MiniProgress percent={78} strokeWidth={8} target={80} />
-            </ChartCard>
+            <TrainerChartCard />
           </Col>
         </Row>
       </div>
