@@ -71,11 +71,12 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
             },
           },
         });
+        message.success('Create customer succeeded!');
+        setVisible(false);
+        onSuccess();
       } else {
         message.error('Not enough 9 registered face images!');
       }
-      setVisible(false);
-      message.success('Create customer succeed');
     } catch (e) {
       const msg = e.message.split(': ')[1] ?? e.message;
       message.error(`${msg}!`);
