@@ -1,6 +1,9 @@
 import {
+  BarChartOutlined,
+  CheckCircleOutlined,
   CommentOutlined,
   DeleteOutlined,
+  DollarCircleOutlined,
   DownOutlined,
   FundViewOutlined,
   MenuFoldOutlined,
@@ -11,6 +14,7 @@ import {
   ToolOutlined,
   UserOutlined,
   VideoCameraOutlined,
+  WarningOutlined,
 } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Avatar, Dropdown, Layout, Menu } from 'antd';
@@ -67,7 +71,19 @@ export const LayoutDashboard = ({ children }) => {
 
   const SIDER_MENU = [
     {
+      icon: <BarChartOutlined />,
+      key: 'dashboard',
+      onClick: () => history.push('/dashboard'),
+      title: 'Dashboard',
+    },
+    {
       children: [
+        {
+          icon: <CheckCircleOutlined />,
+          key: 'check-in',
+          onClick: () => history.push('/check-in'),
+          title: 'Check In',
+        },
         {
           icon: <TeamOutlined />,
           key: 'attendance',
@@ -147,6 +163,18 @@ export const LayoutDashboard = ({ children }) => {
       key: 'payment-plans',
       onClick: () => history.push('/payment-plans'),
       title: 'Payment Plans',
+    },
+    {
+      icon: <DollarCircleOutlined />,
+      key: 'payments',
+      onClick: () => history.push('/payments'),
+      title: 'Payments',
+    },
+    {
+      icon: <WarningOutlined />,
+      key: 'warnings',
+      onClick: () => history.push('/warnings'),
+      title: 'Warnings History',
     },
     {
       children: [
@@ -285,7 +313,9 @@ export const LayoutDashboard = ({ children }) => {
 };
 
 const getSelectedKey = pathname =>
-  pathname === '/' || /^\/customers/.test(pathname)
+  pathname === '/' || /^\/dashboard/.test(pathname)
+    ? 'dashboard'
+    : /^\/customers/.test(pathname)
     ? 'customers'
     : /^\/trainers/.test(pathname)
     ? 'trainers'
@@ -299,10 +329,18 @@ const getSelectedKey = pathname =>
     ? 'feedbacks'
     : /^\/payment-plans/.test(pathname)
     ? 'payment-plans'
+    : /^\/payments/.test(pathname)
+    ? 'payments'
+    : /^\/payments/.test(pathname)
+    ? 'payments'
+    : /^\/warnings/.test(pathname)
+    ? 'warnings'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
     : /^\/attendance/.test(pathname)
     ? 'attendance'
+    : /^\/check-in/.test(pathname)
+    ? 'check-in'
     : /^\/line-labelling/.test(pathname)
     ? 'line-labelling'
     : /^\/bin/.test(pathname)

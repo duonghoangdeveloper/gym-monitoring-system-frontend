@@ -9,16 +9,12 @@ import { UsersCreateCustomerStep1View } from './users-create-customer-step-1-vie
 import { UsersCreateCustomerStep2View } from './users-create-customer-step-2-view';
 import { UsersCreateCustomerStep3View } from './users-create-customer-step-3-view';
 import { UsersCreateCustomerStep4View } from './users-create-customer-step-4-view';
-import { UsersCreateCustomerStep5View } from './users-create-customer-step-5-view';
 
 export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
   const client = useApolloClient();
-  const [visible, setVisible] = useState(true);
-  const [currentStep, setCurrentStep] = useState(4);
+  const [visible, setVisible] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
   const [customerData, setCustomerData] = useState(INITIAL_CUSTOMER_DATA);
-  const [loading, setLoading] = useState(true);
-  const [paymentPlans, setPaymentPlans] = useState([]);
-  const [payment, setPayment] = useState();
 
   useEffect(() => {
     if (!visible) {
@@ -47,10 +43,11 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
         .map(sameAngleFaces => sameAngleFaces[sameAngleFaces.length - 1]);
 
       if (base64Faces.length === 9) {
-        await client.mutate({
+        const user = await client.mutate({
           mutation: gql`
             mutation CreateUser($data: CreateUserInput!) {
               createUser(data: $data) {
+                _id
                 displayName
                 email
                 gender
@@ -73,9 +70,30 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
             },
           },
         });
-        message.success('Create customer succeeded!');
-        setVisible(false);
-        onSuccess();
+        if (customerData.step3.paymentPlan) {
+          await client.mutate({
+            mutation: gql`
+              mutation CreatePayment($data: CreatePaymentInput!) {
+                createPayment(data: $data) {
+                  _id
+                }
+              }
+            `,
+            variables: {
+              data: {
+                customerId: user.data.createUser._id,
+                paymentPlanId: customerData.step3.paymentPlan,
+              },
+            },
+          });
+          message.success('Create customer succeeded!');
+          setVisible(false);
+          onSuccess();
+        } else {
+          message.success('Create customer succeeded!');
+          setVisible(false);
+          onSuccess();
+        }
       } else {
         message.error('Not enough 9 registered face images!');
       }
@@ -140,7 +158,7 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
         return (
           <UsersCreateCustomerStep4View
             customerData={customerData}
-            onDone={createCustomer()}
+            onDone={createCustomer}
             onPrev={() => {
               setCurrentStep(2);
             }}
@@ -170,7 +188,6 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
             <Steps.Step title="Face ID" />
             <Steps.Step title="Auth" />
             <Steps.Step title="Review" />
-            <Steps.Step title="Payment" />
           </Steps>
           <div className="mt-6">{generateStepView(currentStep)}</div>
         </div>
