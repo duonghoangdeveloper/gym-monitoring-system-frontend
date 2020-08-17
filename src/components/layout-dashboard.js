@@ -24,6 +24,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 
 import { TOKEN_KEY } from '../common/constants';
 import { generateRolesToView } from '../common/services';
+import eGMS from '../images/eGMSnoTextWhite.png';
 import {
   SIDER_SET_OPEN_KEYS,
   SIDER_TOGGLE_COLLAPSED,
@@ -201,8 +202,14 @@ export const LayoutDashboard = ({ children }) => {
             className="cursor-pointer text-white flex items-center"
             onClick={() => history.push('/')}
           >
-            <div className="bg-blue-500 w-8 h-8" />
-            {!collapsed && <div className="ml-4">eGMS</div>}
+            <div className=" w-8 h-8" />
+            <img
+              alt="logo"
+              className="text-xs"
+              src={eGMS}
+              style={{ width: 60 }}
+            />
+            {!collapsed && <div>eGMS</div>}
           </a>
         </div>
         <Menu

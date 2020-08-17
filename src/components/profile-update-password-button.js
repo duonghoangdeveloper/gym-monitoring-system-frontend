@@ -22,7 +22,6 @@ export const UpdatePasswordButton = props => {
 
   const onFinish = async values => {
     const { confirmPassword, newPassword, oldPassword } = values;
-    console.log(values);
 
     if (confirmPassword !== newPassword) {
       message.error('Confirm password is not matched!');
