@@ -137,7 +137,7 @@ export const CheckIn = () => {
                 const diffDays = Math.round(
                   (expiredDateTemp - toDays) / (24 * 60 * 60 * 1000)
                 );
-                console.log(diffDays);
+                // console.log(diffDays);
                 // console.log(expiredDateTemp);
                 if (diffDays >= 1) {
                   return (
