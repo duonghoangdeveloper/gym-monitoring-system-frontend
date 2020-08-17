@@ -1,5 +1,5 @@
 import { useApolloClient } from '@apollo/react-hooks';
-import { DatePicker, Space, Tabs } from 'antd';
+import { DatePicker, Space, Spin, Tabs } from 'antd';
 import {
   Axis,
   Chart,
@@ -16,6 +16,8 @@ import { DATE_FORMAT_US } from '../common/constants';
 
 const { RangePicker } = DatePicker;
 export const PieCharts = () => {
+  const [spinning, setSpinning] = useState(true);
+
   const client = useApolloClient();
   const dateNow = moment(new Date()).format(DATE_FORMAT_US);
   const [dateRange, setDateRange] = useState(['2020-05-09', dateNow]);
@@ -32,6 +34,8 @@ export const PieCharts = () => {
   const [to, setTo] = useState('');
 
   const fetchWarningsSucceededData = async () => {
+    setSpinning(true);
+
     try {
       const result = await client.query({
         query: gql`
@@ -131,6 +135,7 @@ export const PieCharts = () => {
       const fetchedWarningsTotal = result?.data?.warnings?.total ?? 0;
 
       setTotal4(fetchedWarningsTotal);
+      setSpinning(false);
     } catch (e) {
       // Do something
     }
@@ -163,34 +168,38 @@ export const PieCharts = () => {
         }
       >
         <Tabs.TabPane key="1" tab="Warning status">
-          <div className="flex justify-between">
-            <h6 className="text-sm">Warning accept status</h6>
+          <div className="chartSpinLoader">
+            <div className="flex justify-between">
+              <h6 className="text-sm">Warning accept status</h6>
+            </div>
+            <Spin spinning={spinning}>
+              <Chart autoFit data={datas} height={350} scale={cols}>
+                <Coordinate radius={0.75} type="theta" />
+                <Tooltip showTitle={false} />
+                <Axis visible={false} />
+                <Interval
+                  adjust="stack"
+                  color="item"
+                  label={[
+                    'count',
+                    {
+                      content: data =>
+                        `${data.item}: ${(
+                          (data.count / (total2 - total4)) *
+                          100
+                        ).toFixed(1)}%`,
+                    },
+                  ]}
+                  position="count"
+                  style={{
+                    lineWidth: 1,
+                    stroke: '#fff',
+                  }}
+                />
+                <Interaction type="element-single-selected" />
+              </Chart>
+            </Spin>
           </div>
-          <Chart autoFit data={datas} height={350} scale={cols}>
-            <Coordinate radius={0.75} type="theta" />
-            <Tooltip showTitle={false} />
-            <Axis visible={false} />
-            <Interval
-              adjust="stack"
-              color="item"
-              label={[
-                'count',
-                {
-                  content: data =>
-                    `${data.item}: ${(
-                      (data.count / (total2 - total4)) *
-                      100
-                    ).toFixed(1)}%`,
-                },
-              ]}
-              position="count"
-              style={{
-                lineWidth: 1,
-                stroke: '#fff',
-              }}
-            />
-            <Interaction type="element-single-selected" />
-          </Chart>
         </Tabs.TabPane>
         <Tabs.TabPane key="2" tab="Payment Plans">
           <div className="flex justify-between">
