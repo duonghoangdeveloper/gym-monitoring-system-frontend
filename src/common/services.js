@@ -203,3 +203,65 @@ export const validateFile = file => {
   }
   return isJpgOrPng && isLt2M;
 };
+
+export const calculate2LineTails = (theta0, theta1, rectangle) => {
+  if (
+    theta0 !== null &&
+    theta1 !== null &&
+    !Number.isNaN(theta0) &&
+    !Number.isNaN(theta1) &&
+    typeof rectangle?.width === 'number' &&
+    typeof rectangle?.height === 'number'
+  ) {
+    // Line: y = theta0 + theta1 * x
+
+    // y = 0 => x = - theta0 / theta1
+    const topCrossPointX = -theta0 / theta1;
+    const topCrossPoint =
+      topCrossPointX >= 0 && topCrossPointX <= rectangle.width
+        ? {
+            x: topCrossPointX,
+            y: 0,
+          }
+        : null;
+
+    // x = 0 => y = theta0
+    const leftCrossPointY = theta0;
+    const leftCrossPoint =
+      leftCrossPointY >= 0 && leftCrossPointY <= rectangle.height
+        ? {
+            x: 0,
+            y: leftCrossPointY,
+          }
+        : null;
+
+    // y = rectangle.height => x = (rectangle.height - theta0) / theta1
+    const bottomCrossPointX = (rectangle.height - theta0) / theta1;
+    const bottomCrossPoint =
+      bottomCrossPointX >= 0 && bottomCrossPointX <= rectangle.width
+        ? {
+            x: bottomCrossPointX,
+            y: rectangle.height,
+          }
+        : null;
+
+    // x = rectangle.width => y = theta0 + theta1 * rectangle.width
+    const rightCrossPointY = theta0 + theta1 * rectangle.width;
+    const rightCrossPoint =
+      rightCrossPointY >= 0 && rightCrossPointY <= rectangle.height
+        ? {
+            x: rectangle.width,
+            y: rightCrossPointY,
+          }
+        : null;
+
+    return [
+      topCrossPoint,
+      leftCrossPoint,
+      bottomCrossPoint,
+      rightCrossPoint,
+    ].filter(_ => _);
+  }
+
+  return [];
+};

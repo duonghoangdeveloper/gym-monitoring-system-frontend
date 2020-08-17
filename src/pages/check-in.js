@@ -76,27 +76,27 @@ export const CheckIn = () => {
   }, []);
 
   useEffect(() => {
-    socket.emit('client-start-view-check-in');
+    socket.emit('client-start-get-check-in');
 
-    const receiveScreensHandler = receivedCheckIn => {
+    const handleCheckInGet = ({ checkIn: _checkIn }) => {
       if (
-        receivedCheckIn?.lastCheckIn?._id &&
-        receivedCheckIn?.lastCheckIn?._id !== checkIns[0]?._id
+        _checkIn?.lastCheckIn?._id &&
+        _checkIn?.lastCheckIn?._id !== checkIns[0]?._id
       ) {
         fetchLatestCheckIns();
       }
-      setCheckIn(receivedCheckIn);
+      setCheckIn(_checkIn);
       socket.emit('client-receive-check-in');
     };
     const observable = fromEvent(socket, 'server-send-check-in');
     const subscriber = observable.subscribe({
-      next(receivedCheckIn) {
-        receiveScreensHandler(receivedCheckIn);
+      next(data) {
+        handleCheckInGet(data);
       },
     });
 
     return () => {
-      socket.emit('client-stop-view-check-in');
+      socket.emit('client-stop-get-check-in');
       socket.off('server-send-check-in');
       subscriber.unsubscribe();
     };

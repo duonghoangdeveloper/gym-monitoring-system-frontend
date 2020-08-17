@@ -18,6 +18,7 @@ import { useApolloClient } from '@apollo/react-hooks';
 import { Avatar, Dropdown, Layout, Menu } from 'antd';
 import gql from 'graphql-tag';
 import React from 'react';
+import { RiWebcamLine } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 
@@ -94,6 +95,16 @@ export const LayoutDashboard = ({ children }) => {
           onClick: () => history.push('/cameras'),
           title: 'Cameras',
         },
+        {
+          icon: (
+            <span aria-label="video-camera" className="anticon" role="img">
+              <RiWebcamLine />
+            </span>
+          ),
+          key: 'webcam',
+          onClick: () => history.push('/webcam'),
+          title: 'Webcam',
+        },
       ],
       icon: <FundViewOutlined />,
       key: 'monitoring',
@@ -169,6 +180,13 @@ export const LayoutDashboard = ({ children }) => {
           key: 'line-labelling',
           onClick: () => history.push('/line-labelling'),
           title: 'Line Labelling',
+        },
+        {
+          hidden: role !== 'SYSTEM_ADMIN',
+          icon: <VideoCameraOutlined />,
+          key: 'cameras-detection',
+          onClick: () => history.push('/cameras-detection'),
+          title: 'Cameras Detection',
         },
       ],
       icon: <ToolOutlined />,
@@ -316,8 +334,12 @@ const getSelectedKey = pathname =>
     ? 'payment-plans'
     : /^\/payments/.test(pathname)
     ? 'payments'
+    : /^\/cameras-detection/.test(pathname)
+    ? 'cameras-detection'
     : /^\/cameras/.test(pathname)
     ? 'cameras'
+    : /^\/webcam/.test(pathname)
+    ? 'webcam'
     : /^\/attendance/.test(pathname)
     ? 'attendance'
     : /^\/check-in/.test(pathname)

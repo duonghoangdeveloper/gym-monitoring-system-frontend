@@ -6,9 +6,9 @@ import { _403 } from '../pages/_403';
 import { _404 } from '../pages/_404';
 import { Attendance } from '../pages/attendance';
 import { Cameras } from '../pages/cameras';
+import { CamerasDetection } from '../pages/cameras-detection';
 import { CheckIn } from '../pages/check-in';
 import { Customers } from '../pages/customers';
-// Everyone can access
 import { Dashboard } from '../pages/dashboard';
 import { Feedbacks } from '../pages/feedbacks';
 import { Home } from '../pages/home';
@@ -18,6 +18,7 @@ import { Payments } from '../pages/payments';
 import { Profile } from '../pages/profile';
 import { SignIn } from '../pages/sign-in';
 import { Staffs } from '../pages/staffs';
+import { Webcam } from '../pages/webcam';
 
 const publicRoutes = [
   {
@@ -73,10 +74,22 @@ const managerOwnerAdminRoutes = [
     path: '/attendance',
   },
   {
+    component: CamerasDetection,
+    exact: true,
+    key: 'cameras-detection',
+    path: '/cameras-detection',
+  },
+  {
     component: Cameras,
     exact: true,
     key: 'cameras',
     path: '/cameras',
+  },
+  {
+    component: Webcam,
+    exact: true,
+    key: 'webcam',
+    path: '/webcam',
   },
   {
     component: Payments,
