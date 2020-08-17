@@ -74,6 +74,7 @@ export const CustomerChartCard = () => {
       footer={
         <Field label="Daily Customer" value={numeral(10).format('0,0')} />
       }
+      // loading
       title="Total Customer"
       total={numeral(total).format('0,0')}
     >

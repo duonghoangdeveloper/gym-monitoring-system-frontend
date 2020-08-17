@@ -12,6 +12,7 @@ export const WarningChartCard = () => {
   const [warnings, setWarnings] = useState([]);
   const [total, setTotal] = useState(0);
   // const [skip, setSkip] = useState(0);
+  // const [loading, setLoading] = useState(true);
   // const [sort, setSort] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -27,6 +28,7 @@ export const WarningChartCard = () => {
     });
   }
   const fetchWarningsData = async () => {
+    // setLoading(true);
     try {
       const result = await client.query({
         query: gql`
@@ -54,6 +56,7 @@ export const WarningChartCard = () => {
           ...warning,
         }))
       );
+      // setLoading(false);
       setTotal(fetchedPaymentsTotal);
     } catch (e) {
       // Do something
@@ -77,6 +80,7 @@ export const WarningChartCard = () => {
       footer={
         <Field label="Daily Dangerous" value={numeral(10).format('0,0')} />
       }
+      // loading={loading}
       title="Total Dangerous"
       total={numeral(total).format('0,0')}
     >

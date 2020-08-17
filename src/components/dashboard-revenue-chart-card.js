@@ -67,6 +67,7 @@ export const RevenueChartCard = () => {
       footer={
         <Field label="Daily revenue" value={numeral(12423).format('0,0')} />
       }
+      // loading
       title="Revenue"
       total={() => (
         <span
