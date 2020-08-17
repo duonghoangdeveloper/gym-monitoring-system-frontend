@@ -29,7 +29,7 @@ export const UsersUpdateStaffButton = ({ onSuccess, user }) => {
     try {
       await client.mutate({
         mutation: gql`
-          mutation DeactivateUser(
+          mutation UpdateUser(
             $_id: ID!
             $username: String!
             $displayName: String
@@ -37,7 +37,7 @@ export const UsersUpdateStaffButton = ({ onSuccess, user }) => {
             $email: String
             $phone: String
           ) {
-            deactivateUser(
+            updateUser(
               data: {
                 username: $username
                 displayName: $displayName

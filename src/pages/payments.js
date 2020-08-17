@@ -52,7 +52,6 @@ export const Payments = () => {
       });
 
       const fetchedPaymentsData = result?.data?.payments?.data ?? [];
-      console.log('ABC');
       const fetchedPaymentsTotal = result?.data?.payments?.total ?? 0;
       setPayments(
         fetchedPaymentsData.map((_payment, index) => ({

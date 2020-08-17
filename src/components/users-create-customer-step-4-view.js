@@ -8,7 +8,7 @@ export const UsersCreateCustomerStep4View = ({
 }) => {
   const [loading, setLoading] = useState(false);
 
-  const onNextClick = async () => {
+  const onDoneClick = async () => {
     setLoading(true);
     onDone();
     setLoading(false);
@@ -53,7 +53,7 @@ export const UsersCreateCustomerStep4View = ({
         <Button
           className="ml-2"
           loading={loading}
-          onClick={onNextClick}
+          onClick={onDoneClick}
           type="primary"
         >
           Create customer
