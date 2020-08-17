@@ -85,6 +85,7 @@ export const TrainerChartCard = () => {
           </span>
         </div>
       }
+      // loading
       title="Tranier working"
       total={total}
     >
