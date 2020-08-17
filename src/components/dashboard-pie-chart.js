@@ -50,7 +50,7 @@ export const PieCharts = () => {
         },
       });
 
-      const fetchedWarningsTotal = result?.data?.warnings?.total ?? [];
+      const fetchedWarningsTotal = result?.data?.warnings?.total ?? 0;
 
       setTotal1(fetchedWarningsTotal);
     } catch (e) {

@@ -1,5 +1,5 @@
 import { useApolloClient } from '@apollo/react-hooks';
-import { List, message, Space, Tag } from 'antd';
+import { Descriptions, List, message, Space, Tag } from 'antd';
 import gql from 'graphql-tag';
 import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
@@ -135,11 +135,10 @@ export const CheckIn = () => {
                 const toDays = moment(new Date());
                 // const diffDuration = expiredDateTemp.diff(toDays);
                 const diffDays = Math.round(
-                  Math.abs((toDays - expiredDateTemp) / (24 * 60 * 60 * 1000))
+                  (expiredDateTemp - toDays) / (24 * 60 * 60 * 1000)
                 );
-                // console.log(diffDuration);
                 // console.log(diffDays);
-
+                // console.log(expiredDateTemp);
                 if (diffDays >= 1) {
                   return (
                     <List.Item
@@ -172,15 +171,20 @@ export const CheckIn = () => {
                         // avatar={<Avatar src={item.avatar} />}
                         title={`Username: ${item.user.username}`}
                       />
-                      <div className="pb-10">
-                        {`Name: ${item.user.displayName}`}
-                        <br />
-                        {`Role: ${item.user.role}`}
-                        <br />
-                        {`This user created account at: ${moment(
-                          item.user.createdAt
-                        ).format(DATE_FORMAT)}`}
-                      </div>
+                      <Descriptions column={1} size="small">
+                        <Descriptions.Item label="Name">
+                          {item.user.displayName}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Role">
+                          <a>{item.user.role}</a>
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Check in at">
+                          {moment(item.createdAt).format(DATE_FORMAT)}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="This user created account at">
+                          {moment(item.user.createdAt).format(DATE_FORMAT)}
+                        </Descriptions.Item>
+                      </Descriptions>
                     </List.Item>
                   );
                 }
@@ -198,7 +202,7 @@ export const CheckIn = () => {
                       />,
                       <IconText
                         key="list-vertical-message"
-                        text={diffDays}
+                        text="0"
                         title="Days left: "
                       />,
 
@@ -212,15 +216,20 @@ export const CheckIn = () => {
 
                       title={`Username: ${item.user.username}`}
                     />
-                    <div className="pb-10">
-                      {`Name: ${item.user.displayName}`}
-                      <br />
-                      {`Role: ${item.user.role}`}
-                      <br />
-                      {`This user created account at: ${moment(
-                        item.user.createdAt
-                      ).format(DATE_FORMAT)}`}
-                    </div>
+                    <Descriptions column={1} size="small">
+                      <Descriptions.Item label="Name">
+                        {item.user.displayName}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Role">
+                        <a>{item.user.role}</a>
+                      </Descriptions.Item>
+                      <Descriptions.Item label="Check in at">
+                        {moment(item.createdAt).format(DATE_FORMAT)}
+                      </Descriptions.Item>
+                      <Descriptions.Item label="This user created account at">
+                        {moment(item.user.createdAt).format(DATE_FORMAT)}
+                      </Descriptions.Item>
+                    </Descriptions>
                   </List.Item>
                 );
               }}
