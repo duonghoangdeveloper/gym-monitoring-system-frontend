@@ -2,6 +2,7 @@ import {
   BarChartOutlined,
   CheckCircleOutlined,
   CommentOutlined,
+  DeleteOutlined,
   DollarCircleOutlined,
   DownOutlined,
   FundViewOutlined,
@@ -137,6 +138,13 @@ export const LayoutDashboard = ({ children }) => {
           key: 'admins',
           onClick: () => history.push('/admins'),
           title: 'Admins',
+        },
+        {
+          hidden: role !== 'SYSTEM_ADMIN',
+          icon: <DeleteOutlined />,
+          key: 'bin',
+          onClick: () => history.push('/bin'),
+          title: 'User bin',
         },
       ],
       icon: <UserOutlined />,
@@ -342,4 +350,6 @@ const getSelectedKey = pathname =>
     ? 'check-in'
     : /^\/line-labelling/.test(pathname)
     ? 'line-labelling'
+    : /^\/bin/.test(pathname)
+    ? 'bin'
     : null;

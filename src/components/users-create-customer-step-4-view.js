@@ -10,7 +10,7 @@ export const UsersCreateCustomerStep4View = ({
 
   const onDoneClick = async () => {
     setLoading(true);
-    await onDone();
+    onDone();
     setLoading(false);
   };
 

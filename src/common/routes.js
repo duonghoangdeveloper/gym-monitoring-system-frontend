@@ -5,6 +5,7 @@ import { AppAuthRoute } from '../components/app-auth-route';
 import { _403 } from '../pages/_403';
 import { _404 } from '../pages/_404';
 import { Attendance } from '../pages/attendance';
+import { Bin } from '../pages/bin';
 import { Cameras } from '../pages/cameras';
 import { CheckIn } from '../pages/check-in';
 import { Customers } from '../pages/customers';
@@ -132,6 +133,12 @@ export const adminRoutes = [
     exact: true,
     key: 'admins',
     path: '/admins',
+  },
+  {
+    component: Bin,
+    exact: true,
+    key: 'bin',
+    path: '/bin',
   },
   {
     component: LineLabelling,
