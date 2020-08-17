@@ -78,6 +78,7 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
         message.error('Not enough 9 registered face images!');
       }
     } catch (e) {
+      console.log(e);
       const msg = e.message.split(': ')[1] ?? e.message;
       message.error(`${msg}!`);
     }

@@ -1,13 +1,13 @@
 import React from 'react';
 
-import { CamerasLiveCamerasView } from '../components/cameras-live-cameras-view';
 import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
+import { WebcamLiveWebcamView } from '../components/webcam-live-webcam-view';
 
-export const Cameras = () => (
+export const Webcam = () => (
   <LayoutDashboard>
     <CommonMainContainer>
-      <CamerasLiveCamerasView />
+      <WebcamLiveWebcamView />
     </CommonMainContainer>
   </LayoutDashboard>
 );
