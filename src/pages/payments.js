@@ -108,9 +108,17 @@ export const Payments = () => {
     {
       dataIndex: 'customer',
       key: 'customer',
-      render: customer => `${customer.username}`,
+      render: customer => `${customer?.username}`,
       sorter: true,
       title: 'Customer',
+      // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
+    },
+    {
+      dataIndex: 'creator',
+      key: 'creator',
+      render: creator => `${creator?.username}`,
+      sorter: true,
+      title: 'Creator',
       // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
     },
     {
@@ -119,14 +127,6 @@ export const Payments = () => {
       render: _paymentPlan => `${_paymentPlan.name}`,
       sorter: true,
       title: 'Payment Plan',
-      // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
-    },
-    {
-      dataIndex: 'creator',
-      key: 'creator',
-      render: creator => `${creator.username}`,
-      sorter: true,
-      title: 'Creator',
       // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
     },
     {
