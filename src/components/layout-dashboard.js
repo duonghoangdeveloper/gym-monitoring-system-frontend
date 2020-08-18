@@ -228,10 +228,10 @@ export const LayoutDashboard = ({ children }) => {
             className="cursor-pointer text-white flex items-center"
             onClick={() => history.push('/')}
           >
-            <div className=" w-8 h-8" />
+            <div className=" w-8 h-8 flex items-start " />
             <img
               alt="logo"
-              className="text-xs"
+              className="text-xs items-start"
               src={eGMS}
               style={{ width: 60 }}
             />

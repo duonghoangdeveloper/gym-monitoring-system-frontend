@@ -7,8 +7,6 @@ import { getColumnSearchProps } from '../common/antd';
 import { PAGE_SIZE } from '../common/constants';
 import { LayoutDashboard } from '../components/layout-dashboard';
 import { UsersBackupButton } from '../components/users-backup-button';
-import { UsersCreateCustomerButton } from '../components/users-create-customer-button';
-import { UsersRemoveUserButton } from '../components/users-remove-user-button';
 
 export const Bin = () => {
   const client = useApolloClient();
@@ -56,7 +54,7 @@ export const Bin = () => {
       setUsers(
         fetchedCustomersData.map((user, index) => ({
           key: user._id,
-          no: index + 1,
+          no: skip + index + 1,
           ...user,
         }))
       );

@@ -5,6 +5,7 @@ import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
 export const LadderChart = () => {
+  const [loading, setLoading] = useState(true);
   const client = useApolloClient();
   const [spinning, setSpinning] = useState(true);
 
