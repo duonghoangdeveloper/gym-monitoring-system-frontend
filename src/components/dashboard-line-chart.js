@@ -1,10 +1,12 @@
 import { useApolloClient } from '@apollo/react-hooks';
+import { Spin } from 'antd';
 import { Chart, Line, Point } from 'bizcharts';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
 export const LineChart = () => {
   const client = useApolloClient();
+  const [spinning, setSpinning] = useState(true);
 
   const [warnings, setWarnings] = useState([]);
   const [warningsSucceeded, setWarningsSucceeded] = useState([]);
@@ -16,6 +18,8 @@ export const LineChart = () => {
   const [to, setTo] = useState('');
 
   const fetchWarningsData = async () => {
+    setSpinning(true);
+
     try {
       const result = await client.query({
         query: gql`
@@ -75,6 +79,7 @@ export const LineChart = () => {
           ...warning,
         }))
       );
+      setSpinning(false);
     } catch (e) {
       // Do something
     }
@@ -117,20 +122,22 @@ export const LineChart = () => {
   // console.log(warnings.forEach(p => p.createdAt));
   // console.log(warnings);
   return (
-    <>
+    <div className="chartSpinLoader">
       <div className="flex justify-between">
         <h6 className="text-sm">Report of customer's risk</h6>
       </div>
-      <Chart
-        autoFit
-        data={dataLineChart}
-        height={320}
-        padding={[10, 20, 50, 40]}
-        scale={{ value: { min: 0 } }}
-      >
-        <Line color="numberOfRisk" position="month*value" shape="smooth" />
-        <Point color="numberOfRisk" position="month*value" />
-      </Chart>
-    </>
+      <Spin spinning={spinning}>
+        <Chart
+          autoFit
+          data={dataLineChart}
+          height={320}
+          padding={[10, 20, 50, 40]}
+          scale={{ value: { min: 0 } }}
+        >
+          <Line color="numberOfRisk" position="month*value" shape="smooth" />
+          <Point color="numberOfRisk" position="month*value" />
+        </Chart>
+      </Spin>
+    </div>
   );
 };
