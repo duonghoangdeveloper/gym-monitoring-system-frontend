@@ -12,7 +12,7 @@ import { UsersCreateCustomerStep4View } from './users-create-customer-step-4-vie
 
 export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
   const client = useApolloClient();
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(true);
   const [currentStep, setCurrentStep] = useState(0);
   const [customerData, setCustomerData] = useState(INITIAL_CUSTOMER_DATA);
 

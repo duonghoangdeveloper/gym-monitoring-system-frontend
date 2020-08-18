@@ -2,6 +2,7 @@ import { SyncOutlined } from '@ant-design/icons';
 import { useApolloClient } from '@apollo/react-hooks';
 import { Button, Form, Input, message, Select } from 'antd';
 import gql from 'graphql-tag';
+import { value } from 'numeral';
 import React, { useEffect, useState } from 'react';
 
 import { PAGE_SIZE } from '../common/constants';
@@ -14,6 +15,7 @@ export const UsersCreateCustomerStep3View = ({
 }) => {
   const [form] = Form.useForm();
   const [paymentPlans, setPaymentPlans] = useState([]);
+  const [currentPaymentPlan, setCurrentPaymentPlan] = useState([]);
   const [loading, setLoading] = useState(false);
   const [selectLoading, setSelectLoading] = useState(false);
   const client = useApolloClient();
@@ -37,6 +39,9 @@ export const UsersCreateCustomerStep3View = ({
           },
         },
       });
+      values.paymentPlanName = paymentPlans.filter(
+        ({ _id }) => _id.toString() === values.paymentPlan
+      )[0].name;
 
       if (!hasError(result.data.validateUser)) {
         onNext(values);
@@ -102,6 +107,11 @@ export const UsersCreateCustomerStep3View = ({
   const handleOnNextClick = () => {
     form.submit();
   };
+  const changePayment = value => {
+    setCurrentPaymentPlan(
+      paymentPlans.filter(({ _id }) => _id.toString() === value)
+    );
+  };
   return (
     <div>
       <Form
@@ -164,7 +174,12 @@ export const UsersCreateCustomerStep3View = ({
           />
         </Form.Item>
         <Form.Item label="Choose a payment plan" name="paymentPlan">
-          <Select loading={selectLoading} placeholder="Choose a payment plan">
+          <Select
+            allowClear
+            loading={selectLoading}
+            onChange={value => changePayment(value)}
+            placeholder="Choose a payment plan"
+          >
             {paymentPlans.map(({ _id, name }) => (
               <Select.Option key={_id} value={_id}>
                 {name}
@@ -174,6 +189,21 @@ export const UsersCreateCustomerStep3View = ({
           </Select>
         </Form.Item>
       </Form>
+      {currentPaymentPlan[0] ? (
+        <div className="flex flex-col pt-2">
+          <div className="flex mb-6">
+            <span className="w-1/4 font-semibold">Period:</span>
+            <span>{currentPaymentPlan[0].period ?? 'N/A'}</span>
+          </div>
+
+          <div className="flex mb-6">
+            <span className="w-1/4 font-semibold">Price:</span>
+            <span>{currentPaymentPlan[0].price ?? 'N/A'}</span>
+          </div>
+        </div>
+      ) : (
+        <div />
+      )}
       <div className="flex justify-end">
         <Button className="ml-2" onClick={onPrev}>
           Previous
