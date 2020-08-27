@@ -138,7 +138,7 @@ export const Bin = () => {
       render: (text, user) => (
         <UsersBackupButton onSuccess={fetchedCustomers} user={user} />
       ),
-      title: 'Backup',
+      title: 'Activate',
     },
   ];
 

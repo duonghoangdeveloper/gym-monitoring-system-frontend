@@ -114,19 +114,19 @@ export const Payments = () => {
       // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
     },
     {
-      dataIndex: 'paymentPlan',
-      key: 'paymentPlan',
-      render: _paymentPlan => `${_paymentPlan.name}`,
-      sorter: true,
-      title: 'Payment Plan',
-      // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
-    },
-    {
       dataIndex: 'creator',
       key: 'creator',
       render: creator => `${creator.username}`,
       sorter: true,
       title: 'Creator',
+      // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
+    },
+    {
+      dataIndex: 'paymentPlan',
+      key: 'paymentPlan',
+      render: _paymentPlan => `${_paymentPlan.name}`,
+      sorter: true,
+      title: 'Payment Plan',
       // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
     },
     {

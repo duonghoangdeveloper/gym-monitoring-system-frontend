@@ -134,7 +134,7 @@ export const LayoutDashboard = ({ children }) => {
           icon: <UserOutlined />,
           key: 'managers',
           onClick: () => history.push('/managers'),
-          title: 'Managers',
+          title: 'Receptionist',
         },
         {
           hidden: !rolesToView.includes('GYM_OWNER'),

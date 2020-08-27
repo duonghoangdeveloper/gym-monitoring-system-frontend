@@ -23,7 +23,7 @@ export const UsersRemoveUserButton = ({ onSuccess, user }) => {
           _id,
         },
       });
-      message.info('Remove success');
+      message.info('Deactivate success');
       if (onSuccess instanceof Function) {
         onSuccess();
       }
@@ -43,7 +43,7 @@ export const UsersRemoveUserButton = ({ onSuccess, user }) => {
       >
         <a className="whitespace-no-wrap">
           <DeleteOutlined />
-          &nbsp;&nbsp;Remove
+          &nbsp;&nbsp;Deactivate
         </a>
       </Popconfirm>
     </>

@@ -2,7 +2,7 @@ export const URI =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
     ? 'http://localhost:7777'
     : 'https://gym-monitoring-system.herokuapp.com';
-
+// change local LAN
 export const PYTHON_SERVER_URI =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
     ? 'http://localhost:8000'

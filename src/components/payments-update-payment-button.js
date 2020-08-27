@@ -129,7 +129,7 @@ export const PaymentsUpdatePaymentButton = ({ onSuccess, payment }) => {
             />
           </Form.Item>
           <Form.Item
-            label="Package"
+            label="Payment Plan"
             name="paymentPlanId"
             // rules={[
             //   {

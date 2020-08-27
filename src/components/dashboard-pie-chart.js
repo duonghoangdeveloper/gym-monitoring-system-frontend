@@ -49,7 +49,7 @@ export const PieCharts = () => {
           query: {
             createdBetween: { from: dateRange[0], to: dateRange[1] },
             limit: 100000000,
-            search: { status: 'SUCCEEDED' },
+            search: { status: 'ACCEPTED' },
           },
         },
       });

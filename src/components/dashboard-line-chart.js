@@ -66,7 +66,7 @@ export const LineChart = () => {
         variables: {
           query: {
             createdBetween: { from, to },
-            search: { status: 'SUCCEEDED' },
+            search: { status: 'ACCEPTED' },
           },
         },
       });
