@@ -9,7 +9,6 @@ export const UsersCreateCustomerStep4View = ({
   const [loading, setLoading] = useState(false);
 
   const onDoneClick = async () => {
-    setLoading(true);
     onDone();
     setLoading(false);
   };
@@ -46,6 +45,10 @@ export const UsersCreateCustomerStep4View = ({
           <span className="w-1/4 font-semibold">Gender:</span>
           <span>{customerData.step1?.gender ?? 'N/A'}</span>
         </div>
+        <div className="flex mb-6">
+          <span className="w-1/4 font-semibold">Payment plan:</span>
+          <span>{customerData.step3?.paymentPlanName ?? 'N/A'}</span>
+        </div>
       </div>
 
       <div className="flex justify-end">
@@ -53,7 +56,10 @@ export const UsersCreateCustomerStep4View = ({
         <Button
           className="ml-2"
           loading={loading}
-          onClick={onDoneClick}
+          onClick={() => {
+            setLoading(true);
+            onDoneClick();
+          }}
           type="primary"
         >
           Create customer
