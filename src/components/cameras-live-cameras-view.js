@@ -9,7 +9,7 @@ import { CamerasScreen } from './cameras-screen';
 
 export const CamerasLiveCamerasView = () => {
   const { socket } = useContext(SocketContext);
-  const [cameraKeys, setCameraKeys] = useState([]);
+  const [cameraIds, setCameraIds] = useState([]);
   const [initLoading, setInitLoading] = useState(true);
   const loading = useRef(false);
 
@@ -19,7 +19,7 @@ export const CamerasLiveCamerasView = () => {
     return () => clearTimeout(timeoutId);
   }, []);
 
-  console.log(123)
+  console.log(123);
 
   useEffect(() => {
     socket.emit('client-start-get-cameras');
@@ -27,18 +27,18 @@ export const CamerasLiveCamerasView = () => {
     const handleCamerasGet = ({ cameras }) => {
       loading.current = true;
       if (
-        cameras.length !== cameraKeys.length ||
-        cameras.some(({ key }) => cameraKeys.indexOf(key) === -1)
+        cameras.length !== cameraIds.length ||
+        cameras.some(({ _id }) => cameraIds.indexOf(_id) === -1)
       ) {
-        setCameraKeys(cameras.map(({ key }) => key));
+        setCameraIds(cameras.map(({ _id }) => _id));
       }
 
       if (initLoading) {
         setInitLoading(false);
       }
 
-      cameras.forEach(({ key, screenshot }) => {
-        const img = document.getElementById(key);
+      cameras.forEach(({ _id, screenshot }) => {
+        const img = document.getElementById(_id);
 
         if (img) {
           img.src = `data:image/jpeg;base64,${encode(screenshot.data)}`;
@@ -61,7 +61,7 @@ export const CamerasLiveCamerasView = () => {
       socket.off('server-send-cameras');
       subscriber.unsubscribe();
     };
-  }, [socket.connected, initLoading, cameraKeys]);
+  }, [socket.connected, initLoading, cameraIds]);
 
   if (initLoading) {
     return (
@@ -71,7 +71,7 @@ export const CamerasLiveCamerasView = () => {
     );
   }
 
-  if (cameraKeys.length === 0) {
+  if (cameraIds.length === 0) {
     return <CamerasEmptyResult />;
   }
 
@@ -84,8 +84,8 @@ export const CamerasLiveCamerasView = () => {
           'repeat(auto-fit, minmax(calc(50% - 0.25rem), 1fr))',
       }}
     >
-      {cameraKeys.map(cameraKey => (
-        <CamerasScreen cameraKey={cameraKey} key={cameraKey} />
+      {cameraIds.map(_id => (
+        <CamerasScreen _id={_id} key={_id} />
       ))}
     </div>
   );

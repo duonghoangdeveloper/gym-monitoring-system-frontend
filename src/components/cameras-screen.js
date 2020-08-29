@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const CamerasScreen = ({ cameraKey, detectionData }) => {
+export const CamerasScreen = ({ _id, detectionData }) => {
   console.log(detectionData);
 
   return (
@@ -13,9 +13,9 @@ export const CamerasScreen = ({ cameraKey, detectionData }) => {
       >
         <div className="absolute inset-0 m-1">
           <img
-            alt={cameraKey}
+            alt={_id}
             className="rounded-sm"
-            id={cameraKey}
+            id={_id}
             src="video-placeholder.png"
           />
         </div>
