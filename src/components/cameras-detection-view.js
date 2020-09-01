@@ -24,9 +24,9 @@ export const CamerasDetectionView = () => {
     const handleCamerasDetectionGet = ({ cameras: _cameras }) => {
       loading.current = true;
       setCameras(
-        _cameras.map(({ detectionData, key }) => ({
+        _cameras.map(({ _id, detectionData }) => ({
+          _id,
           detectionData,
-          key,
         }))
       );
 
@@ -73,8 +73,8 @@ export const CamerasDetectionView = () => {
           'repeat(auto-fit, minmax(calc(50% - 0.25rem), 1fr))',
       }}
     >
-      {cameras.map(({ detectionData, key }) => (
-        <CamerasDetectionScreen detectionData={detectionData} key={key} />
+      {cameras.map(({ _id, detectionData }) => (
+        <CamerasDetectionScreen detectionData={detectionData} key={_id} />
       ))}
     </div>
   );

@@ -64,7 +64,6 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
               faces: base64Faces.map(base64 => base64ToFile(base64)),
               gender,
               password,
-              paymentPlanId: customerData.step3.paymentPlan,
               phone,
               role: 'CUSTOMER',
               username,
