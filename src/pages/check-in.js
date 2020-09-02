@@ -1,15 +1,41 @@
 import { useApolloClient } from '@apollo/react-hooks';
-import { Descriptions, List, message, Space, Tag } from 'antd';
+import Description from 'ant-design-pro/lib/DescriptionList/Description';
+import { Descriptions, List, message, Radio, Space, Tag } from 'antd';
 import gql from 'graphql-tag';
 import moment from 'moment';
 import React, { useContext, useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroller';
 import { fromEvent } from 'rxjs';
 
-import { DATE_FORMAT } from '../common/constants';
+import { DATE_FORMAT, DATE_TIME_FORMAT } from '../common/constants';
 import { SocketContext } from '../common/contexts';
 import { CommonMainContainer } from '../components/common-main-container';
 import { LayoutDashboard } from '../components/layout-dashboard';
+
+const IconText = ({ description, text, title }) => (
+  <Space>
+    {title}
+    {text}
+    {description}
+  </Space>
+);
+
+const SORT_BY_ITEMS = [
+  {
+    label: 'Recent check-in',
+    query: {
+      sort: '-createdAt',
+    },
+    value: 'createdAt',
+  },
+  {
+    label: 'Membership expiry date',
+    query: {
+      sort: 'expiryDate',
+    },
+    value: 'expiryDate',
+  },
+];
 
 export const CheckIn = () => {
   const client = useApolloClient();
@@ -19,24 +45,24 @@ export const CheckIn = () => {
   const [loading, setLoading] = useState(true);
   const [hasMore, setHasMore] = useState(true);
   const [total, setTotal] = useState(0);
-  const IconText = ({ description, text, title }) => (
-    <Space>
-      {title}
-      {text}
-      {description}
-    </Space>
-  );
+  const [sortBy, setSortBy] = useState(SORT_BY_ITEMS[0].value);
 
-  const fetchLatestCheckIns = async () => {
+  const fetchLatestCheckIns = async (sortBy, init = false) => {
     setLoading(true);
-    const fetchedCheckIns = await fetchCheckIns(client, { limit: 10, skip: 0 });
-    const newCheckIns = [
-      ...fetchedCheckIns.data.filter(
-        newCheckIn =>
-          !checkIns.some(oldCheckIn => newCheckIn._id === oldCheckIn._id)
-      ),
-      ...checkIns,
-    ];
+    const fetchedCheckIns = await fetchCheckIns(client, {
+      limit: 10,
+      skip: 0,
+      ...SORT_BY_ITEMS.find(({ value }) => value === sortBy)?.query,
+    });
+    const newCheckIns = init
+      ? fetchedCheckIns.data
+      : [
+          ...fetchedCheckIns.data.filter(
+            newCheckIn =>
+              !checkIns.some(oldCheckIn => newCheckIn._id === oldCheckIn._id)
+          ),
+          ...checkIns,
+        ];
     if (fetchedCheckIns.total > 0) {
       setTotal(fetchedCheckIns.total);
     }
@@ -44,11 +70,12 @@ export const CheckIn = () => {
     setLoading(false);
   };
 
-  const fetchMoreCheckIns = async () => {
+  const fetchMoreCheckIns = async sortBy => {
     setLoading(true);
     const fetchedCheckIns = await fetchCheckIns(client, {
       limit: 10,
       skip: checkIns.length,
+      ...SORT_BY_ITEMS.find(({ value }) => value === sortBy)?.query,
     });
     const newCheckIns = [
       ...checkIns,
@@ -65,8 +92,8 @@ export const CheckIn = () => {
   };
 
   useEffect(() => {
-    fetchLatestCheckIns();
-  }, []);
+    fetchLatestCheckIns(sortBy, true);
+  }, [sortBy]);
 
   useEffect(() => {
     socket.emit('client-start-get-check-in');
@@ -101,7 +128,7 @@ export const CheckIn = () => {
       setHasMore(false);
       return;
     }
-    fetchMoreCheckIns();
+    fetchMoreCheckIns(sortBy);
   };
 
   return (
@@ -109,18 +136,29 @@ export const CheckIn = () => {
       <CommonMainContainer>
         <h1 className="text-3xl mr-4">Check In</h1>
         <div>
-          <div className="font-semibold mb-2">
-            Last update:{' '}
-            {checkIn?.updatedAt && moment(checkIn.updatedAt).format('HH:mm:ss')}
-            <Tag
-              color="processing"
-              style={{
-                fontSize: 15,
-                marginLeft: 20,
-              }}
-            >{`Total check-in: ${total}`}</Tag>
+          <div className="flex justify-between mb-4">
+            <div className="font-semibold">
+              Last update:{' '}
+              {checkIn?.updatedAt &&
+                moment(checkIn.updatedAt).format('HH:mm:ss')}
+            </div>
+            <div>
+              <span className="mr-3">Sort by:</span>
+              <Radio.Group
+                onChange={e => {
+                  setSortBy(e.target.value);
+                }}
+                value={sortBy}
+              >
+                {SORT_BY_ITEMS.map(({ label, value }) => (
+                  <Radio.Button key={value} value={value}>
+                    {label}
+                  </Radio.Button>
+                ))}
+              </Radio.Group>
+            </div>
           </div>
-          ,
+
           <InfiniteScroll
             hasMore={!loading && hasMore}
             loadMore={handleInfiniteOnLoad}
@@ -131,105 +169,51 @@ export const CheckIn = () => {
               itemLayout="vertical"
               loading={loading}
               renderItem={item => {
-                const expiredDateTemp = moment(item.user.expiryDate);
+                const expiredDateTemp = moment(item.expiryDate);
+                const userCreatedAt = moment(item.user.createdAt);
                 const toDays = moment(new Date());
-                // const diffDuration = expiredDateTemp.diff(toDays);
-                const diffDays = Math.round(
+                const diffDays = Math.ceil(
                   (expiredDateTemp - toDays) / (24 * 60 * 60 * 1000)
                 );
-                // console.log(diffDays);
-                // console.log(expiredDateTemp);
-                if (diffDays >= 1) {
-                  return (
-                    <List.Item
-                      actions={[
-                        <IconText
-                          text={moment(item.user.expiryDate).format(
-                            DATE_FORMAT
-                          )}
-                          title="Expiration date: "
-                        />,
-                        <IconText
-                          key="list-vertical-message"
-                          text={item.user.feedbacks.total}
-                          title="Feedback: "
-                        />,
-                        <IconText
-                          key="list-vertical-message"
-                          text={diffDays}
-                          title="Days left: "
-                        />,
-
-                        <Tag color="success">Member</Tag>,
-                      ]}
-                      extra={
-                        <img alt="logo" src={item.image.url} width={256} />
-                      }
-                      key={item.username}
-                    >
-                      <List.Item.Meta
-                        // avatar={<Avatar src={item.avatar} />}
-                        title={`Username: ${item.user.username}`}
-                      />
-                      <Descriptions column={1} size="small">
-                        <Descriptions.Item label="Name">
-                          {item.user.displayName}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Role">
-                          <a>{item.user.role}</a>
-                        </Descriptions.Item>
-                        <Descriptions.Item label="Check in at">
-                          {moment(item.createdAt).format(DATE_FORMAT)}
-                        </Descriptions.Item>
-                        <Descriptions.Item label="This user created account at">
-                          {moment(item.user.createdAt).format(DATE_FORMAT)}
-                        </Descriptions.Item>
-                      </Descriptions>
-                    </List.Item>
-                  );
-                }
-
+                const diffCreatedDays = Math.ceil(
+                  (toDays - userCreatedAt) / (24 * 60 * 60 * 1000)
+                );
                 return (
                   <List.Item
-                    actions={[
-                      <IconText
-                        text={moment(item.user.expiryDate).format(DATE_FORMAT)}
-                        title="Expiration date: "
-                      />,
-                      <IconText
-                        text={item.user.feedbacks.total}
-                        title="Feedback: "
-                      />,
-                      <IconText
-                        key="list-vertical-message"
-                        text="0"
-                        title="Days left: "
-                      />,
-
-                      <Tag color="error">Expired</Tag>,
-                    ]}
                     extra={<img alt="logo" src={item.image.url} width={256} />}
                     key={item.username}
                   >
                     <List.Item.Meta
                       // avatar={<Avatar src={item.avatar} />}
-
                       title={`Username: ${item.user.username}`}
                     />
-                    <Descriptions column={1} size="small">
-                      <Descriptions.Item label="Name">
-                        {item.user.displayName}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Role">
-                        <a>{item.user.role}</a>
-                      </Descriptions.Item>
-                      <Descriptions.Item label="Check in at">
-                        {moment(item.createdAt).format(DATE_FORMAT)}
-                      </Descriptions.Item>
-                      <Descriptions.Item label="This user created account at">
-                        {moment(item.user.createdAt).format(DATE_FORMAT)}
-                      </Descriptions.Item>
-                    </Descriptions>
+                    <div>
+                      <Descriptions column={1} size="small">
+                        <Descriptions.Item label="Name">
+                          {item.user.displayName}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Check in at">
+                          {moment(item.createdAt).format(DATE_TIME_FORMAT)}
+                        </Descriptions.Item>
+                        <Descriptions.Item label="Membership expiry date">
+                          <div>
+                            <span className="mr-3">
+                              {moment(item.expiryDate).format(DATE_FORMAT)}
+                            </span>
+                            {diffDays < 30 &&
+                              (diffCreatedDays < 3 ? (
+                                <Tag color="blue">New member</Tag>
+                              ) : (
+                                <Tag color={getColor(diffDays)}>
+                                  {diffDays > 0
+                                    ? `${diffDays} days left`
+                                    : 'Expired'}
+                                </Tag>
+                              ))}
+                          </div>
+                        </Descriptions.Item>
+                      </Descriptions>
+                    </div>
                   </List.Item>
                 );
               }}
@@ -242,8 +226,9 @@ export const CheckIn = () => {
   );
 };
 
-const fetchCheckIns = async (client, { limit = 10, skip = 0 }) => {
+const fetchCheckIns = async (client, { limit = 10, skip = 0, sort }) => {
   try {
+    console.log(sort);
     const result = await client.query({
       query: gql`
         query CheckIns($query: CheckInsQueryInput!) {
@@ -259,12 +244,11 @@ const fetchCheckIns = async (client, { limit = 10, skip = 0 }) => {
                 role
                 username
                 displayName
-                expiryDate
                 feedbacks {
                   total
                 }
               }
-
+              expiryDate
               createdAt
             }
             total
@@ -275,7 +259,7 @@ const fetchCheckIns = async (client, { limit = 10, skip = 0 }) => {
         query: {
           limit,
           skip,
-          sort: '-createdAt',
+          sort,
         },
       },
     });
@@ -293,4 +277,17 @@ const fetchCheckIns = async (client, { limit = 10, skip = 0 }) => {
       total: 0,
     };
   }
+};
+
+const getColor = diffDays => {
+  if (diffDays > 7) {
+    return 'success';
+  }
+  if (diffDays > 3) {
+    return 'gold';
+  }
+  if (diffDays > 0) {
+    return 'orange';
+  }
+  return 'error';
 };

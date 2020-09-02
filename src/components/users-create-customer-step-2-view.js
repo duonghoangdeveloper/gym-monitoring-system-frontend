@@ -13,6 +13,7 @@ import {
   Popover,
   Progress,
   Radio,
+  Select,
   Spin,
   Switch,
 } from 'antd';
@@ -47,7 +48,8 @@ export const UsersCreateCustomerStep2View = ({
   const cancelTokenRef = useRef(null);
   const [faces, setFaces] = useState(customerData.step2 || INIT_FACES);
   const [error, setError] = useState(false);
-  const [device, setDevice] = useState();
+  const [devices, setDevices] = useState([]);
+  const [index, setIndex] = useState(0);
   const [streamLoaded, setStreamLoaded] = useState(false);
   const [detecting, setDetecting] = useState(false);
   const [settingsVisible, setSettingsVisible] = useState(false);
@@ -59,9 +61,7 @@ export const UsersCreateCustomerStep2View = ({
     navigator.mediaDevices
       .enumerateDevices()
       .then(mediaDevices =>
-        setDevice(
-          mediaDevices.filter(({ kind }) => kind === 'videoinput').slice(-1)[0]
-        )
+        setDevices(mediaDevices.filter(({ kind }) => kind === 'videoinput'))
       );
 
     return () => {
@@ -71,12 +71,19 @@ export const UsersCreateCustomerStep2View = ({
   }, []);
 
   useEffect(() => {
-    if (device && streamLoaded && webcamRef.current) {
+    if (error) {
+      setDevices(devices.filter((_, i) => i !== index));
+      setIndex(index - 1 > 0 ? index - 1 : 0);
+    }
+  }, [error]);
+
+  useEffect(() => {
+    if (devices[index] && streamLoaded && webcamRef.current) {
       if (autoDetect) {
         setDetecting(true);
       }
     }
-  }, [device, streamLoaded, webcamRef.current]);
+  }, [devices, index, streamLoaded, webcamRef.current]);
 
   useEffect(() => {
     if (detecting) {
@@ -156,7 +163,8 @@ export const UsersCreateCustomerStep2View = ({
       };
     }
   }, [
-    device,
+    devices,
+    index,
     detecting,
     faceFound,
     faces,
@@ -205,7 +213,7 @@ export const UsersCreateCustomerStep2View = ({
       );
     }
 
-    if (!device) {
+    if (!devices[index]) {
       return (
         <div
           className="flex flex-col justify-center bg-gray-200 rounded-sm"
@@ -227,7 +235,7 @@ export const UsersCreateCustomerStep2View = ({
           onUserMedia={() => setStreamLoaded(true)}
           onUserMediaError={() => setError(true)}
           ref={webcamRef}
-          videoConstraints={{ deviceId: device.deviceId }}
+          videoConstraints={{ deviceId: devices[index].deviceId }}
         />
       </div>
     );
@@ -298,6 +306,22 @@ export const UsersCreateCustomerStep2View = ({
                     });
                     setSettingsVisible(false);
                   }}
+                />
+              </Form.Item>
+              <Form.Item
+                label="Select webcam"
+                rules={[{ message: 'Please select a webcam!', required: true }]}
+              >
+                <Select
+                  className="w-full"
+                  onChange={i => setIndex(i)}
+                  options={devices.map((device, i) => ({
+                    label: device.label.split(' (')[0] || `Webcam ${i + 1}`,
+                    value: i,
+                  }))}
+                  placeholder="Select a webcam"
+                  showSearch
+                  value={index}
                 />
               </Form.Item>
             </Form>

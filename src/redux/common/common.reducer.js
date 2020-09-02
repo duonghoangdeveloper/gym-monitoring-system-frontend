@@ -20,6 +20,7 @@ const INITIAL_STATE = {
   userWebcam: {
     autoDetect: false,
     facesLayout: 'FLEX',
+    webcamDesktop: true,
     webcamVisible: true,
   },
 };
