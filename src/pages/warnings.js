@@ -26,6 +26,12 @@ export const Warnings = () => {
               data {
                 _id
                 content
+                customer {
+                  username
+                }
+                supporter {
+                  username
+                }
                 createdAt
                 status
               }
@@ -90,6 +96,22 @@ export const Warnings = () => {
       key: 'content',
       sorter: true,
       title: 'Content',
+    },
+    {
+      dataIndex: 'customer',
+      key: 'customer',
+      render: customer => `${customer ? customer.username : 'N/A'}`,
+      sorter: true,
+      title: 'Customer',
+      // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
+    },
+    {
+      dataIndex: 'supporter',
+      key: 'supporter',
+      render: supporter => `${supporter ? supporter.username : 'N/A'}`,
+      sorter: true,
+      title: 'Supporter',
+      // ...getColumnSearchProps('name', generateOnSearch('name'), search.name),
     },
     {
       dataIndex: 'status',

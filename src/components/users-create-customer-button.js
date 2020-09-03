@@ -21,7 +21,7 @@ export const UsersCreateCustomerButton = ({ onSuccess, ...rest }) => {
       const timeoutId = setTimeout(() => {
         setCustomerData(INITIAL_CUSTOMER_DATA);
         if (currentStep !== 1) {
-          setCurrentStep(0);
+          setCurrentStep(2);
         }
       }, 500);
 

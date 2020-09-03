@@ -100,8 +100,7 @@ export const CheckIn = () => {
 
     const handleCheckInGet = ({ checkIn: _checkIn }) => {
       if (
-        _checkIn?.lastCheckIn?._id &&
-        _checkIn?.lastCheckIn?._id !== checkIns[0]?._id
+        _checkIn?.lastCheckIn?.timestamp !== checkIn?.lastCheckIn?.timestamp
       ) {
         fetchLatestCheckIns();
       }
@@ -120,7 +119,7 @@ export const CheckIn = () => {
       socket.off('server-send-check-in');
       subscriber.unsubscribe();
     };
-  }, [socket.connected, checkIns]);
+  }, [socket.connected, checkIns, checkIn?.lastCheckIn?.timestamp]);
 
   const handleInfiniteOnLoad = () => {
     if (checkIns.length >= total) {

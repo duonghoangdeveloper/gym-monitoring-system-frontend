@@ -166,7 +166,7 @@ export const Staffs = () => {
             render: (text, user) => (
               <UsersRemoveUserButton onSuccess={fetchUsersData} user={user} />
             ),
-            title: 'Remove',
+            title: 'Deactivate',
           },
         ]
       : []),
@@ -224,7 +224,7 @@ const generatePageTitle = pathname => {
     case '/trainers':
       return 'Trainer Management';
     case '/managers':
-      return 'Manager Management';
+      return 'Receptionist Management';
     case '/owners':
       return 'Gym Owner Management';
     case '/admins':

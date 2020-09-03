@@ -66,7 +66,7 @@ export const LineChart = () => {
         variables: {
           query: {
             createdBetween: { from, to },
-            search: { status: 'SUCCEEDED' },
+            search: { status: 'ACCEPTED' },
           },
         },
       });
@@ -119,8 +119,6 @@ export const LineChart = () => {
   ).reverse();
   const dataLineChart = [...resultdata, ...resultdataSucceeded];
 
-  // console.log(warnings.forEach(p => p.createdAt));
-  // console.log(warnings);
   return (
     <div className="chartSpinLoader">
       <div className="flex justify-between">

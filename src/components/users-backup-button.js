@@ -23,7 +23,7 @@ export const UsersBackupButton = ({ onSuccess, user }) => {
           _id,
         },
       });
-      message.info('Backup success');
+      message.info('Activate success');
 
       if (onSuccess instanceof Function) {
         onSuccess();
@@ -44,7 +44,7 @@ export const UsersBackupButton = ({ onSuccess, user }) => {
       >
         <a className="whitespace-no-wrap">
           <RollbackOutlined />
-          &nbsp;&nbsp;Backup
+          &nbsp;&nbsp;Activate
         </a>
       </Popconfirm>
     </>

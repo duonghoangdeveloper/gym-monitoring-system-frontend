@@ -109,7 +109,7 @@ export const PaymentsCreatePaymentButton = ({ onSuccess, ...props }) => {
             />
           </Form.Item>
           <Form.Item
-            label="Package"
+            label="Payment Plan"
             name="paymentPlanId"
             rules={[
               {

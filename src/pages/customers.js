@@ -142,7 +142,7 @@ export const Customers = () => {
       render: (text, user) => (
         <UsersRemoveUserButton onSuccess={fetchedCustomers} user={user} />
       ),
-      title: 'Remove',
+      title: 'Deactivate',
     },
   ];
 

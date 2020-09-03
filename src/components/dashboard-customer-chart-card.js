@@ -3,6 +3,7 @@ import { useApolloClient } from '@apollo/react-hooks';
 import { ChartCard, Field, MiniBar } from 'ant-design-pro/lib/Charts';
 import { Tooltip } from 'antd';
 import gql from 'graphql-tag';
+import { xorBy } from 'lodash';
 import moment from 'moment';
 import numeral from 'numeral';
 import React, { useEffect, useState } from 'react';
@@ -11,18 +12,12 @@ export const CustomerChartCard = () => {
   const client = useApolloClient();
   const [users, setUsers] = useState([]);
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(true);
   const visitData = [];
   const beginDay = new Date().getTime();
 
-  for (let i = 0; i < 50; i += 1) {
-    visitData.push({
-      x: moment(new Date(beginDay + 1000 * 60 * 60 * 24 * i)).format(
-        'YYYY-MM-DD'
-      ),
-      y: Math.floor(Math.random() * 100) + 10,
-    });
-  }
   const fectchUserData = async () => {
+    setLoading(true);
     try {
       const result = await client.query({
         query: gql`
@@ -30,6 +25,7 @@ export const CustomerChartCard = () => {
             users(query: $query) {
               data {
                 _id
+                createdAt
               }
               total
             }
@@ -50,6 +46,7 @@ export const CustomerChartCard = () => {
         }))
       );
       setTotal(fetchedPaymentsTotal);
+      setLoading(false);
     } catch (e) {
       // Do something
     }
@@ -62,7 +59,19 @@ export const CustomerChartCard = () => {
   // console.log(totalRevenue);
   // console.log(Object.keys(payments).forEach(ps => ps.Payment));
   // console.log(users.forEach(p => p._id));
-
+  const resultdata = Object.values(
+    users.reduce((r, { createdAt }) => {
+      const dateObj = new Date(createdAt);
+      const x = dateObj.toLocaleString('en-us', {
+        day: 'numeric',
+        month: 'long',
+        // year: 'numeric',
+      });
+      if (!r[x]) r[x] = { x, y: 1 };
+      else r[x].y++;
+      return r;
+    }, {})
+  ).reverse();
   return (
     <ChartCard
       action={
@@ -74,11 +83,12 @@ export const CustomerChartCard = () => {
       footer={
         <Field label="Daily Customer" value={numeral(10).format('0,0')} />
       }
+      loading={loading}
       // loading
       title="Total Customer"
       total={numeral(total).format('0,0')}
     >
-      <MiniBar data={visitData} height={46} />
+      <MiniBar data={resultdata} height={46} />
     </ChartCard>
   );
 };
