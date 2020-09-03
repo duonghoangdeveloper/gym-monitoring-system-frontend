@@ -4,7 +4,7 @@ import { Chart, Interval, Tooltip } from 'bizcharts';
 import gql from 'graphql-tag';
 import React, { useEffect, useState } from 'react';
 
-export const WarningColumnChart = ({ data, text }) => {
+export const CustomerColumnChart = ({ data, text }) => {
   const client = useApolloClient();
 
   const [warnings, setWarnings] = useState([]);
@@ -12,32 +12,35 @@ export const WarningColumnChart = ({ data, text }) => {
   // const [total, setTotal] = useState(0);
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
+  const [users, setUsers] = useState([]);
+
   const [spinning, setSpinning] = useState(true);
-  const fetchWarningsData = async () => {
+  const fectchUserData = async () => {
     setSpinning(true);
+
     try {
       const result = await client.query({
         query: gql`
-          query($query: WarningsQueryInput) {
-            warnings(query: $query) {
+          query Users($query: UsersQueryInput) {
+            users(query: $query) {
               data {
+                _id
                 createdAt
-                status
               }
             }
           }
         `,
         variables: {
-          query: { createdBetween: { from, to }, limit: 100000000 },
+          limit: 100000000,
+          query: { filter: { role: 'CUSTOMER' } },
+          //  search,
         },
       });
 
-      const fetchedWarningsData = result?.data?.warnings?.data ?? [];
-
-      setWarnings(
-        fetchedWarningsData.map(warning => ({
-          key: warning._id,
-          ...warning,
+      const fetchedUserssData = result?.data?.users?.data ?? [];
+      setUsers(
+        fetchedUserssData.map(user => ({
+          ...user,
         }))
       );
       setSpinning(false);
@@ -45,27 +48,28 @@ export const WarningColumnChart = ({ data, text }) => {
       // Do something
     }
   };
+
   useEffect(() => {
-    fetchWarningsData();
+    fectchUserData();
   }, []);
+
   const resultdata = Object.values(
-    warnings.reduce((r, { createdAt }) => {
+    users.reduce((r, { createdAt }) => {
       const dateObj = new Date(createdAt);
       const month = dateObj.toLocaleString('en-us', {
         // day: 'numeric',
         month: 'long',
         // year: 'numeric',
       });
-      if (!r[month]) r[month] = { month, warnings: 1 };
-      else r[month].warnings++;
+      if (!r[month]) r[month] = { month, users: 1 };
+      else r[month].users++;
       return r;
     }, {})
   ).reverse();
-  // console.log(resultdata);
   return (
     <div className="chartSpinLoader">
       <div className="flex justify-between ">
-        <h6 className="text-sm">Warning report</h6>
+        <h6 className="text-sm">Customer registered report</h6>
       </div>
       <Spin spinning={spinning}>
         <Chart
@@ -75,7 +79,7 @@ export const WarningColumnChart = ({ data, text }) => {
           interactions={['active-region']}
           padding={[30, 30, 30, 50]}
         >
-          <Interval position="month*warnings" />
+          <Interval position="month*users" />
           <Tooltip shared />
         </Chart>
       </Spin>

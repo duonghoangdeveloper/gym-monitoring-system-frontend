@@ -4,15 +4,19 @@ import { ChartCard, Field } from 'ant-design-pro/lib/Charts';
 import Trend from 'ant-design-pro/lib/Trend';
 import { Tooltip } from 'antd';
 import gql from 'graphql-tag';
+import moment from 'moment';
 import numeral from 'numeral';
 import React, { useEffect, useState } from 'react';
+
+import { DATE_FORMAT } from '../common/constants';
 
 export const RevenueChartCard = () => {
   const client = useApolloClient();
   const [payments, setPayments] = useState([]);
-  const [total, setTotal] = useState(0);
-  const totalSales = 123213;
+  const [loading, setLoading] = useState(true);
+
   const fetchPaymentsData = async () => {
+    setLoading(true);
     try {
       const result = await client.query({
         query: gql`
@@ -23,10 +27,9 @@ export const RevenueChartCard = () => {
 
                 paymentPlan {
                   price
-                  period
                 }
+                createdAt
               }
-              total
             }
           }
         `,
@@ -37,13 +40,13 @@ export const RevenueChartCard = () => {
       });
 
       const fetchedPaymentsData = result?.data?.payments?.data ?? [];
-      const fetchedPaymentsTotal = result?.data?.payments?.total ?? 0;
       setPayments(
         fetchedPaymentsData.map(_payment => ({
           ..._payment,
         }))
       );
-      setTotal(fetchedPaymentsTotal);
+
+      setLoading(false);
     } catch (e) {
       // Do something
     }
@@ -52,42 +55,40 @@ export const RevenueChartCard = () => {
   useEffect(() => {
     fetchPaymentsData();
   }, []);
-  // const totalRevenue = payments.forEach(p => p.paymentPlan.price * p.total);
-  // console.log(totalRevenue);
-  // console.log(Object.keys(payments).forEach(ps => ps.Payment));
+  const totalRevenue = payments.reduce(
+    (prev, next) => prev + next.paymentPlan.price,
+    0
+  );
+  console.log(payments[0].paymentPlan[0].price);
 
   return (
     <ChartCard
       action={
-        <Tooltip title="Total sales">
+        <Tooltip title="Show total revenue">
           <InfoCircleOutlined />
         </Tooltip>
       }
       contentHeight={46}
       footer={
-        <Field label="Daily revenue" value={numeral(12423).format('0,0')} />
+        <Field
+          label="Last update"
+          value={moment(new Date()).format(DATE_FORMAT)}
+        />
       }
+      loading={loading}
       // loading
       title="Revenue"
       total={() => (
         <span
           dangerouslySetInnerHTML={{
-            __html: `${numeral(totalSales).format('0,0')} VND`,
+            __html: `${numeral(totalRevenue).format('0,0')} VND`,
           }}
         />
       )}
     >
       <span>
-        Increase
-        <Trend flag="up" style={{ color: 'rgba(0,0,0,.85)', marginLeft: 8 }}>
-          12%
-        </Trend>
-      </span>
-      <span style={{ marginLeft: 16 }}>
-        Decrease
-        <Trend flag="down" style={{ color: 'rgba(0,0,0,.85)', marginLeft: 8 }}>
-          11%
-        </Trend>
+        Newest Buying
+        <Trend flag="up" style={{ color: 'rgba(0,0,0,.85)', marginLeft: 8 }} />
       </span>
     </ChartCard>
   );

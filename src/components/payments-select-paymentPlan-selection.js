@@ -78,10 +78,14 @@ export const PaymentsSelectpaymentPlanSelection = ({
         ))}
       </Select>
       {currentPaymentPlan[0] ? (
-        <div className="flex flex-col pt-6">
+        <div className="flex flex-col pt-10">
+          <div className="flex  mb-6">
+            <span className="w-1/4 font-semibold">Name:</span>
+            <span>{currentPaymentPlan[0].name ?? 'N/A'}</span>
+          </div>
           <div className="flex mb-6">
             <span className="w-1/4 font-semibold">Period:</span>
-            <span>{currentPaymentPlan[0].period ?? 'N/A'}</span>
+            <span>{currentPaymentPlan[0].period ?? 'N/A'} Days</span>
           </div>
 
           <div className="flex">

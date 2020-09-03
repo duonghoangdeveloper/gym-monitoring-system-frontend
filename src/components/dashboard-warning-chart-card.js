@@ -12,7 +12,7 @@ export const WarningChartCard = () => {
   const [warnings, setWarnings] = useState([]);
   const [total, setTotal] = useState(0);
   // const [skip, setSkip] = useState(0);
-  // const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   // const [sort, setSort] = useState('');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
@@ -28,7 +28,7 @@ export const WarningChartCard = () => {
     });
   }
   const fetchWarningsData = async () => {
-    // setLoading(true);
+    setLoading(true);
     try {
       const result = await client.query({
         query: gql`
@@ -56,7 +56,7 @@ export const WarningChartCard = () => {
           ...warning,
         }))
       );
-      // setLoading(false);
+      setLoading(false);
       setTotal(fetchedPaymentsTotal);
     } catch (e) {
       // Do something
@@ -68,11 +68,24 @@ export const WarningChartCard = () => {
   // const totalRevenue = payments.forEach(p => p.paymentPlan.price * p.total);
   // console.log(totalRevenue);
   // console.log(Object.keys(payments).forEach(ps => ps.Payment));
-
+  const resultdata = Object.values(
+    warnings.reduce((r, { createdAt }) => {
+      const dateObj = new Date(createdAt);
+      const x = dateObj.toLocaleString('en-us', {
+        day: 'numeric',
+        month: 'long',
+        // year: 'numeric',
+      });
+      if (!r[x]) r[x] = { x, y: 1 };
+      else r[x].y++;
+      return r;
+    }, {})
+  ).reverse();
+  // console.log(resultdata);
   return (
     <ChartCard
       action={
-        <Tooltip title="Total Dangerous">
+        <Tooltip title="Show total dangerous of customer">
           <InfoCircleOutlined />
         </Tooltip>
       }
@@ -80,11 +93,11 @@ export const WarningChartCard = () => {
       footer={
         <Field label="Daily Dangerous" value={numeral(10).format('0,0')} />
       }
-      // loading={loading}
+      loading={loading}
       title="Total Dangerous"
       total={numeral(total).format('0,0')}
     >
-      <MiniArea data={visitData} height={45} line />
+      <MiniArea data={resultdata} height={45} line />
     </ChartCard>
   );
 };

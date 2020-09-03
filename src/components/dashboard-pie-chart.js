@@ -17,6 +17,9 @@ import { DATE_FORMAT_US } from '../common/constants';
 const { RangePicker } = DatePicker;
 export const PieCharts = () => {
   const [spinning, setSpinning] = useState(true);
+  const [payments, setPayments] = useState([]);
+  const [totalPayment, setTotalPayment] = useState(0);
+  const [paymentPlan, setPaymentPlan] = useState([]);
 
   const client = useApolloClient();
   const dateNow = moment(new Date()).format(DATE_FORMAT_US);
@@ -31,7 +34,6 @@ export const PieCharts = () => {
   const [total2, setTotal2] = useState(0);
   const [total3, setTotal3] = useState(0);
   const [total4, setTotal4] = useState(0);
-  const [to, setTo] = useState('');
 
   const fetchWarningsSucceededData = async () => {
     setSpinning(true);
@@ -140,17 +142,82 @@ export const PieCharts = () => {
       // Do something
     }
   };
+  // fetch payment
+  const fetchPaymentsData = async () => {
+    try {
+      const result = await client.query({
+        query: gql`
+          query Payments($query: PaymentsQueryInput) {
+            payments(query: $query) {
+              data {
+                _id
+                paymentPlan {
+                  _id
+                  name
+                }
+              }
+              total
+            }
+          }
+        `,
+        variables: {
+          query: {
+            createdBetween: { from: dateRange[0], to: dateRange[1] },
+            limit: 100000000,
+          },
+          //  search,
+        },
+      });
+
+      const fetchedPaymentsData = result?.data?.payments?.data ?? [];
+      const fetchedPaymentsTotal = result?.data?.payments?.total ?? 0;
+      setPayments(
+        fetchedPaymentsData.map(_payment => ({
+          ..._payment,
+        }))
+      );
+      reportPaymentPlan(fetchedPaymentsData);
+      setTotalPayment(fetchedPaymentsTotal);
+    } catch (e) {
+      // Do something
+    }
+  };
   useEffect(() => {
     fetchWarningsSucceededData();
     fetchWarningsData();
     fetchWarningsFailedData();
     fetchWarningsPendingData();
+    fetchPaymentsData();
   }, [dateRange]);
   const datas = [
     { count: total3, item: 'Trainer help customer failed' },
     { count: total1, item: 'Trainer help cutomer succeeded' },
   ];
 
+  const reportPaymentPlan = payments => {
+    const paymentPlans = [];
+    payments.forEach(({ paymentPlan }) => {
+      if (paymentPlan !== null) {
+        const current = paymentPlans.filter(
+          d => d.paymentPlan.name === paymentPlan.name
+        );
+        if (current.length > 0) {
+          paymentPlans[paymentPlans.indexOf(current[0])].count += 1;
+        } else {
+          paymentPlans.push({ count: 1, paymentPlan });
+        }
+      }
+    });
+    setPaymentPlan(
+      paymentPlans.map(item => ({
+        item: item.paymentPlan.name,
+        ...item,
+      }))
+    );
+    // setPaymentPlan(paymentPlans);
+  };
+  // console.log(payments);
+  // console.log(paymentPlan);
   return (
     <>
       <Tabs
@@ -202,30 +269,38 @@ export const PieCharts = () => {
           </div>
         </Tabs.TabPane>
         <Tabs.TabPane key="2" tab="Payment Plans">
-          <div className="flex justify-between">
-            <h6 className="text-sm">Warning report</h6>
+          <div className="chartSpinLoader">
+            <div className="flex justify-between">
+              <h6 className="text-sm">Payment Plan Report</h6>
+            </div>
+            <Spin spinning={spinning}>
+              <Chart autoFit data={paymentPlan} height={350} scale={cols}>
+                <Coordinate radius={0.75} type="theta" />
+                <Tooltip showTitle={false} />
+                <Axis visible={false} />
+                <Interval
+                  adjust="stack"
+                  color="item"
+                  label={[
+                    'count',
+                    {
+                      content: data =>
+                        `${data.item}: ${(
+                          (data.count / totalPayment) *
+                          100
+                        ).toFixed(1)}%`,
+                    },
+                  ]}
+                  position="count"
+                  style={{
+                    lineWidth: 1,
+                    stroke: '#fff',
+                  }}
+                />
+                <Interaction type="element-single-selected" />
+              </Chart>
+            </Spin>
           </div>
-          <Chart autoFit data={datas} height={350} scale={cols}>
-            <Coordinate radius={0.75} type="theta" />
-            <Tooltip showTitle={false} />
-            <Axis visible={false} />
-            <Interval
-              adjust="stack"
-              color="item"
-              label={[
-                'count',
-                {
-                  content: data => `${data.item}: ${data.percent * 100}%`,
-                },
-              ]}
-              position="percent"
-              style={{
-                lineWidth: 1,
-                stroke: '#fff',
-              }}
-            />
-            <Interaction type="element-single-selected" />
-          </Chart>
         </Tabs.TabPane>
       </Tabs>
     </>
