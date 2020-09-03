@@ -59,7 +59,6 @@ export const RevenueChartCard = () => {
     (prev, next) => prev + next.paymentPlan.price,
     0
   );
-  console.log(payments[0].paymentPlan[0].price);
 
   return (
     <ChartCard
@@ -87,7 +86,7 @@ export const RevenueChartCard = () => {
       )}
     >
       <span>
-        Newest Buying
+        Updated
         <Trend flag="up" style={{ color: 'rgba(0,0,0,.85)', marginLeft: 8 }} />
       </span>
     </ChartCard>

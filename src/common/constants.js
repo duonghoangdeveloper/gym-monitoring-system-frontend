@@ -1,11 +1,11 @@
 export const URI =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
-    ? 'http://192.168.1.103:7777'
+    ? 'http://localhost:7777'
     : 'https://gym-monitoring-system.herokuapp.com';
 // change local LAN
 export const PYTHON_SERVER_URI =
   process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test'
-    ? 'http://192.168.1.103:8000'
+    ? 'http://localhost:8000'
     : '';
 
 export const TOKEN_KEY = 'gym-monitoring-system-token';
