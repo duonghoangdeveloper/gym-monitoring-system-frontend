@@ -118,7 +118,6 @@ export const LineChart = () => {
     }, {})
   ).reverse();
   const dataLineChart = [...resultdata, ...resultdataSucceeded];
-
   return (
     <div className="chartSpinLoader">
       <div className="flex justify-between">
