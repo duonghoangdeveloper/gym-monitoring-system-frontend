@@ -80,9 +80,7 @@ export const CustomerChartCard = () => {
         </Tooltip>
       }
       contentHeight={46}
-      footer={
-        <Field label="Daily Customer" value={numeral(10).format('0,0')} />
-      }
+      footer={<Field label="Updated" />}
       loading={loading}
       // loading
       title="Total Customer"

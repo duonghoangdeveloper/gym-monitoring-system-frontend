@@ -33,6 +33,11 @@ export const Feedbacks = () => {
                 _id
                 content
                 createdAt
+                staffs {
+                  _id
+                  username
+                  role
+                }
               }
               total
             }
@@ -131,6 +136,20 @@ export const Feedbacks = () => {
       ),
     },
     {
+      dataIndex: 'staffs',
+      key: 'staffs',
+      render: ([staffs]) => `${staffs ? staffs.username : 'The Gym'}`,
+      sorter: true,
+      title: 'Feedback for',
+    },
+    {
+      dataIndex: 'staffs',
+      key: 'staffs',
+      render: ([staffs]) => `${staffs ? staffs.role : 'N/A'}`,
+      sorter: true,
+      title: 'Role',
+    },
+    {
       dataIndex: 'date',
       key: 'createdAt',
       sorter: true,
@@ -157,7 +176,6 @@ export const Feedbacks = () => {
       title: 'Delete',
     },
   ];
-
   return (
     <LayoutDashboard>
       <CommonMainContainer>

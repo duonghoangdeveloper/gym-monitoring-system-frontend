@@ -30,7 +30,9 @@ export const LadderChart = () => {
         }
       }
     });
-
+    dangerousPostures.sort(function(a, b) {
+      return parseInt(b.total) - parseInt(a.total);
+    });
     setDangerousPostures(
       dangerousPostures.map((itemPosture, index) => ({
         key: itemPosture.dangerousPosture._id,

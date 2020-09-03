@@ -90,9 +90,7 @@ export const WarningChartCard = () => {
         </Tooltip>
       }
       contentHeight={46}
-      footer={
-        <Field label="Daily Dangerous" value={numeral(10).format('0,0')} />
-      }
+      footer={<Field label="Updated" />}
       loading={loading}
       title="Total Dangerous"
       total={numeral(total).format('0,0')}
